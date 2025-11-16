@@ -44,20 +44,19 @@ export type WritingSection = {
 
 export const aboutProfile = {
 	name: 'Micheál Reilly',
-	subtitle: 'Building AI-powered tools for vibe engineering and context-aided development.',
-	tagline: 'AI-assisted development & minimalist design',
-	bio: 'Software engineer focused on developer experience with large language models.',
+	subtitle: 'Software engineer exploring AI, learning systems, institutions, and economic history.',
+	tagline: 'Software development, AI, and understanding how systems work',
+	bio: 'Software engineer interested in AI, learning, institutional design, and how technology intersects with economics and politics.',
 
 	intro: {
 		sectionId: 'intro',
 		type: 'narrative',
 		paragraphs: [
 			{
-				text: "I'm a software engineer focused on AI-assisted development and the emerging field of vibe engineering — designing systems that understand and amplify context, intent, and workflow.",
-				highlight: 'vibe engineering',
+				text: "I'm a software engineer interested in how technology shapes and is shaped by institutions, economics, and human learning. I work on problems across several domains: building AI-assisted development tools, understanding how to learn effectively, and thinking through the implications of technological change.",
 			},
 			{
-				text: 'I build tools that help developers work more effectively with AI, exploring how large language models can become genuine collaborators in the development process rather than just autocomplete on steroids.',
+				text: 'My interests span software development, hardware, European politics and institutions, economic history, AI systems, and learning—both how humans learn and how to design better learning systems. I write about these topics and their intersections on this blog.',
 			},
 		],
 	} as AboutIntroSection,
@@ -67,14 +66,14 @@ export const aboutProfile = {
 		type: 'status',
 		title: 'Currently',
 		items: [
-			{ category: 'building', text: 'Tools for context-aided engineering workflows' },
+			{ category: 'building', text: 'Software tools and exploring AI-assisted workflows' },
 			{
 				category: 'exploring',
-				text: 'Agent-based development patterns and AI collaboration',
+				text: 'Institutional design, learning systems, and technology\'s role in economic change',
 			},
 			{
 				category: 'writing-about',
-				text: 'AI engineering, developer experience, and minimalist design',
+				text: 'Software development, AI, learning, institutions, and economic history',
 			},
 		],
 	} as CurrentlySection,
