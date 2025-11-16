@@ -108,8 +108,8 @@ const assistantLinks = buildAssistantLinks({
 		top: calc(100% + 0.5rem);
 		right: 0;
 		width: 200px;
-		background: rgba(var(--gray-light), 0.05);
-		border: 1px solid rgba(var(--gray-light), 0.3);
+		background: #f8f8f8;
+		border: 1px solid #e5e5e5;
 		border-radius: 6px;
 		padding: 0.75rem;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -121,13 +121,13 @@ const assistantLinks = buildAssistantLinks({
 		font-size: 0.7rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: rgb(var(--gray));
+		color: #666;
 	}
 
 	.panel-hint {
 		margin: 0.5rem 0 0 0;
 		font-size: 0.7rem;
-		color: rgb(var(--gray));
+		color: #666;
 	}
 
 	.menu-items {
@@ -160,9 +160,14 @@ const assistantLinks = buildAssistantLinks({
 
 	/* Dark mode styling */
 	[data-theme="dark"] .assist-panel {
-		background: rgba(var(--gray-light), 0.08);
-		border-color: rgba(var(--gray-light), 0.25);
+		background: #2a2a2a;
+		border-color: #404040;
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+
+	[data-theme="dark"] .panel-label,
+	[data-theme="dark"] .panel-hint {
+		color: #999;
 	}
 
 	@media (max-width: 640px) {
