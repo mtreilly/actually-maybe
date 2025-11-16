@@ -1,0 +1,64 @@
+---
+/**
+ * PullQuote component for emphasized excerpts
+ * Used to highlight important quotes or key ideas in blog posts
+ *
+ * Usage in MDX:
+ * <PullQuote>This is an important idea worth highlighting</PullQuote>
+ */
+---
+
+<aside class="pull-quote">
+	<slot />
+</aside>
+
+<style>
+	.pull-quote {
+		margin: 2.5rem 0;
+		padding: 1.5rem 1.25rem;
+		border-left: 4px solid var(--accent);
+		background-color: rgba(37, 99, 235, 0.05);
+		border-radius: 0 6px 6px 0;
+		font-size: 1.1875rem;
+		line-height: 1.6;
+		color: rgb(var(--black));
+		font-weight: 500;
+		letter-spacing: -0.3px;
+		transition: all 0.2s;
+	}
+
+	.pull-quote :global(p) {
+		margin: 0;
+	}
+
+	.pull-quote :global(p + p) {
+		margin-top: 1rem;
+	}
+
+	/* Dark theme adjustments */
+	[data-theme="dark"] .pull-quote {
+		background-color: rgba(37, 99, 235, 0.08);
+		border-color: rgba(96, 165, 250, 0.7);
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 720px) {
+		.pull-quote {
+			margin: 1.75rem -1rem;
+			border-left: 3px solid var(--accent);
+			padding: 1rem 1rem;
+			font-size: 1rem;
+			border-radius: 0;
+		}
+	}
+
+	/* Wide layout enhancements */
+	@media (min-width: 1200px) {
+		.pull-quote {
+			margin: 2rem 0 2rem -1.5rem;
+			padding: 1.5rem 1.5rem;
+			font-size: 1.25rem;
+			background: rgba(37, 99, 235, 0.04);
+		}
+	}
+</style>

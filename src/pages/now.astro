@@ -1,0 +1,96 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import { nowPage } from '../data/now';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Now | ${SITE_TITLE}`}
+			description="What I'm doing now"
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Now</h1>
+			<p class="subtitle">{nowPage.subtitle}</p>
+
+			{nowPage.sections.map(section => (
+				<section class="now-section">
+					<h2>{section.title}</h2>
+					<ul>
+						{section.items.map(item => (
+							<li>{item}</li>
+						))}
+					</ul>
+				</section>
+			))}
+
+			<hr />
+			<p class="footnote">
+				Inspired by <a href="https://nownownow.com/">nownownow.com</a>. Last updated: {nowPage.lastUpdated}
+			</p>
+		</main>
+	<Footer />
+	</body>
+</html>
+
+<style>
+	h1 {
+		margin-bottom: 0.5rem;
+	}
+
+	.subtitle {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		margin-bottom: 2rem;
+	}
+
+	.now-section {
+		margin-bottom: 2rem;
+	}
+
+	.now-section h2 {
+		font-size: 1.125rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.now-section ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.now-section li {
+		margin-bottom: 0.5rem;
+		padding-left: 1.5rem;
+		position: relative;
+	}
+
+	.now-section li::before {
+		content: '–';
+		position: absolute;
+		left: 0;
+	}
+
+	hr {
+		margin: 2rem 0;
+		border: none;
+		border-top: 1px solid rgb(var(--gray-light));
+	}
+
+	.footnote {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		margin: 1rem 0 0 0;
+	}
+
+	.footnote a {
+		color: var(--accent);
+	}
+</style>

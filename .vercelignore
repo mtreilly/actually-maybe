@@ -1,0 +1,26 @@
+# Version control
+.git
+.gitignore
+
+# Development
+node_modules
+pnpm-lock.yaml
+
+# Documentation
+README.md
+AGENTS.md
+CLAUDE.md
+
+# Build artifacts
+dist
+.astro
+
+# IDE & OS
+.vscode
+.idea
+.DS_Store
+*.swp
+*.swo
+
+# Testing
+scripts

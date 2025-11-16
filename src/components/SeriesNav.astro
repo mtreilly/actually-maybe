@@ -1,0 +1,214 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	currentPost: CollectionEntry<'blog'>;
+	allPosts: CollectionEntry<'blog'>[];
+}
+
+const { currentPost, allPosts } = Astro.props;
+
+// Only render if post is part of a series
+if (!currentPost.data.series) {
+	throw new Error('SeriesNav requires a post with series data');
+}
+
+const { series } = currentPost.data;
+
+// Find all posts in this series
+const seriesPosts = allPosts
+	.filter(post => post.data.series?.name === series.name)
+	.sort((a, b) => (a.data.series?.part || 0) - (b.data.series?.part || 0));
+
+// Get previous and next posts in series
+const currentIndex = seriesPosts.findIndex(p => p.id === currentPost.id);
+const prevPost = currentIndex > 0 ? seriesPosts[currentIndex - 1] : null;
+const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentIndex + 1] : null;
+---
+
+<div class="series-nav">
+	<div class="series-header">
+		<span class="series-badge">Part of a series</span>
+		<h3 class="series-title">{series.name}</h3>
+		<span class="series-progress">Part {series.part}{series.total ? ` of ${series.total}` : ''}</span>
+	</div>
+
+	{seriesPosts.length > 1 && (
+		<div class="series-posts">
+			{seriesPosts.map((post, index) => (
+				<a
+					href={`/blog/${post.id}/`}
+					class={`series-item ${post.id === currentPost.id ? 'current' : ''}`}
+					aria-current={post.id === currentPost.id ? 'page' : undefined}
+				>
+					<span class="series-number">Part {post.data.series?.part}</span>
+					<span class="series-item-title">{post.data.title}</span>
+				</a>
+			))}
+		</div>
+	)}
+
+	{(prevPost || nextPost) && (
+		<div class="series-navigation">
+			{prevPost && (
+				<a href={`/blog/${prevPost.id}/`} class="series-nav-link series-prev">
+					← Part {prevPost.data.series?.part}: {prevPost.data.title}
+				</a>
+			)}
+			{nextPost && (
+				<a href={`/blog/${nextPost.id}/`} class="series-nav-link series-next">
+					Part {nextPost.data.series?.part}: {nextPost.data.title} →
+				</a>
+			)}
+		</div>
+	)}
+</div>
+
+<style>
+	.series-nav {
+		background: rgba(37, 99, 235, 0.04);
+		border: 1px solid rgba(37, 99, 235, 0.15);
+		border-radius: 6px;
+		padding: 1.25rem;
+		margin: 2rem 0;
+	}
+
+	.series-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.series-badge {
+		font-size: 0.6875rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-weight: 600;
+		color: var(--accent);
+		padding: 0.25rem 0.5rem;
+		background-color: rgba(37, 99, 235, 0.1);
+		border-radius: 3px;
+	}
+
+	.series-title {
+		margin: 0;
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: rgb(var(--black));
+		flex: 1;
+	}
+
+	.series-progress {
+		font-size: 0.875rem;
+		color: rgb(var(--gray));
+		font-weight: 500;
+	}
+
+	.series-posts {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+		padding: 0.75rem 0;
+		border-top: 1px solid rgba(37, 99, 235, 0.1);
+		border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+	}
+
+	.series-item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.5rem 0.75rem;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: all 0.2s;
+		color: rgb(var(--gray));
+	}
+
+	.series-item:hover {
+		background-color: rgba(37, 99, 235, 0.08);
+		color: var(--accent);
+	}
+
+	.series-item.current {
+		background-color: rgba(37, 99, 235, 0.12);
+		color: var(--accent);
+		font-weight: 500;
+	}
+
+	.series-number {
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		font-weight: 600;
+		min-width: 3rem;
+		color: rgb(var(--gray));
+	}
+
+	.series-item.current .series-number {
+		color: var(--accent);
+	}
+
+	.series-item-title {
+		flex: 1;
+		font-size: 0.9375rem;
+	}
+
+	.series-navigation {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.series-nav-link {
+		display: block;
+		padding: 0.625rem;
+		background-color: rgba(37, 99, 235, 0.05);
+		border: 1px solid rgba(37, 99, 235, 0.15);
+		border-radius: 4px;
+		text-decoration: none;
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		transition: all 0.2s;
+	}
+
+	.series-nav-link:hover {
+		background-color: rgba(37, 99, 235, 0.1);
+		color: var(--accent);
+		border-color: var(--accent);
+	}
+
+	/* Dark mode adjustments */
+	[data-theme="dark"] .series-nav {
+		background: rgba(37, 99, 235, 0.06);
+		border-color: rgba(37, 99, 235, 0.2);
+	}
+
+	[data-theme="dark"] .series-badge {
+		background-color: rgba(37, 99, 235, 0.15);
+	}
+
+	[data-theme="dark"] .series-posts {
+		border-color: rgba(37, 99, 235, 0.15);
+	}
+
+	[data-theme="dark"] .series-item:hover {
+		background-color: rgba(37, 99, 235, 0.1);
+	}
+
+	[data-theme="dark"] .series-item.current {
+		background-color: rgba(37, 99, 235, 0.15);
+	}
+
+	[data-theme="dark"] .series-nav-link {
+		background-color: rgba(37, 99, 235, 0.08);
+		border-color: rgba(37, 99, 235, 0.2);
+	}
+
+	[data-theme="dark"] .series-nav-link:hover {
+		background-color: rgba(37, 99, 235, 0.12);
+		border-color: var(--accent);
+	}
+</style>

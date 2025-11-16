@@ -1,0 +1,93 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PostItem from '../components/PostItem.astro';
+import KeyboardShortcuts from '../components/KeyboardShortcuts.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const LATEST_POSTS_COUNT = 10;
+const posts = allPosts.slice(0, LATEST_POSTS_COUNT);
+const totalPosts = allPosts.length;
+const hasMorePosts = totalPosts > LATEST_POSTS_COUNT;
+
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<KeyboardShortcuts />
+		<main>
+			<p class="tagline">Some writing about things.</p>
+
+			<div class="post-list">
+				{posts.map((post) => (
+					<PostItem post={post} variant="home" />
+				))}
+			</div>
+
+			{hasMorePosts && (
+				<div class="view-all-container">
+					<a href="/blog/" class="view-all-link">
+						View all {totalPosts} posts →
+					</a>
+				</div>
+			)}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.tagline {
+		color: rgb(var(--gray));
+		margin-bottom: 2rem;
+		font-size: 1rem;
+	}
+
+	.post-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.view-all-container {
+		display: flex;
+		justify-content: center;
+		padding: 2rem 0;
+		border-top: 1px solid rgba(var(--gray-light), 0.4);
+		margin-top: 1rem;
+	}
+
+	.view-all-link {
+		color: var(--accent);
+		text-decoration: none;
+		font-weight: 500;
+		padding: 0.5rem 1rem;
+		transition: all 0.2s;
+		border: 1px solid rgba(37, 99, 235, 0.3);
+		border-radius: 4px;
+	}
+
+	.view-all-link:hover {
+		background-color: rgba(37, 99, 235, 0.05);
+		border-color: var(--accent);
+	}
+
+	/* Enhanced layout for large screens */
+	@media (min-width: 1200px) {
+		.tagline {
+			font-size: 1.125rem;
+			line-height: 1.6;
+		}
+	}
+</style>

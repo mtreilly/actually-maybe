@@ -1,0 +1,255 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import PostItem from '../../components/PostItem.astro';
+import { SITE_TITLE } from '../../consts';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+
+	// Get all unique topics
+	const allTopics = new Set<string>();
+	posts.forEach(post => {
+		post.data.topics.forEach(topic => allTopics.add(topic));
+	});
+
+	// Create a page for each topic
+	return Array.from(allTopics).map(topic => ({
+		params: { topic },
+		props: {
+			posts: posts
+				.filter(post => post.data.topics.includes(topic))
+				.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+			allPosts: posts,
+		},
+	}));
+}
+
+const { topic } = Astro.params;
+const { posts, allPosts } = Astro.props;
+
+// Calculate related topics (topics that frequently co-occur with this topic)
+const relatedTopicCounts = new Map<string, number>();
+posts.forEach(post => {
+	post.data.topics.forEach(t => {
+		if (t !== topic) {
+			relatedTopicCounts.set(t, (relatedTopicCounts.get(t) || 0) + 1);
+		}
+	});
+});
+
+const relatedTopics = Array.from(relatedTopicCounts.entries())
+	.sort((a, b) => b[1] - a[1])
+	.slice(0, 6); // Show top 6 related topics
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`${topic} | ${SITE_TITLE}`}
+			description={`Posts about ${topic}`}
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<!-- Breadcrumb Navigation -->
+			<nav class="breadcrumb" aria-label="Breadcrumb">
+				<a href="/topics/">Topics</a>
+				<span class="separator">/</span>
+				<span class="current">{topic}</span>
+			</nav>
+
+			<div class="topic-header">
+				<div>
+					<h1>{topic}</h1>
+					<p class="subtitle">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+				</div>
+			</div>
+
+			<!-- Related Topics Section -->
+			{relatedTopics.length > 0 && (
+				<div class="related-topics-section">
+					<h2 class="section-title">Related Topics</h2>
+					<div class="related-topics-list">
+						{relatedTopics.map(([relatedTopic, count]) => (
+							<a href={`/topics/${relatedTopic}`} class="related-topic-tag">
+								<span>{relatedTopic}</span>
+								<span class="count">{count}</span>
+							</a>
+						))}
+					</div>
+				</div>
+			)}
+
+			<!-- Posts List -->
+			<div class="posts-section">
+				<h2 class="section-title">Posts</h2>
+				<div class="post-list">
+					{posts.map((post) => (
+						<PostItem post={post} variant="blog" />
+					))}
+				</div>
+			</div>
+		</main>
+	</body>
+</html>
+
+<style>
+	/* Breadcrumb Navigation */
+	.breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 2rem;
+		font-size: 0.875rem;
+	}
+
+	.breadcrumb a {
+		color: var(--accent);
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.breadcrumb a:hover {
+		opacity: 0.7;
+	}
+
+	.breadcrumb .separator {
+		color: rgb(var(--gray));
+	}
+
+	.breadcrumb .current {
+		color: rgb(var(--gray));
+	}
+
+	/* Topic Header */
+	.topic-header {
+		margin-bottom: 2.5rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+	}
+
+	.topic-header h1 {
+		margin-bottom: 0.5rem;
+		text-transform: capitalize;
+	}
+
+	.subtitle {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		margin: 0;
+	}
+
+	/* Section Styling */
+	.section-title {
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 2rem 0 1.25rem 0;
+		color: rgb(var(--black));
+		border-bottom: 1px solid rgba(var(--gray-light), 0.3);
+		padding-bottom: 0.75rem;
+	}
+
+	.related-topics-section {
+		margin-bottom: 2.5rem;
+		padding: 1.25rem;
+		background-color: rgba(37, 99, 235, 0.02);
+		border: 1px solid rgba(37, 99, 235, 0.1);
+		border-radius: 6px;
+	}
+
+	.related-topics-section .section-title {
+		margin: 0 0 1rem 0;
+		border: none;
+		padding: 0;
+	}
+
+	.related-topics-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.625rem;
+	}
+
+	.related-topic-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		color: rgb(var(--gray));
+		text-decoration: none;
+		padding: 0.375rem 0.75rem;
+		border: 1px solid rgba(37, 99, 235, 0.2);
+		border-radius: 4px;
+		transition: all 0.2s;
+	}
+
+	.related-topic-tag:hover {
+		color: var(--accent);
+		border-color: var(--accent);
+		background-color: rgba(37, 99, 235, 0.05);
+	}
+
+	.related-topic-tag .count {
+		color: rgb(var(--gray));
+		font-size: 0.75rem;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+
+	.related-topic-tag:hover .count {
+		color: var(--accent);
+	}
+
+	/* Posts Section */
+	.posts-section {
+		margin-bottom: 2rem;
+	}
+
+	.post-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	@media (min-width: 1200px) {
+		.topic-header {
+			gap: 2rem;
+		}
+
+		.related-topics-section {
+			padding: 1.5rem;
+		}
+	}
+
+	@media (max-width: 720px) {
+		.breadcrumb {
+			font-size: 0.8125rem;
+			margin-bottom: 1.5rem;
+		}
+
+		.topic-header {
+			flex-direction: column;
+			align-items: flex-start;
+			margin-bottom: 2rem;
+		}
+
+		.related-topics-section {
+			margin-bottom: 2rem;
+			padding: 1rem;
+		}
+
+		.related-topics-list {
+			gap: 0.5rem;
+		}
+
+		.section-title {
+			font-size: 0.95rem;
+			margin-top: 1.5rem;
+			margin-bottom: 1rem;
+		}
+	}
+</style>

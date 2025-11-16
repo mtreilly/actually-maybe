@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+
+const posts = await getCollection('blog');
+
+// Count posts per type
+const typeCounts = new Map<string, number>();
+posts.forEach(post => {
+	const type = post.data.type;
+	typeCounts.set(type, (typeCounts.get(type) || 0) + 1);
+});
+
+// Get all types with counts
+const types = [
+	{ name: 'note', count: typeCounts.get('note') || 0, description: 'Quick thoughts and observations' },
+	{ name: 'essay', count: typeCounts.get('essay') || 0, description: 'Long-form explorations and analysis' },
+	{ name: 'guide', count: typeCounts.get('guide') || 0, description: 'How-tos and tutorials' },
+	{ name: 'link', count: typeCounts.get('link') || 0, description: 'Links to external content with commentary' },
+];
+
+// Capitalize first letter
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Post Types | ${SITE_TITLE}`}
+			description="Browse posts by type"
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Post Types</h1>
+			<p class="subtitle">Browse posts by format</p>
+
+			<div class="types-list">
+				{types.map(({ name, count, description }) => (
+					<a href={`/type/${name}`} class="type-item">
+						<div class="type-content">
+							<span class="type-name">{capitalize(name)}s</span>
+							<span class="type-description">{description}</span>
+						</div>
+						<span class="type-count">{count}</span>
+					</a>
+				))}
+			</div>
+		</main>
+	</body>
+</html>
+
+<style>
+	h1 {
+		margin-bottom: 0.5rem;
+	}
+
+	.subtitle {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		margin-bottom: 2rem;
+	}
+
+	.types-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.type-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem;
+		border: 1px solid rgba(var(--gray-light), 1);
+		border-radius: 4px;
+		text-decoration: none;
+		color: rgb(var(--black));
+		transition: all 0.2s;
+	}
+
+	.type-item:hover {
+		border-color: var(--accent);
+		background-color: rgba(37, 99, 235, 0.02);
+	}
+
+	.type-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.type-name {
+		font-weight: 500;
+		font-size: 1rem;
+	}
+
+	.type-description {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+	}
+
+	.type-count {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.type-item:hover .type-count {
+		color: var(--accent);
+	}
+
+	@media (max-width: 720px) {
+		.type-item {
+			padding: 0.75rem;
+		}
+	}
+</style>

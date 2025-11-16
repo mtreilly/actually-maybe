@@ -1,0 +1,35 @@
+---
+// Sidenote component for margin notes
+// Usage: <Sidenote>Your note here</Sidenote>
+
+interface Props {
+	id?: string;
+}
+
+const { id } = Astro.props;
+const noteNumber = 1;
+const noteId = id || `sidenote-${noteNumber}-${Math.random().toString(36).slice(2, 7)}`;
+---
+
+???
+
+<div class="sidenote-wrapper">
+	<label for={noteId} class="sidenote-number">
+		[{noteNumber}]
+	</label>
+	<input
+		type="checkbox"
+		id={noteId}
+		class="sidenote-checkbox"
+	/>
+	<span class="sidenote-content" data-note-number={noteNumber}>
+		<span class="sidenote-heading">Note {noteNumber}</span>
+		<slot />
+	</span>
+</div>
+
+<style>
+	.sidenote-wrapper {
+		position: relative;
+	}
+</style>

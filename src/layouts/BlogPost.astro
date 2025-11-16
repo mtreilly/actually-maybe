@@ -1,0 +1,340 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import KeyboardShortcuts from '../components/KeyboardShortcuts.astro';
+import BlogSidebar from '../components/BlogSidebar.astro';
+import Footer from '../components/Footer.astro';
+import Toaster from '../components/Toaster.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import MiniToc from '../components/MiniToc.astro';
+import SeriesNav from '../components/SeriesNav.astro';
+import LlmCopyMenu from '../components/LlmCopyMenu.astro';
+import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+
+type Props = CollectionEntry<'blog'>['data'] & {
+	relatedPosts?: Array<CollectionEntry<'blog'> & { sharedTopics: number }>;
+	nextPost?: CollectionEntry<'blog'> | null;
+	prevPost?: CollectionEntry<'blog'> | null;
+	headings?: Array<{ depth: number; slug: string; text: string }>;
+	bodyText?: string;
+	allPosts?: CollectionEntry<'blog'>[];
+	postId?: string;
+};
+
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	topics,
+	series,
+	relatedPosts = [],
+	nextPost = null,
+	prevPost = null,
+	headings = [],
+	bodyText = '',
+	allPosts = [],
+	postId = ''
+} = Astro.props;
+
+// Calculate reading time
+const readingTimeMinutes = calculateReadingTime(bodyText);
+const readingTimeFormatted = formatReadingTime(readingTimeMinutes);
+---
+
+<script>
+	import { initCodeBlockCopy } from '../scripts/codeBlockCopy';
+	import { initHeadingAnchors } from '../scripts/headingAnchors';
+	import { initTocScrollHighlight } from '../scripts/tocScrollHighlight';
+	import { initExternalLinks } from '../scripts/externalLinks';
+	import { initAssistantsMenu } from '../scripts/assistantsMenu';
+
+	// Initialize code block copy on page load
+	initCodeBlockCopy();
+
+	// Initialize heading anchor links
+	initHeadingAnchors();
+
+	// Initialize TOC scroll highlighting
+	initTocScrollHighlight();
+
+	// Initialize external link handling
+	initExternalLinks();
+
+	// Initialize LLM copy/share helpers
+	initAssistantsMenu();
+</script>
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+
+	<body>
+		<Header />
+		<KeyboardShortcuts />
+		<Toaster />
+		<ReadingProgress />
+
+		<!-- Wide layout for large screens -->
+		<div class="wide-layout">
+			<main>
+				<article>
+					{series && allPosts.length > 0 && (
+						<SeriesNav currentPost={{ id: postId, data: { ...Astro.props, series } } as any} allPosts={allPosts} />
+					)}
+				<header class="post-header">
+					<div class="post-header-top">
+						<div class="post-header-main">
+							<h1>{title}</h1>
+							<div class="post-meta">
+								<span class="meta-date"><FormattedDate date={pubDate} /></span>
+								{updatedDate && <span class="meta-updated">• Updated <FormattedDate date={updatedDate} /></span>}
+								<span class="meta-time">• {readingTimeFormatted}</span>
+							</div>
+						</div>
+						{postId && (
+							<div class="post-header-actions">
+								<LlmCopyMenu postId={postId} title={title} description={description} />
+							</div>
+						)}
+					</div>
+					{topics && topics.length > 0 && (
+						<div class="post-topics">
+							{topics.map(topic => (
+								<a href={`/topics/${topic}`} class="topic-tag">{topic}</a>
+							))}
+						</div>
+					)}
+				</header>
+
+					<div class="prose">
+						<slot />
+					</div>
+
+					{(nextPost || prevPost) && (
+						<nav class="post-navigation">
+							<div class="nav-prev">
+								{prevPost && (
+									<a href={`/blog/${prevPost.id}/`} class="nav-link" data-nav="prev">
+										<span class="nav-label">← Previous</span>
+										<span class="nav-title">{prevPost.data.title}</span>
+									</a>
+								)}
+							</div>
+							<div class="nav-next">
+								{nextPost && (
+									<a href={`/blog/${nextPost.id}/`} class="nav-link" data-nav="next">
+										<span class="nav-label">Next →</span>
+										<span class="nav-title">{nextPost.data.title}</span>
+									</a>
+								)}
+							</div>
+						</nav>
+					)}
+				</article>
+			</main>
+			
+			<BlogSidebar relatedPosts={relatedPosts} headings={headings} />
+		</div>
+		<MiniToc headings={headings} />
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.post-header {
+		margin-bottom: 2rem;
+		max-width: 45em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.post-header h1 {
+		margin-bottom: 0.5rem;
+		font-size: 2rem;
+	}
+
+	.post-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 0.9rem;
+		color: rgb(var(--gray));
+		margin-bottom: 1rem;
+	}
+
+	.meta-date {
+		color: rgb(var(--gray));
+		font-weight: 500;
+	}
+
+	.meta-updated {
+		color: rgb(var(--gray));
+		opacity: 0.85;
+	}
+
+	.meta-time {
+		color: rgb(var(--gray));
+		font-weight: 500;
+	}
+
+	.post-topics {
+		display: flex;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.topic-tag {
+		font-size: 0.75rem;
+		color: rgb(var(--gray));
+		text-decoration: none;
+		padding: 0.125rem 0.5rem;
+		border: 1px solid rgba(var(--gray-light), 1);
+		border-radius: 3px;
+		transition: all 0.2s;
+	}
+
+	.topic-tag:hover {
+		color: var(--accent);
+		border-color: var(--accent);
+		background-color: rgba(37, 99, 235, 0.05);
+	}
+
+	.post-header-top {
+		display: flex;
+		align-items: flex-start;
+		gap: 1.5rem;
+	}
+
+	.post-header-main {
+		flex: 1;
+	}
+
+	.post-header-actions {
+		flex-shrink: 0;
+	}
+
+	@media (max-width: 720px) {
+		.post-header-top {
+			flex-direction: column;
+		}
+
+		.post-header-actions {
+			width: 100%;
+		}
+	}
+
+	.prose {
+		line-height: 1.7; /* Improved line height for readability on large screens */
+		font-size: 1.125rem; /* Larger font size for desktop */
+		max-width: 45em; /* Optimal reading width (65 characters) */
+		margin: 0 auto;
+	}
+
+	/* Mobile optimization for better line length */
+	@media (max-width: 720px) {
+		.prose {
+			font-size: 1rem; /* Slightly smaller on mobile */
+			max-width: 100%; /* Use full width but constrain via parent */
+			line-height: 1.6; /* Tighter line height on mobile */
+		}
+	}
+
+	.prose :is(h2, h3, h4, h5, h6) {
+		margin-top: 1.5rem;
+	}
+
+	.prose h2 {
+		margin-top: 1.75rem;
+	}
+
+	.post-navigation {
+		margin-top: 3.5rem;
+		padding-top: 1.75rem;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1.25rem;
+		border-top: 1px solid rgb(var(--gray-light));
+	}
+
+	/* Wide layout adjustments */
+	@media (min-width: 1200px) {
+		.post-header h1 {
+			font-size: 2.25rem; /* Larger heading on desktop */
+			margin-bottom: 1.25rem;
+		}
+
+		.meta-item {
+			font-size: 1.0625rem;
+		}
+
+		.prose {
+			font-size: 1.1875rem; /* 19px for optimal reading */
+			line-height: 1.8;
+		}
+
+		.post-navigation {
+			grid-template-columns: 2fr 1fr; /* Wider prev content on desktop */
+		}
+	}
+
+	.nav-link {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 1rem;
+		border: 1px solid rgba(var(--gray-light), 1);
+		border-radius: 4px;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.nav-link:hover {
+		border-color: var(--accent);
+		background-color: rgba(37, 99, 235, 0.02);
+	}
+
+	.nav-label {
+		font-size: 0.875rem;
+		color: rgb(var(--gray));
+	}
+
+	.nav-title {
+		color: rgb(var(--black));
+		font-weight: 500;
+		line-height: 1.4;
+	}
+
+	.nav-prev {
+		text-align: left;
+	}
+
+	.nav-next {
+		text-align: right;
+	}
+
+	.nav-next .nav-link {
+		flex-direction: column-reverse;
+	}
+
+	@media (max-width: 720px) {
+		.post-navigation {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+
+		.related-item {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.25rem;
+		}
+
+		.nav-next {
+			text-align: left;
+		}
+	}
+</style>

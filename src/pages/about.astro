@@ -1,0 +1,301 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import { aboutProfile } from '../data/about';
+
+const siteUrl = 'https://actuallymaybe.com';
+
+const platformLabels = {
+	email: 'Email',
+	github: 'GitHub',
+	bluesky: 'Bluesky',
+	x: 'X / Twitter',
+	rss: 'RSS',
+};
+
+const jsonLdSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: aboutProfile.name,
+	url: siteUrl,
+	description: aboutProfile.bio,
+	jobTitle: 'Software Engineer',
+	sameAs: [
+		'https://github.com/mtreilly',
+		'https://bsky.app/profile/michealrs.bsky.social',
+		'https://x.com/MichealReilly',
+	],
+	knowsAbout: ['AI-assisted development', 'Developer experience', 'Minimalist design'],
+};
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`About | ${SITE_TITLE}`} description="About Micheál Reilly" />
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLdSchema)} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>{aboutProfile.name}</h1>
+			<p class="subtitle">{aboutProfile.subtitle}</p>
+
+			{/* Intro section - narrative with highlighted terms */}
+			<section id="intro" class="intro-section">
+				{aboutProfile.intro.paragraphs.map((para) => (
+					<p>
+						{para.highlight ? (
+							<>
+								{para.text.split(para.highlight).map((part, i) => (
+									<>
+										{part}
+										{i < para.text.split(para.highlight).length - 1 && (
+											<dfn title="A design philosophy for systems that understand context, intent, and workflow">
+												{para.highlight}
+											</dfn>
+										)}
+									</>
+								))}
+							</>
+						) : (
+							para.text
+						)}
+					</p>
+				))}
+			</section>
+
+			{/* Currently section - status with definition list */}
+			<section id="currently" class="status-section" data-section-type="status">
+				<h2>{aboutProfile.currently.title}</h2>
+				<dl class="status-list">
+					{aboutProfile.currently.items.map((item) => (
+						<>
+							<dt class={`status-label status-${item.category}`}>
+								{item.category === 'building' && '🔨'}
+								{item.category === 'exploring' && '🔍'}
+								{item.category === 'writing-about' && '✍️'}
+								<span>{item.category.replace('-', ' ')}</span>
+							</dt>
+							<dd class="status-text">{item.text}</dd>
+						</>
+					))}
+				</dl>
+			</section>
+
+			{/* Elsewhere section - social links */}
+			<section id="elsewhere" class="social-section" data-section-type="social-links">
+				<h2>{aboutProfile.elsewhere.title}</h2>
+				<ul class="social-links">
+					{aboutProfile.elsewhere.links.map((link) => (
+						<li data-platform={link.platform}>
+							<a href={link.url} rel={link.rel}>
+								{platformLabels[link.platform as keyof typeof platformLabels]}
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+
+			{/* Writing section - call to action */}
+			<section id="writing" class="cta-section" data-section-type="call-to-action">
+				<h2>{aboutProfile.writing.title}</h2>
+				<p class="cta-text">
+					<a href={aboutProfile.writing.url} class="cta-link">
+						{aboutProfile.writing.label}
+					</a>
+				</p>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	/* Header styling */
+	h1 {
+		margin-bottom: 0.25rem;
+	}
+
+	.subtitle {
+		color: rgb(var(--gray));
+		font-size: 1.125rem;
+		margin-top: 0.5rem;
+		margin-bottom: 2.5rem;
+		border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+		padding-bottom: 1.5rem;
+	}
+
+	/* Section common styles */
+	section {
+		margin-bottom: 3rem;
+		scroll-margin-top: 80px; /* For anchor navigation */
+	}
+
+	section h2 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin-bottom: 1.25rem;
+		color: rgb(var(--text));
+		letter-spacing: -0.02em;
+	}
+
+	section p {
+		margin-bottom: 1rem;
+		line-height: 1.8;
+	}
+
+	/* Intro section */
+	.intro-section p {
+		margin-bottom: 1.25rem;
+	}
+
+	dfn {
+		font-style: italic;
+		font-weight: 500;
+		color: var(--accent);
+		text-decoration: underline dotted;
+		cursor: help;
+		transition: color 0.2s ease;
+	}
+
+	dfn:hover {
+		color: var(--accent-alt);
+	}
+
+	/* Status section (Currently) - using definition list */
+	.status-section {
+		background: rgba(128, 128, 128, 0.05);
+		padding: 1.5rem;
+		border-radius: 8px;
+		border-left: 3px solid var(--accent);
+	}
+
+	.status-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.status-label {
+		font-weight: 600;
+		font-size: 0.95rem;
+		text-transform: capitalize;
+		color: var(--accent);
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0;
+	}
+
+	.status-label span {
+		letter-spacing: 0.02em;
+	}
+
+	.status-text {
+		margin: 0 0 0 1.75rem;
+		color: rgb(var(--text));
+		font-size: 1rem;
+	}
+
+	/* Social links section */
+	.social-section {
+		background: rgba(128, 128, 128, 0.03);
+		padding: 1.5rem;
+		border-radius: 8px;
+		border-left: 3px solid rgb(var(--gray));
+	}
+
+	.social-links {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.social-links li {
+		flex: 0 1 auto;
+	}
+
+	.social-links a {
+		color: var(--accent);
+		text-decoration: none;
+		font-weight: 500;
+		padding: 0.5rem 1rem;
+		border: 1px solid var(--accent);
+		border-radius: 4px;
+		display: inline-block;
+		transition: all 0.2s ease;
+	}
+
+	.social-links a:hover {
+		background: var(--accent);
+		color: var(--bg);
+	}
+
+	.social-links a:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	/* Call-to-action section */
+	.cta-section {
+		background: linear-gradient(135deg, rgba(128, 128, 128, 0.05), rgba(128, 128, 128, 0.02));
+		padding: 2rem;
+		border-radius: 8px;
+		text-align: center;
+	}
+
+	.cta-text {
+		margin: 0;
+	}
+
+	.cta-link {
+		color: var(--accent);
+		font-weight: 600;
+		font-size: 1.1rem;
+		text-decoration: none;
+		border-bottom: 2px solid var(--accent);
+		transition: all 0.2s ease;
+		display: inline-block;
+	}
+
+	.cta-link:hover {
+		color: var(--accent-alt);
+		border-bottom-color: var(--accent-alt);
+	}
+
+	.cta-link:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 640px) {
+		section h2 {
+			font-size: 1.125rem;
+		}
+
+		.status-section,
+		.social-section,
+		.cta-section {
+			padding: 1.25rem;
+		}
+
+		.social-links {
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.social-links a {
+			display: block;
+			text-align: center;
+		}
+	}
+</style>

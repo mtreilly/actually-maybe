@@ -1,0 +1,125 @@
+---
+// Simple newsletter signup component
+// Integrates with Buttondown or similar service
+// Update the action URL to your actual newsletter endpoint
+---
+
+<section class="newsletter">
+	<div class="newsletter-content">
+		<h3>Stay updated</h3>
+		<p>Get new posts delivered to your inbox.</p>
+		<form class="newsletter-form" action="https://buttondown.email/api/emails/embed-subscribe/yourname" method="post">
+			<input
+				type="hidden"
+				name="embed"
+				value="1"
+			/>
+			<div class="newsletter-input-group">
+				<input
+					type="email"
+					name="email"
+					placeholder="you@example.com"
+					required
+					class="newsletter-input"
+				/>
+				<button type="submit" class="newsletter-button">Subscribe</button>
+			</div>
+			<p class="newsletter-disclaimer">No spam, unsubscribe anytime.</p>
+		</form>
+	</div>
+</section>
+
+<style>
+	.newsletter {
+		margin: 3rem 0 2rem;
+		padding: 1.5rem;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 6px;
+		background-color: rgba(37, 99, 235, 0.02);
+	}
+
+	.newsletter-content h3 {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.125rem;
+	}
+
+	.newsletter-content > p {
+		margin: 0 0 1rem 0;
+		color: rgb(var(--gray));
+		font-size: 0.9375rem;
+	}
+
+	.newsletter-form {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.newsletter-input-group {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.newsletter-input {
+		flex: 1;
+		padding: 0.5rem 0.75rem;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 3px;
+		font-size: 0.9375rem;
+		background-color: transparent;
+		color: rgb(var(--black));
+		transition: border-color 0.2s;
+	}
+
+	.newsletter-input:focus {
+		outline: none;
+		border-color: var(--accent);
+	}
+
+	.newsletter-input::placeholder {
+		color: rgb(var(--gray));
+	}
+
+	.newsletter-button {
+		padding: 0.5rem 1rem;
+		background-color: var(--accent);
+		color: white;
+		border: none;
+		border-radius: 3px;
+		font-weight: 500;
+		font-size: 0.9375rem;
+		cursor: pointer;
+		transition: opacity 0.2s;
+		white-space: nowrap;
+	}
+
+	.newsletter-button:hover {
+		opacity: 0.9;
+	}
+
+	.newsletter-button:active {
+		transform: scale(0.98);
+	}
+
+	.newsletter-disclaimer {
+		margin: 0;
+		font-size: 0.75rem;
+		color: rgb(var(--gray));
+		text-align: center;
+	}
+
+	@media (max-width: 720px) {
+		.newsletter {
+			padding: 1rem;
+		}
+
+		.newsletter-input-group {
+			flex-direction: column;
+		}
+
+		.newsletter-input,
+		.newsletter-button {
+			font-size: 16px;
+		}
+	}
+</style>

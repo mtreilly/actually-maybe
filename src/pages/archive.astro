@@ -1,0 +1,162 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_TITLE } from '../consts';
+import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+// Group posts by year
+const postsByYear = new Map<number, typeof posts>();
+posts.forEach(post => {
+	const year = post.data.pubDate.getFullYear();
+	if (!postsByYear.has(year)) {
+		postsByYear.set(year, []);
+	}
+	postsByYear.get(year)!.push(post);
+});
+
+// Sort years descending
+const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Archive | ${SITE_TITLE}`}
+			description="All posts by year"
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Archive</h1>
+			<p class="subtitle">{posts.length} posts total</p>
+
+			<div class="archive">
+				{years.map(year => {
+					const yearPosts = postsByYear.get(year) || [];
+					return (
+						<section class="year-section">
+							<h2 class="year-heading">{year}</h2>
+							<div class="year-posts">
+								{yearPosts.map(post => (
+									<a href={`/blog/${post.id}/`} class="archive-item">
+										<time class="archive-date">
+											<FormattedDate date={post.data.pubDate} />
+										</time>
+										<span class="archive-title">{post.data.title}</span>
+										<span class="archive-meta">
+											<span class="archive-reading-time">{formatReadingTime(calculateReadingTime(post.data.description))}</span>
+										</span>
+									</a>
+								))}
+							</div>
+						</section>
+					);
+				})}
+			</div>
+		</main>
+	<Footer />
+	</body>
+</html>
+
+<style>
+	h1 {
+		margin-bottom: 0.5rem;
+	}
+
+	.subtitle {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		margin-bottom: 2rem;
+	}
+
+	.archive {
+		display: flex;
+		flex-direction: column;
+		gap: 2.5rem;
+	}
+
+	.year-section {
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+		padding: 1.5rem;
+		background: rgba(37, 99, 235, 0.02);
+		border: 1px solid rgba(var(--gray-light), 0.4);
+		border-radius: 6px;
+	}
+
+	.year-heading {
+		font-size: 1.375rem;
+		font-weight: 600;
+		color: rgb(var(--black));
+		margin: 0;
+		padding-bottom: 0.875rem;
+		border-bottom: 2px solid rgba(var(--gray-light), 0.6);
+		letter-spacing: -0.5px;
+	}
+
+	.year-posts {
+		display: flex;
+		flex-direction: column;
+		gap: 0.625rem;
+	}
+
+	.archive-item {
+		display: flex;
+		align-items: center;
+		padding: 0.625rem 0;
+		text-decoration: none;
+		transition: all 0.2s;
+		gap: 1rem;
+	}
+
+	.archive-item:hover {
+		background-color: rgba(37, 99, 235, 0.04);
+		padding-left: 0.25rem;
+	}
+
+	.archive-item:hover .archive-title {
+		color: var(--accent);
+	}
+
+	.archive-date {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		min-width: 5.5rem;
+		flex-shrink: 0;
+	}
+
+	.archive-title {
+		color: rgb(var(--black));
+		font-weight: 500;
+		flex: 1;
+	}
+
+	.archive-meta {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		text-align: right;
+		flex-shrink: 0;
+	}
+
+	@media (max-width: 720px) {
+		.archive-item {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.25rem;
+		}
+
+		.archive-meta {
+			text-align: left;
+		}
+	}
+</style>

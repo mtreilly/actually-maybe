@@ -1,0 +1,68 @@
+<div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+
+<script is:inline>
+	const initReadingProgress = () => {
+		const progressEl = document.querySelector('[data-reading-progress]');
+		if (!progressEl || progressEl.dataset.initialized === 'true') return;
+		progressEl.dataset.initialized = 'true';
+
+	let ticking = false;
+
+	const updateProgress = () => {
+			ticking = false;
+			const scrollTop = window.scrollY;
+			const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+			const progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+			progressEl.style.setProperty('--progress-value', progress.toString());
+			progressEl.setAttribute('data-progress', (progress * 100).toFixed(0));
+		};
+
+		const requestTick = () => {
+			if (!ticking) {
+				ticking = true;
+				requestAnimationFrame(updateProgress);
+			}
+		};
+
+		window.addEventListener('scroll', requestTick, { passive: true });
+		window.addEventListener('resize', requestTick, { passive: true });
+		requestTick();
+	};
+
+	const setupReadingProgress = () => {
+		requestAnimationFrame(initReadingProgress);
+	};
+
+	document.addEventListener('astro:page-load', setupReadingProgress);
+	document.addEventListener('DOMContentLoaded', setupReadingProgress);
+</script>
+
+<style>
+	.reading-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		z-index: 1000;
+		pointer-events: none;
+		background: transparent;
+	}
+
+	.reading-progress::after {
+		content: '';
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, var(--accent) 0%, var(--accent-rose) 45%, var(--accent-sage) 100%);
+		transform-origin: left;
+		transform: scaleX(var(--progress-value, 0));
+		transition: transform 0.1s ease-out;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reading-progress::after {
+			transition: none;
+		}
+	}
+</style>

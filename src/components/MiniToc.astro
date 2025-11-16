@@ -1,0 +1,376 @@
+---
+interface Props {
+	headings?: Array<{ depth: number; slug: string; text: string }>;
+}
+
+const { headings = [] } = Astro.props;
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const toggleId = `mini-toc-toggle-${Math.random().toString(36).slice(2, 7)}`;
+const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
+---
+
+{tocHeadings.length > 0 && (
+	<div class="mini-toc" data-mini-toc data-open="false">
+		<button
+			id={toggleId}
+			class="mini-toc-toggle"
+			type="button"
+			aria-expanded="false"
+			aria-controls={panelId}
+			data-mini-toc-toggle
+		>
+			<svg viewBox="0 0 24 24" aria-hidden="true" class="mini-toc-icon">
+				<path d="M5 7h14M5 12h10M5 17h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+			</svg>
+			<span class="mini-toc-label" data-mini-toc-label>Sections</span>
+		</button>
+		<div class="mini-toc-panel" id={panelId} data-mini-toc-panel hidden>
+			<div class="mini-toc-header">
+				<span>Jump to section</span>
+				<button type="button" class="mini-toc-close" data-mini-toc-close>
+					Close
+				</button>
+			</div>
+			<ol class="mini-toc-list">
+				{tocHeadings.map((heading) => (
+					<li class={`mini-toc-item depth-${heading.depth}`}>
+						<a href={`#${heading.slug}`} class="mini-toc-link toc-link" data-heading={heading.slug}>
+							{heading.text}
+						</a>
+					</li>
+				))}
+			</ol>
+		</div>
+	</div>
+)}
+
+<script is:inline>
+	const initMiniToc = () => {
+		const container = document.querySelector('[data-mini-toc]');
+		if (!container || container.dataset.initialized === 'true') return;
+		container.dataset.initialized = 'true';
+
+		const toggle = container.querySelector('[data-mini-toc-toggle]') as HTMLButtonElement | null;
+		const panel = container.querySelector('[data-mini-toc-panel]') as HTMLElement | null;
+		const label = container.querySelector('[data-mini-toc-label]') as HTMLElement | null;
+		const closeBtn = container.querySelector('[data-mini-toc-close]') as HTMLButtonElement | null;
+		const links = panel?.querySelectorAll('.mini-toc-link') ?? [];
+		let isOpen = false;
+		let activeHeading = '';
+
+		const setOpen = (value) => {
+			isOpen = value;
+			container.dataset.open = value ? 'true' : 'false';
+			if (panel) {
+				panel.hidden = !value;
+			}
+			toggle?.setAttribute('aria-expanded', value ? 'true' : 'false');
+			if (value) {
+				requestAnimationFrame(() => {
+					const firstLink = panel?.querySelector('.mini-toc-link') as HTMLElement | null;
+					firstLink?.focus();
+				});
+			}
+		};
+
+		const updateLabel = (text) => {
+			if (!label) return;
+			label.textContent = text || 'Sections';
+		};
+
+		const handleScrollUpdate = () => {
+			const headings = Array.from(links).map((link) => {
+				const id = link.getAttribute('data-heading');
+				return id ? document.getElementById(id) : null;
+			}).filter(Boolean);
+
+			let current = '';
+			const offset = window.scrollY + window.innerHeight * 0.2;
+			headings.forEach((heading) => {
+				const top = heading.getBoundingClientRect().top + window.scrollY;
+				if (top <= offset) {
+					current = heading.id;
+				}
+			});
+
+			if (current && current !== activeHeading) {
+				activeHeading = current;
+				const activeLink = panel.querySelector(`.mini-toc-link[data-heading="${current}"]`);
+				if (activeLink) {
+					updateLabel(activeLink.textContent?.trim() ?? 'Sections');
+				}
+			}
+		};
+
+		const throttledUpdate = () => {
+			window.requestAnimationFrame(handleScrollUpdate);
+		};
+
+		window.addEventListener('scroll', throttledUpdate, { passive: true });
+		window.addEventListener('resize', throttledUpdate, { passive: true });
+		throttledUpdate();
+
+		toggle?.addEventListener('click', () => setOpen(!isOpen));
+		closeBtn?.addEventListener('click', () => setOpen(false));
+		panel?.addEventListener('click', (event) => {
+			const target = (event.target as HTMLElement)?.closest('.mini-toc-link');
+			if (target) {
+				setOpen(false);
+			}
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && isOpen) {
+				setOpen(false);
+			}
+		});
+	};
+
+	const setupMiniToc = () => {
+		requestAnimationFrame(initMiniToc);
+	};
+
+	document.addEventListener('astro:page-load', setupMiniToc);
+	document.addEventListener('DOMContentLoaded', setupMiniToc);
+</script>
+
+<style>
+	.mini-toc {
+		position: fixed;
+		bottom: 1.5rem;
+		right: 1.25rem;
+		z-index: 900;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+
+	.mini-toc-toggle {
+		border: 1px solid rgba(var(--gray-light), 0.7);
+		background: rgba(var(--background), 0.88);
+		backdrop-filter: blur(10px);
+		border-radius: 999px;
+		padding: 0.4rem 0.8rem 0.4rem 0.6rem;
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: rgb(var(--gray));
+		cursor: pointer;
+		box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+		transition: all 0.2s;
+		min-height: 36px;
+	}
+
+	[data-theme='dark'] .mini-toc-toggle {
+		background: rgba(17, 24, 39, 0.85);
+		border-color: rgba(75, 85, 99, 0.6);
+		color: rgb(var(--black));
+	}
+
+	.mini-toc-toggle:hover,
+	.mini-toc-toggle:focus-visible,
+	[data-open='true'] .mini-toc-toggle {
+		border-color: var(--accent-rose);
+		color: rgb(var(--black));
+		outline: none;
+		transform: translateY(-1px);
+	}
+
+	.mini-toc-icon {
+		width: 16px;
+		height: 16px;
+	}
+
+	.mini-toc-label {
+		font-size: 0.75rem;
+	}
+
+	.mini-toc-panel {
+		margin-top: 0.5rem;
+		width: min(280px, calc(100vw - 1.5rem));
+		max-height: min(50vh, 320px);
+		border-radius: 10px;
+		border: 1px solid rgba(var(--gray-light), 0.7);
+		background: rgba(var(--background), 0.92);
+		backdrop-filter: blur(12px);
+		box-shadow: 0 20px 35px rgba(15, 23, 42, 0.18);
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	[data-theme='dark'] .mini-toc-panel {
+		background: rgba(17, 24, 39, 0.92);
+		border-color: rgba(75, 85, 99, 0.7);
+	}
+
+	.mini-toc-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.6rem 0.8rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: rgb(var(--black));
+		border-bottom: 1px solid rgba(var(--gray-light), 0.6);
+		flex-shrink: 0;
+	}
+
+	.mini-toc-close {
+		background: transparent;
+		border: none;
+		color: rgb(var(--gray));
+		cursor: pointer;
+		font-size: 0.7rem;
+		padding: 0.2rem;
+	}
+
+	.mini-toc-list {
+		list-style: none;
+		margin: 0;
+		padding: 0.4rem 0;
+		overflow-y: auto;
+		flex: 1;
+	}
+
+	.mini-toc-item {
+		margin: 0;
+		padding: 0;
+	}
+
+	.mini-toc-link {
+		display: block;
+		padding: 0.35rem 0.8rem;
+		text-decoration: none;
+		color: rgb(var(--gray));
+		font-size: 0.8rem;
+		border-left: 2px solid transparent;
+		transition: all 0.2s;
+		min-height: 32px;
+		display: flex;
+		align-items: center;
+		line-height: 1.3;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.mini-toc-link:hover,
+	.mini-toc-link:focus-visible {
+		color: var(--accent);
+		background-color: rgba(37, 99, 235, 0.08);
+		border-left-color: var(--accent);
+	}
+
+	.mini-toc-link.active {
+		color: var(--accent);
+		border-left-color: var(--accent);
+		background-color: rgba(37, 99, 235, 0.1);
+		font-weight: 500;
+	}
+
+	.depth-3 .mini-toc-link {
+		padding-left: 1.6rem;
+		font-size: 0.75rem;
+		min-height: 28px;
+	}
+
+	/* Compact mode for small screens */
+	@media (max-height: 600px) {
+		.mini-toc-panel {
+			max-height: min(40vh, 260px);
+		}
+
+		.mini-toc-header {
+			padding: 0.4rem 0.6rem;
+			font-size: 0.7rem;
+		}
+
+		.mini-toc-list {
+			padding: 0.3rem 0;
+		}
+
+		.mini-toc-link {
+			padding: 0.25rem 0.6rem;
+			font-size: 0.75rem;
+			min-height: 28px;
+		}
+
+		.depth-3 .mini-toc-link {
+			padding-left: 1.4rem;
+			font-size: 0.7rem;
+			min-height: 24px;
+		}
+	}
+
+	/* Very compact mode for very small screens */
+	@media (max-height: 480px) {
+		.mini-toc-panel {
+			max-height: min(35vh, 220px);
+		}
+
+		.mini-toc-header {
+			padding: 0.3rem 0.5rem;
+		}
+
+		.mini-toc-list {
+			padding: 0.2rem 0;
+		}
+
+		.mini-toc-link {
+			padding: 0.2rem 0.5rem;
+			font-size: 0.7rem;
+			min-height: 24px;
+		}
+
+		.depth-3 .mini-toc-link {
+			padding-left: 1.2rem;
+			font-size: 0.65rem;
+			min-height: 20px;
+		}
+	}
+
+	/* Horizontal layout for very wide but short screens */
+	@media (min-width: 1400px) and (max-height: 700px) {
+		.mini-toc-panel {
+			width: min(360px, calc(100vw - 2rem));
+			max-height: min(45vh, 280px);
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.mini-toc {
+			display: none;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.mini-toc {
+			bottom: 1rem;
+			right: 0.75rem;
+		}
+
+		.mini-toc-panel {
+			width: min(240px, calc(100vw - 1.2rem));
+			max-height: min(45vh, 280px);
+		}
+
+		.mini-toc-toggle {
+			padding: 0.3rem 0.6rem 0.3rem 0.5rem;
+			min-height: 32px;
+		}
+
+		.mini-toc-icon {
+			width: 14px;
+			height: 14px;
+		}
+	}
+
+	@media (max-height: 400px) and (max-width: 480px) {
+		.mini-toc-panel {
+			max-height: min(30vh, 200px);
+		}
+	}
+</style>

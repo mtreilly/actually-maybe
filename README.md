@@ -1,82 +1,74 @@
-# A Blog example using Next.js and DatoCMS
+# Astro Starter Kit: Blog
 
-This example showcases a Next.js Blog using [DatoCMS](https://www.datocms.com/) as the data source. It fully supports [Preview Mode](https://www.datocms.com/docs/next-js/setting-up-next-js-preview-mode) with [DatoCMS real-time updates](https://www.datocms.com/docs/next-js/real-time-updates).
-
-The purpose of this repo is to have a quick start reference that can be set up with the "one-click" button below.
-
-## Demo
-
-Have a look at the end result live:
-
-### [https://nextjs-demo-bay.vercel.app/](https://nextjs-demo-bay.vercel.app/)
-
-## How to use
-
-### Quick start
-
-1. [Create an account on DatoCMS](https://datocms.com).
-
-2. Make sure that you have set up the [Github integration on Vercel](https://vercel.com/docs/git/vercel-for-github).
-
-3. Let DatoCMS set everything up for you clicking this button:
-
-[![Deploy with DatoCMS](https://dashboard.datocms.com/deploy/button.svg)](https://dashboard.datocms.com/deploy?repo=datocms/nextjs-demo)
-
-### Local setup
-
-Once the setup of the project and repo is done, clone the repo locally.
-
-#### Set up environment variables
-
-In your DatoCMS' project, go to the **Settings** menu at the top and click **API tokens**.
-
-Then click **Read-only API token** and copy the token.
-
-Next, copy the `.env.example` file in this directory to `.env` (which will be ignored by Git):
-
-```bash
-cp .env.example .env
+```sh
+pnpm create astro@latest -- --template blog
 ```
 
-Then set each variable on `.env`:
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-- `NEXT_EXAMPLE_CMS_DATOCMS_API_TOKEN` should be the API token you just copied.
-- `NEXT_EXAMPLE_CMS_DATOCMS_PREVIEW_SECRET` can be any random string (but avoid spaces), like `MY_SECRET` - this is used for the Preview Mode](https://www.datocms.com/docs/next-js/setting-up-next-js-preview-mode).
+Features:
 
-Your `.env` file should look like this:
+- ✅ Minimal styling (make it your own!)
+- ✅ 100/100 Lighthouse performance
+- ✅ SEO-friendly with canonical URLs and OpenGraph data
+- ✅ Sitemap support
+- ✅ RSS Feed support
+- ✅ Markdown & MDX support
+- ✅ Site-wide LLM-ready markdown export (`/path.md`, `/topics/ai.md`, `/about.md`, etc.)
+- ✅ In-page “LLM ready” menu with ChatGPT/Claude launchers + Cmd+Shift+M shortcut
 
-```bash
-NEXT_EXAMPLE_CMS_DATOCMS_API_TOKEN=...
-NEXT_EXAMPLE_CMS_DATOCMS_PREVIEW_SECRET=...
+Reference: `/.well-known` style hints live at `/llm.txt` for crawler discovery.
+
+## 🤖 LLM-ready documentation
+
+Every page now has a dedicated `.md` endpoint plus a lightweight “LLM ready” dropdown in the article header.
+
+- Append `.md` to any route (`/blog/my-post.md`, `/topics/astro.md`, `/projects.md`, `/index.md`) to fetch clean markdown with canonical metadata and helpful frontmatter.
+- Use the dropdown buttons to copy the rendered markdown, grab a shareable `.md` link, or launch ChatGPT/Claude with the markdown preloaded. You can also trigger the action from the command palette (Cmd+K) or the global shortcut (Cmd+Shift+M).
+- Responses are cached (`max-age=86400, immutable`), sent with `text/markdown`, and discoverable via `/llm.txt` for tooling that wants to auto-detect the capability.
+
+## 🚀 Project Structure
+
+Inside of your Astro project, you'll see the following folders and files:
+
+```text
+├── public/
+├── src/
+│   ├── components/
+│   ├── content/
+│   ├── layouts/
+│   └── pages/
+├── astro.config.mjs
+├── README.md
+├── package.json
+└── tsconfig.json
 ```
 
-#### Run your project locally
+Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
 
-```bash
-npm install
-npm run dev
-```
+There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
 
-Your blog should be up and running on [http://localhost:3000](http://localhost:3000)!
+The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
 
-#### Try preview mode
+Any static assets, like images, can be placed in the `public/` directory.
 
-On DatoCMS, go to one of the posts you've created and:
+## 🧞 Commands
 
-- **Update the title**. For example, you can add `[Draft]` in front of the title.
-- Click **Save**, but **DO NOT** click **Publish**. By doing this, the post will be in the draft state.
+All commands are run from the root of the project, from a terminal:
 
-(If it doesn't become draft, you need to go to the model settings for `Post`, go to **Additional Settings**, and turn on **Enable draft/published system**.)
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `pnpm install`             | Installs dependencies                            |
+| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
+| `pnpm build`           | Build your production site to `./dist/`          |
+| `pnpm preview`         | Preview your build locally, before deploying     |
+| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `pnpm astro -- --help` | Get help using the Astro CLI                     |
 
-Now, if you go to the post page on localhost, you won't see the updated title. However, if you use the **Preview Mode**, you'll be able to see the change ([Documentation](https://www.datocms.com/docs/next-js/setting-up-next-js-preview-mode)).
+## 👀 Want to learn more?
 
-To enable the Preview Mode, go to this URL:
+Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
 
-```
-http://localhost:3000/api/preview?secret=<secret>
-```
+## Credit
 
-- `<secret>` should be the string you entered for `NEXT_EXAMPLE_CMS_DATOCMS_PREVIEW_SECRET`.
-- `<slug>` should be the post's `slug` attribute (you can check on DatoCMS).
-
-You should now be able to see the updated title. To exit the preview mode, you can click **Click here to exit preview mode** at the top.
+This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).

@@ -1,0 +1,166 @@
+---
+import { buildAssistantLinks } from '../utils/aiLinks';
+
+type Props = {
+	postId: string;
+	title: string;
+	description?: string;
+};
+
+const { postId, title, description = '' } = Astro.props as Props;
+const markdownPath = `/blog/${postId}.md`;
+const absoluteMarkdownUrl = new URL(markdownPath, Astro.url).toString();
+const canonicalPageUrl = new URL(`/blog/${postId}/`, Astro.url).toString();
+const assistantLinks = buildAssistantLinks({
+	markdownUrl: absoluteMarkdownUrl,
+	canonicalUrl: canonicalPageUrl,
+	title,
+	description,
+});
+---
+
+<div class="llm-menu-wrapper">
+	<details
+		class="llm-menu"
+		data-assist-menu="true"
+		data-markdown-url={markdownPath}
+		data-markdown-link={absoluteMarkdownUrl}
+		data-page-url={canonicalPageUrl}
+		data-chatgpt-url={assistantLinks.chatgpt}
+		data-claude-url={assistantLinks.claude}
+		data-title={title}
+		data-description={description}
+	>
+		<summary class="assist-toggle" data-assist-toggle role="button" tabindex="0">
+			<span class="summary-label">Copy Markdown</span>
+		</summary>
+		<div class="assist-panel" data-assist-panel hidden>
+			<p class="panel-label">One-click exports</p>
+			<div class="menu-items">
+				<button type="button" data-assist-action="copy-markdown">Copy markdown</button>
+				<button type="button" data-assist-action="copy-link">Copy .md link</button>
+				<button type="button" data-assist-action="open-chatgpt">Open in ChatGPT</button>
+				<button type="button" data-assist-action="open-claude">Open in Claude</button>
+			</div>
+			<p class="panel-hint">Shortcut: Shift+Cmd+M</p>
+		</div>
+	</details>
+</div>
+
+<style>
+	.llm-menu-wrapper {
+		margin-top: 0;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.llm-menu {
+		border: 1px solid rgba(var(--gray-light), 0.8);
+		border-radius: 10px;
+		padding: 0.25rem;
+		background: rgba(var(--gray-light), 0.1);
+		max-width: 320px;
+		position: relative;
+	}
+
+	.assist-toggle {
+		width: 100%;
+		border: none;
+		background: transparent;
+		padding: 0.65rem 0.85rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		cursor: pointer;
+		border-radius: 8px;
+	}
+
+	.assist-toggle::-webkit-details-marker {
+		display: none;
+	}
+
+	.assist-toggle:hover,
+	.assist-toggle:focus-visible {
+		background: rgba(var(--gray-light), 0.2);
+		outline: none;
+	}
+
+	.summary-label {
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
+
+	.summary-meta {
+		display: none;
+	}
+
+	.assist-panel {
+		position: absolute;
+		top: calc(100% + 0.25rem);
+		left: 0;
+		width: 100%;
+		background: rgb(var(--background));
+		border: 1px solid rgba(var(--gray-light), 0.8);
+		border-radius: 10px;
+		padding: 0.85rem;
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+		z-index: 10;
+	}
+
+	.panel-label {
+		margin: 0 0 0.5rem 0;
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: rgb(var(--gray));
+	}
+
+	.panel-hint {
+		margin: 0.75rem 0 0 0;
+		font-size: 0.75rem;
+		color: rgb(var(--gray));
+	}
+
+	.menu-items {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.menu-items button {
+		width: 100%;
+		border: 1px solid rgba(var(--gray-light), 0.8);
+		background: rgb(var(--background));
+		color: rgb(var(--black));
+		padding: 0.4rem 0.6rem;
+		border-radius: 6px;
+		font-size: 0.85rem;
+		text-align: left;
+		cursor: pointer;
+		transition: border-color 0.2s, background 0.2s;
+	}
+
+	.menu-items button:hover,
+	.menu-items button:focus-visible {
+		border-color: var(--accent);
+		background: rgba(37, 99, 235, 0.05);
+		outline: none;
+	}
+
+	@media (max-width: 640px) {
+		.llm-menu-wrapper {
+			margin-top: 1rem;
+		}
+
+		.llm-menu {
+			width: 100%;
+			max-width: unset;
+		}
+
+		.assist-panel {
+			position: static;
+			margin-top: 0.5rem;
+		}
+	}
+</style>

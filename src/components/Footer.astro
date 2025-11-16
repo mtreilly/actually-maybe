@@ -1,0 +1,123 @@
+---
+import { SITE_TITLE } from '../consts';
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<nav class="footer-nav">
+		<ul class="footer-list">
+			<li><a href="/rss.xml" rel="alternate">RSS Feed</a></li>
+			<li><a href="/archive" rel="archive">Archive</a></li>
+			<li><a href="/search" rel="search">Search</a></li>
+			<li><a href="/about" rel="author">About</a></li>
+		</ul>
+	</nav>
+
+	<address class="footer-meta">
+		<p class="footer-copyright">© {currentYear} {SITE_TITLE}</p>
+		<p class="footer-note">Built with Astro. No ads, no tracking.</p>
+	</address>
+</footer>
+
+<style>
+	.site-footer {
+		margin-top: 4rem;
+		padding: 2.5rem 1.5rem;
+		border-top: 1px solid rgba(var(--gray-light), 0.15);
+		color: rgb(var(--gray));
+		background-color: var(--background);
+	}
+
+	.footer-nav {
+		max-width: 1400px;
+		margin: 0 auto 2rem;
+	}
+
+	.footer-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.footer-list a {
+		color: rgb(var(--gray));
+		text-decoration: none;
+		font-size: 0.875rem;
+		transition: color 0.2s;
+	}
+
+	.footer-list a:hover {
+		color: var(--accent);
+	}
+
+	.footer-list a:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	.footer-meta {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(var(--gray-light), 0.15);
+		font-style: normal;
+	}
+
+	.footer-copyright,
+	.footer-note {
+		margin: 0 0 0.5rem 0;
+		font-size: 0.8rem;
+		color: rgb(var(--gray));
+		line-height: 1.4;
+	}
+
+	.footer-note {
+		opacity: 0.7;
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 720px) {
+		.site-footer {
+			padding: 2rem 1rem;
+		}
+
+		.footer-meta {
+			padding-top: 1.25rem;
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.site-footer {
+			padding: 3rem 2rem;
+		}
+
+		.footer-list {
+			flex-direction: row;
+			gap: 2rem;
+		}
+
+		.footer-meta {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 2rem;
+		}
+
+		.footer-copyright {
+			margin-bottom: 0;
+		}
+	}
+
+	/* Dark mode adjustments */
+	[data-theme="dark"] .site-footer {
+		border-top-color: rgba(75, 85, 99, 0.15);
+	}
+
+	[data-theme="dark"] .footer-meta {
+		border-top-color: rgba(75, 85, 99, 0.15);
+	}
+</style>

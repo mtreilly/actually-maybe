@@ -1,0 +1,97 @@
+---
+interface Props {
+	headings?: Array<{ depth: number; slug: string; text: string }>;
+}
+
+const { headings = [] } = Astro.props;
+
+// Filter and organize headings for TOC (only h2 and h3)
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{
+	tocHeadings.length > 0 && (
+		<nav class="toc-container">
+			<h3 class="toc-title">Table of Contents</h3>
+			<ol class="toc-list">
+				{tocHeadings.map((heading) => (
+					<li class={`toc-item toc-depth-${heading.depth}`}>
+						<a href={`#${heading.slug}`} class="toc-link">
+							{heading.text}
+						</a>
+					</li>
+				))}
+			</ol>
+		</nav>
+	)
+}
+
+<style>
+	.toc-container {
+		border: 1px solid rgba(var(--gray-light), 0.6);
+		border-radius: 6px;
+		padding: 1rem;
+		background-color: rgba(37, 99, 235, 0.02);
+		margin-bottom: 1.5rem;
+	}
+
+	.toc-title {
+		font-size: 0.875rem;
+		font-weight: 600;
+		margin: 0 0 0.75rem 0;
+		color: rgb(var(--black));
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.toc-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.toc-item {
+		margin: 0;
+		padding: 0;
+	}
+
+	.toc-depth-2 {
+		margin-left: 0;
+	}
+
+	.toc-depth-3 {
+		margin-left: 1rem;
+	}
+
+	.toc-link {
+		color: rgb(var(--gray));
+		text-decoration: none;
+		font-size: 0.875rem;
+		padding: 0.25rem 0;
+		transition: color 0.2s;
+		display: block;
+		line-height: 1.4;
+	}
+
+	.toc-link:hover {
+		color: var(--accent);
+	}
+
+	/* Active link styling */
+	.toc-link.active {
+		color: var(--accent);
+		font-weight: 500;
+		border-left: 2px solid var(--accent);
+		padding-left: 0.5rem;
+		margin-left: -0.5rem;
+	}
+
+	/* Dark theme adjustments */
+	[data-theme="dark"] .toc-container {
+		background-color: rgba(37, 99, 235, 0.05);
+		border-color: rgba(75, 85, 99, 0.4);
+	}
+</style>
