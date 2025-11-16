@@ -108,8 +108,8 @@ const assistantLinks = buildAssistantLinks({
 		top: calc(100% + 0.5rem);
 		right: 0;
 		width: 200px;
-		background: rgb(var(--background));
-		border: 1px solid rgba(var(--gray-light), 0.5);
+		background: rgba(var(--gray-light), 0.05);
+		border: 1px solid rgba(var(--gray-light), 0.3);
 		border-radius: 6px;
 		padding: 0.75rem;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -156,6 +156,13 @@ const assistantLinks = buildAssistantLinks({
 		background: rgba(var(--gray-light), 0.3);
 		color: rgb(var(--black));
 		outline: none;
+	}
+
+	/* Dark mode styling */
+	[data-theme="dark"] .assist-panel {
+		background: rgba(var(--gray-light), 0.08);
+		border-color: rgba(var(--gray-light), 0.25);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 	}
 
 	@media (max-width: 640px) {
