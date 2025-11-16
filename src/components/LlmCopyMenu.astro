@@ -140,7 +140,7 @@ const assistantLinks = buildAssistantLinks({
 		width: 100%;
 		border: none;
 		background: transparent;
-		color: rgb(var(--text));
+		color: #333;
 		padding: 0.5rem 0.5rem;
 		border-radius: 3px;
 		font-size: 0.8rem;
@@ -153,8 +153,8 @@ const assistantLinks = buildAssistantLinks({
 	.menu-items button:hover,
 	.menu-items button:focus-visible {
 		border: none;
-		background: rgba(var(--gray-light), 0.3);
-		color: rgb(var(--black));
+		background: #efefef;
+		color: #000;
 		outline: none;
 	}
 
@@ -168,6 +168,16 @@ const assistantLinks = buildAssistantLinks({
 	[data-theme="dark"] .panel-label,
 	[data-theme="dark"] .panel-hint {
 		color: #999;
+	}
+
+	[data-theme="dark"] .menu-items button {
+		color: #d0d0d0;
+	}
+
+	[data-theme="dark"] .menu-items button:hover,
+	[data-theme="dark"] .menu-items button:focus-visible {
+		background: #3a3a3a;
+		color: #e8e8e8;
 	}
 
 	@media (max-width: 640px) {
