@@ -4,7 +4,6 @@
 
 # Development
 node_modules
-pnpm-lock.yaml
 
 # Documentation
 README.md
