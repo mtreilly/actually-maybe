@@ -36,6 +36,7 @@ const jsonLdSchema = {
 <html lang="en">
 	<head>
 		<BaseHead title={`About | ${SITE_TITLE}`} description="About Micheál Reilly" />
+		<link rel="llm-context" href="/about.llm" type="text/plain" title="LLM Context for Micheál Reilly" />
 		<script type="application/ld+json" set:html={JSON.stringify(jsonLdSchema)} />
 	</head>
 	<body>

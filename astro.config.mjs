@@ -29,4 +29,12 @@ export default defineConfig({
 			},
 		},
 	},
+	headers: [
+		{
+			match: 'all',
+			headers: {
+				'Link': '</about.llm>; rel="llm-context"; type="text/plain", </.well-known/ai-profile>; rel="ai-profile"; type="application/json"',
+			},
+		},
+	],
 });
