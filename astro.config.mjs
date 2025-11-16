@@ -2,7 +2,7 @@
 
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-import vercel from '@astrojs/vercel/static';
+import vercel from '@astrojs/vercel';
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
