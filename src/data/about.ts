@@ -6,7 +6,7 @@ export type CurrentlyItem = {
 };
 
 export type ElsewhereLink = {
-	platform: 'email' | 'github' | 'bluesky' | 'x' | 'rss';
+	platform: 'email' | 'github' | 'bluesky' | 'x' | 'linkedin' | 'rss';
 	url: string;
 	rel?: string;
 };
@@ -91,6 +91,7 @@ export const aboutProfile = {
 				rel: 'me',
 			},
 			{ platform: 'x', url: 'https://x.com/MichealReilly', rel: 'me' },
+			{ platform: 'linkedin', url: 'https://www.linkedin.com/in/michealreilly/', rel: 'me' },
 			{ platform: 'rss', url: '/rss.xml' },
 		],
 	} as ElsewhereSection,
