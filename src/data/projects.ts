@@ -7,27 +7,33 @@ export type Project = {
 
 export const projects: Project[] = [
 	{
+		name: 'Agentic Tools & Vibe Engineering',
+		description: 'Exploring what agentic tools can do under the rubric of vibe engineering—designing systems that understand context, intent, and workflow. Reference: Simon Willison\'s "Vibe Engineering" essay.',
+		url: 'https://simonwillison.net/2025/Oct/7/vibe-engineering/',
+		status: 'In Progress',
+	},
+	{
+		name: 'Small Models Exploration',
+		description: 'Building and experimenting with small language models to understand their capabilities and limitations across different domains.',
+		url: '#',
+		status: 'In Progress',
+	},
+	{
+		name: 'Language Learning',
+		description: 'Active language learning: French (B2), Polish (A2-B1), Spanish (A1). Exploring effective learning systems and spaced repetition.',
+		url: '#',
+		status: 'Active',
+	},
+	{
 		name: 'Claude Code',
 		description: 'IDE for local AI-assisted development with your LLM',
 		url: 'https://github.com/anthropics/claude-code',
 		status: 'Active',
 	},
 	{
-		name: 'Vibe Engineering Tools',
-		description: 'Exploring how to build tools that understand context and amplify developer workflow',
-		url: '#',
-		status: 'In Progress',
-	},
-	{
-		name: 'Context-Aided Engineering',
-		description: 'Research and patterns for AI-assisted development that actually collaborates',
-		url: '#',
-		status: 'In Progress',
-	},
-	{
 		name: 'Minimal Blog Platform',
 		description: 'Scalable blog architecture with topics, types, and automatic discovery',
-		url: 'https://github.com/micheal/actuallymaybe',
+		url: 'https://github.com/mtreilly/actually-maybe',
 		status: 'Active',
 	},
 ];
