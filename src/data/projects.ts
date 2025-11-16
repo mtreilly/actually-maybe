@@ -25,12 +25,6 @@ export const projects: Project[] = [
 		status: 'Active',
 	},
 	{
-		name: 'Claude Code',
-		description: 'IDE for local AI-assisted development with your LLM',
-		url: 'https://github.com/anthropics/claude-code',
-		status: 'Active',
-	},
-	{
 		name: 'Minimal Blog Platform',
 		description: 'Scalable blog architecture with topics, types, and automatic discovery',
 		url: 'https://github.com/mtreilly/actually-maybe',

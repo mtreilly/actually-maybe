@@ -205,10 +205,10 @@ const jsonLdSchema = {
 
 	/* Social links section */
 	.social-section {
-		background: rgba(128, 128, 128, 0.03);
-		padding: 1.5rem;
-		border-radius: 8px;
-		border-left: 3px solid rgb(var(--gray));
+		background: transparent;
+		padding: 0;
+		border-radius: 0;
+		border: none;
 	}
 
 	.social-links {
@@ -217,7 +217,7 @@ const jsonLdSchema = {
 		margin: 0;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 1rem;
+		gap: 1.5rem;
 	}
 
 	.social-links li {
@@ -225,19 +225,20 @@ const jsonLdSchema = {
 	}
 
 	.social-links a {
-		color: var(--accent);
+		color: rgb(var(--text));
 		text-decoration: none;
-		font-weight: 500;
-		padding: 0.5rem 1rem;
-		border: 1px solid var(--accent);
-		border-radius: 4px;
-		display: inline-block;
-		transition: all 0.2s ease;
+		font-weight: 400;
+		font-size: 0.95rem;
+		padding: 0;
+		border: none;
+		border-radius: 0;
+		display: inline;
+		transition: color 0.2s ease;
 	}
 
 	.social-links a:hover {
-		background: var(--accent);
-		color: var(--bg);
+		color: var(--accent);
+		background: transparent;
 	}
 
 	.social-links a:focus-visible {
@@ -284,19 +285,18 @@ const jsonLdSchema = {
 		}
 
 		.status-section,
-		.social-section,
 		.cta-section {
 			padding: 1.25rem;
 		}
 
 		.social-links {
-			flex-direction: column;
-			gap: 0.75rem;
+			flex-direction: row;
+			gap: 1rem;
+			font-size: 0.875rem;
 		}
 
 		.social-links a {
-			display: block;
-			text-align: center;
+			display: inline;
 		}
 	}
 </style>
