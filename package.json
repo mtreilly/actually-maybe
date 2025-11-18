@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "tsx scripts/test-markdown.ts"
+    "test": "tsx scripts/test-markdown.ts && tsx src/lib/__tests__/mention-detector.test.ts && tsx scripts/test-graph-page.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.10",

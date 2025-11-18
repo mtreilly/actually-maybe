@@ -1,7 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { unflatten } from 'devalue';
 import type { KnowledgeGraph } from '../types/graph';
 import {
 	buildEdges,
@@ -10,12 +9,24 @@ import {
 	toPostNode,
 } from './graph-utils';
 
-const DATA_STORE_PATH = resolve(process.cwd(), '.astro/data-store.json');
 const GRAPH_CACHE_PATH = resolve(process.cwd(), '.astro/graph-cache.json');
 
 let memoryCache: KnowledgeGraph | null = null;
 
-export async function loadKnowledgeGraph(forceRebuild = false): Promise<KnowledgeGraph> {
+type LoadOptions = {
+	forceRebuild?: boolean;
+	entries?: CollectionEntry<'blog'>[];
+	skipCacheWrite?: boolean;
+};
+
+type GraphCachePayload = {
+	graph: KnowledgeGraph;
+	hash?: string;
+};
+
+export async function loadKnowledgeGraph(options: LoadOptions = {}): Promise<KnowledgeGraph> {
+	const { forceRebuild = false, entries, skipCacheWrite = false } = options;
+
 	if (memoryCache && !forceRebuild) {
 		return memoryCache;
 	}
@@ -28,17 +39,25 @@ export async function loadKnowledgeGraph(forceRebuild = false): Promise<Knowledg
 		}
 	}
 
-	const entries = await loadBlogEntriesFromDataStore();
-	const graph = buildGraph(entries);
-	await writeGraphCache({ graph });
+	const posts =
+		entries ??
+		(await (async () => {
+			const { getCollection } = await import('astro:content');
+			return getCollection('blog');
+		})());
+	const graph = buildGraph(posts);
+
+	if (!skipCacheWrite) {
+		await writeGraphCache({ graph });
+	}
+
 	memoryCache = graph;
 	return graph;
 }
 
-type GraphCachePayload = {
-	graph: KnowledgeGraph;
-	hash?: string;
-};
+export function buildGraphFromEntries(entries: Array<CollectionEntry<'blog'>>): KnowledgeGraph {
+	return buildGraph(entries);
+}
 
 async function readGraphCache(): Promise<GraphCachePayload | null> {
 	try {
@@ -59,28 +78,6 @@ export async function writeGraphCache(payload: GraphCachePayload): Promise<void>
 	await writeFile(GRAPH_CACHE_PATH, JSON.stringify(payload, null, 2), 'utf-8');
 }
 
-async function loadBlogEntriesFromDataStore(): Promise<Array<CollectionEntry<'blog'>>> {
-	try {
-		const raw = await readFile(DATA_STORE_PATH, 'utf-8');
-		const flattened = JSON.parse(raw);
-		const store = unflatten(flattened) as Map<string, Map<string, StoredEntry>>;
-		const blogEntries = store.get('blog');
-		if (!blogEntries) {
-			return [];
-		}
-
-		return Array.from(blogEntries.values()).map((entry) => ({
-			id: entry.id,
-			slug: entry.slug ?? entry.id,
-			collection: 'blog',
-			body: entry.body ?? '',
-			data: entry.data,
-		})) as Array<CollectionEntry<'blog'>>;
-	} catch (error) {
-		throw new Error(`Unable to read blog entries from ${DATA_STORE_PATH}: ${error}`);
-	}
-}
-
 function buildGraph(entries: Array<CollectionEntry<'blog'>>): KnowledgeGraph {
 	const nodes = entries.map(toPostNode);
 	const edges = buildEdges(nodes);
@@ -97,11 +94,4 @@ function buildGraph(entries: Array<CollectionEntry<'blog'>>): KnowledgeGraph {
 		...graphBase,
 		stats: calculateStats(graphBase),
 	};
-}
-
-interface StoredEntry {
-	id: string;
-	slug?: string;
-	body?: string;
-	data: CollectionEntry<'blog'>['data'];
 }
