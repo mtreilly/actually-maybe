@@ -7,6 +7,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 import { defineConfig } from 'astro/config';
+import knowledgeGraph from './src/integrations/knowledge-graph';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const srcPath = resolve(__dirname, 'src');
@@ -21,7 +22,7 @@ export default defineConfig({
 		},
 		imageService: true,
 	}),
-	integrations: [mdx(), sitemap()],
+	integrations: [mdx(), sitemap(), knowledgeGraph()],
 	vite: {
 		resolve: {
 			alias: {

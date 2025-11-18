@@ -23,6 +23,9 @@ importers:
       astro:
         specifier: ^5.15.7
         version: 5.15.7(@types/node@24.10.1)(@vercel/functions@2.2.13)(rollup@4.53.2)(tsx@4.20.6)(typescript@5.9.3)
+      devalue:
+        specifier: ^5.5.0
+        version: 5.5.0
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
