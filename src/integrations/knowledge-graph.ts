@@ -2,8 +2,10 @@ import type { AstroIntegration } from 'astro';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join, resolve } from 'node:path';
+import { unflatten } from 'devalue';
+import type { CollectionEntry } from 'astro:content';
 import type { KnowledgeGraph } from '../types/graph';
-import { loadKnowledgeGraph, writeGraphCache } from '../lib/knowledge-graph-loader';
+import { buildGraphFromEntries, writeGraphCache } from '../lib/knowledge-graph-loader';
 import { findUnlinkedMentions } from '../lib/mention-detector';
 
 export default function knowledgeGraphIntegration(): AstroIntegration {
@@ -18,33 +20,25 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 
 				try {
 					const dataStorePath = resolve(process.cwd(), '.astro/data-store.json');
-					let contentHash: string | null = null;
-					try {
-						const dataStoreContents = readFileSync(dataStorePath, 'utf-8');
-						contentHash = createHash('sha256').update(dataStoreContents).digest('hex');
-					} catch (error) {
-						logger.warn(`⚠️ Unable to hash data store: ${error}`);
-					}
+					const dataStoreRaw = readFileSync(dataStorePath, 'utf-8');
+					const posts = parseBlogEntries(JSON.parse(dataStoreRaw));
+					const contentHash = createHash('sha256').update(dataStoreRaw).digest('hex');
 
-					if (contentHash) {
-						const cachePath = resolve(process.cwd(), '.astro/graph-cache.json');
-						try {
-							const cachedRaw = readFileSync(cachePath, 'utf-8');
-							const cached = JSON.parse(cachedRaw);
-							if (cached?.hash === contentHash && cached.graph) {
-								graphData = cached.graph as KnowledgeGraph;
-								logger.info('📊 Knowledge graph unchanged, using cache');
-							}
-						} catch {
-							// cache miss ignored
+					const cachePath = resolve(process.cwd(), '.astro/graph-cache.json');
+					try {
+						const cachedRaw = readFileSync(cachePath, 'utf-8');
+						const cached = JSON.parse(cachedRaw);
+						if (cached?.hash === contentHash && cached.graph) {
+							graphData = cached.graph as KnowledgeGraph;
+							logger.info('📊 Knowledge graph unchanged, using cache');
 						}
+					} catch {
+						// cache miss ignored
 					}
 
 					if (!graphData) {
-						graphData = await loadKnowledgeGraph(true);
-						if (contentHash) {
-							await writeGraphCache({ graph: graphData, hash: contentHash });
-						}
+						graphData = buildGraphFromEntries(posts);
+						await writeGraphCache({ graph: graphData, hash: contentHash });
 					}
 
 					logger.info(`Found ${graphData.posts.length} posts for graph generation`);
@@ -92,4 +86,27 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 			},
 		},
 	};
+}
+
+function parseBlogEntries(flattened: unknown): Array<CollectionEntry<'blog'>> {
+	const store = unflatten(flattened) as Map<string, Map<string, StoredEntry>>;
+	const blogEntries = store.get('blog');
+	if (!blogEntries) {
+		return [];
+	}
+
+	return Array.from(blogEntries.values()).map((entry) => ({
+		id: entry.id,
+		slug: entry.slug ?? entry.id,
+		collection: 'blog',
+		body: entry.body ?? '',
+		data: entry.data,
+	}));
+}
+
+interface StoredEntry {
+	id: string;
+	slug?: string;
+	body?: string;
+	data: CollectionEntry<'blog'>['data'];
 }
