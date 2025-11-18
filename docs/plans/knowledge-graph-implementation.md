@@ -279,7 +279,9 @@ export function calculateStats(graph: Omit<KnowledgeGraph, 'stats'>): GraphStats
 }
 ```
 
-**Test**: Create `src/lib/__tests__/graph-utils.test.ts` with basic unit tests
+_Status: Completed 2025-11-18 — utilities implemented in `src/lib/graph-utils.ts`._
+
+**Test**: `pnpm tsx src/lib/__tests__/graph-utils.test.ts`
 
 ---
 
