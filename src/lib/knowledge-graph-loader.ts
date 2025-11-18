@@ -23,31 +23,40 @@ export async function loadKnowledgeGraph(forceRebuild = false): Promise<Knowledg
 	if (!forceRebuild) {
 		const cached = await readGraphCache();
 		if (cached) {
-			memoryCache = cached;
-			return cached;
+			memoryCache = cached.graph;
+			return cached.graph;
 		}
 	}
 
 	const entries = await loadBlogEntriesFromDataStore();
 	const graph = buildGraph(entries);
-	await writeGraphCache(graph);
+	await writeGraphCache({ graph });
 	memoryCache = graph;
 	return graph;
 }
 
-async function readGraphCache(): Promise<KnowledgeGraph | null> {
+type GraphCachePayload = {
+	graph: KnowledgeGraph;
+	hash?: string;
+};
+
+async function readGraphCache(): Promise<GraphCachePayload | null> {
 	try {
 		const raw = await readFile(GRAPH_CACHE_PATH, 'utf-8');
-		return JSON.parse(raw) as KnowledgeGraph;
+		const parsed = JSON.parse(raw);
+		if (parsed && typeof parsed === 'object' && 'graph' in parsed) {
+			return parsed as GraphCachePayload;
+		}
+		return { graph: parsed as KnowledgeGraph };
 	} catch {
 		return null;
 	}
 }
 
-async function writeGraphCache(graph: KnowledgeGraph): Promise<void> {
+export async function writeGraphCache(payload: GraphCachePayload): Promise<void> {
 	const cacheDir = dirname(GRAPH_CACHE_PATH);
 	await mkdir(cacheDir, { recursive: true });
-	await writeFile(GRAPH_CACHE_PATH, JSON.stringify(graph, null, 2), 'utf-8');
+	await writeFile(GRAPH_CACHE_PATH, JSON.stringify(payload, null, 2), 'utf-8');
 }
 
 async function loadBlogEntriesFromDataStore(): Promise<Array<CollectionEntry<'blog'>>> {

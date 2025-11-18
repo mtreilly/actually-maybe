@@ -5,6 +5,8 @@ import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
+import type { KnowledgeGraph } from '../types/graph';
+import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
 
 interface Props {
 	title: string;
@@ -15,6 +17,14 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const { title, description, image = FallbackImage } = Astro.props;
+
+let graphStats: KnowledgeGraph['stats'] | null = null;
+try {
+	const graph = await loadKnowledgeGraph();
+	graphStats = graph.stats;
+} catch (error) {
+	console.warn('Unable to load knowledge graph stats for BaseHead:', error);
+}
 ---
 
 <!-- Global Metadata -->
@@ -51,6 +61,14 @@ const { title, description, image = FallbackImage } = Astro.props;
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
+<link rel="alternate" type="application/json" title="Knowledge Graph" href="/data/graph.json" />
+{graphStats && (
+	<>
+		<meta name="graph:posts" content={String(graphStats.totalPosts)} />
+		<meta name="graph:connections" content={String(graphStats.totalEdges)} />
+		<meta name="graph:topics" content={String(graphStats.totalTopics)} />
+	</>
+)}
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>

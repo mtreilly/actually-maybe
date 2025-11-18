@@ -1,8 +1,9 @@
 import type { AstroIntegration } from 'astro';
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { dirname, join, resolve } from 'node:path';
 import type { KnowledgeGraph } from '../types/graph';
-import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
+import { loadKnowledgeGraph, writeGraphCache } from '../lib/knowledge-graph-loader';
 import { findUnlinkedMentions } from '../lib/mention-detector';
 
 export default function knowledgeGraphIntegration(): AstroIntegration {
@@ -13,9 +14,39 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 		hooks: {
 			'astro:build:setup': async ({ logger }) => {
 				logger.info('📊 Preparing knowledge graph data...');
+				const startTime = Date.now();
 
 				try {
-					graphData = await loadKnowledgeGraph(true);
+					const dataStorePath = resolve(process.cwd(), '.astro/data-store.json');
+					let contentHash: string | null = null;
+					try {
+						const dataStoreContents = readFileSync(dataStorePath, 'utf-8');
+						contentHash = createHash('sha256').update(dataStoreContents).digest('hex');
+					} catch (error) {
+						logger.warn(`⚠️ Unable to hash data store: ${error}`);
+					}
+
+					if (contentHash) {
+						const cachePath = resolve(process.cwd(), '.astro/graph-cache.json');
+						try {
+							const cachedRaw = readFileSync(cachePath, 'utf-8');
+							const cached = JSON.parse(cachedRaw);
+							if (cached?.hash === contentHash && cached.graph) {
+								graphData = cached.graph as KnowledgeGraph;
+								logger.info('📊 Knowledge graph unchanged, using cache');
+							}
+						} catch {
+							// cache miss ignored
+						}
+					}
+
+					if (!graphData) {
+						graphData = await loadKnowledgeGraph(true);
+						if (contentHash) {
+							await writeGraphCache({ graph: graphData, hash: contentHash });
+						}
+					}
+
 					logger.info(`Found ${graphData.posts.length} posts for graph generation`);
 					logger.info(`Generated ${graphData.edges.length} connections`);
 					logger.info(`Indexed ${Object.keys(graphData.topics).length} topics`);
@@ -27,6 +58,9 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 					mkdirSync(dirname(suggestionsPath), { recursive: true });
 					writeFileSync(suggestionsPath, JSON.stringify(mentions, null, 2), 'utf-8');
 					logger.info(`💡 Suggestions saved to ${suggestionsPath}`);
+
+					const duration = Date.now() - startTime;
+					logger.info(`⏱️ Knowledge graph prepared in ${duration}ms`);
 				} catch (error) {
 					logger.error(`❌ Failed to assemble knowledge graph data: ${error}`);
 					throw error;
