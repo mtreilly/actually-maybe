@@ -759,6 +759,10 @@ function extractSnippet(text: string, topic: string): string {
 }
 ```
 
+_Status: Completed 2025-11-18 — implemented in `src/lib/mention-detector.ts` using post excerpts with deduped suggestions._
+
+**Test**: `pnpm tsx src/lib/__tests__/graph-utils.test.ts` (existing unit set) + exercised indirectly via `pnpm build` to ensure mention detection runs without errors.
+
 ---
 
 #### 4.2 Generate Suggestions File
@@ -791,6 +795,10 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 }
 ```
 
+_Status: Completed 2025-11-18 — integration now writes `docs/graph-suggestions.json` during `astro:build:setup` with a count logged._
+
+**Test**: `pnpm build && head docs/graph-suggestions.json`
+
 ---
 
 #### 4.3 Add .gitignore Entry
@@ -801,6 +809,8 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 # Knowledge graph suggestions (optional to commit)
 docs/graph-suggestions.json
 ```
+
+_Status: Completed — prevents the generated suggestions file from showing up in git status._
 
 ---
 
