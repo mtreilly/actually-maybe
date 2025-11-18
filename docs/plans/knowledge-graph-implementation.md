@@ -628,316 +628,41 @@ Create `/graph` page with interactive visualization (optional, JS-enhanced).
 
 ```astro
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import graphData from '../data/graph.json';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import KeyboardShortcuts from '../components/KeyboardShortcuts.astro';
+import { SITE_TITLE } from '../consts';
 import type { KnowledgeGraph } from '../types/graph';
+import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
 
-const graph: KnowledgeGraph = graphData as KnowledgeGraph;
-
-// Group posts by topic for fallback view
-const topicGroups = Object.entries(graph.topics)
-  .map(([topic, postIds]) => ({
-    topic,
-    posts: postIds.map(id => graph.posts.find(p => p.id === id)!),
-    count: postIds.length
-  }))
-  .sort((a, b) => b.count - a.count);
----
-
-<BaseLayout
-  title="Knowledge Graph"
-  description="Explore connections between posts and topics"
->
-  <div class="graph-container">
-    <header>
-      <h1>Knowledge Graph</h1>
-      <p>Explore {graph.stats.totalPosts} posts connected by {graph.stats.totalEdges} relationships.</p>
-
-      <div class="graph-stats">
-        <div class="stat">
-          <span class="stat-value">{graph.stats.totalTopics}</span>
-          <span class="stat-label">Topics</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value">{graph.stats.avgConnectionsPerPost}</span>
-          <span class="stat-label">Avg Connections</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Canvas for interactive graph (enhanced with JS) -->
-    <div id="graph-viz" role="img" aria-label="Interactive knowledge graph visualization">
-      <!-- Fallback: text-based view -->
-      <div class="graph-fallback">
-        <h2>Topics & Posts</h2>
-        <nav aria-label="Posts grouped by topic">
-          {topicGroups.map(group => (
-            <details class="topic-group">
-              <summary>
-                <strong>{group.topic}</strong>
-                <span class="post-count">{group.count} posts</span>
-              </summary>
-              <ul>
-                {group.posts.map(post => (
-                  <li>
-                    <a href={`/blog/${post.slug}`}>{post.title}</a>
-                    <time datetime={post.date}>
-                      {new Date(post.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
-                    </time>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          ))}
-        </nav>
-      </div>
-    </div>
-  </div>
-</BaseLayout>
-
-<style>
-  .graph-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
-
-  header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .graph-stats {
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    margin-top: 1.5rem;
-  }
-
-  .stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .stat-value {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--accent-primary);
-  }
-
-  .stat-label {
-    font-size: 0.875rem;
-    opacity: 0.7;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  #graph-viz {
-    min-height: 600px;
-    background: var(--surface-secondary);
-    border-radius: 0.5rem;
-    padding: 2rem;
-  }
-
-  .graph-fallback h2 {
-    margin-bottom: 1.5rem;
-  }
-
-  .topic-group {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background: var(--bg-primary);
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
-  }
-
-  .topic-group summary {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-  }
-
-  .post-count {
-    font-size: 0.875rem;
-    opacity: 0.7;
-    font-weight: normal;
-  }
-
-  .topic-group ul {
-    margin-top: 1rem;
-    list-style: none;
-    padding: 0;
-  }
-
-  .topic-group li {
-    padding: 0.5rem 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .topic-group li:last-child {
-    border-bottom: none;
-  }
-
-  .topic-group a {
-    text-decoration: none;
-    color: var(--text-primary);
-  }
-
-  .topic-group a:hover {
-    color: var(--accent-primary);
-  }
-
-  .topic-group time {
-    font-size: 0.875rem;
-    opacity: 0.6;
-  }
-</style>
-```
-
-**Test**: Visit `/graph`, verify fallback view works, accessibility checks
-
----
-
-#### 3.2 Add Interactive Visualization (Optional)
-
-**File**: `src/components/GraphVisualization.tsx` (React component)
-
-```tsx
-import { useEffect, useRef } from 'react';
-import type { KnowledgeGraph } from '../types/graph';
-
-interface Props {
-  graph: KnowledgeGraph;
+let graph: KnowledgeGraph | null = null;
+try {
+  graph = await loadKnowledgeGraph();
+} catch (error) {
+  console.warn('Unable to load knowledge graph for /graph page:', error);
 }
 
-export default function GraphVisualization({ graph }: Props) {
-  const canvasRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-
-    // Dynamic import to avoid SSR issues
-    import('d3').then(d3 => {
-      const width = canvasRef.current!.clientWidth;
-      const height = 600;
-
-      // Create SVG
-      const svg = d3.select(canvasRef.current)
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .attr('role', 'img')
-        .attr('aria-label', 'Interactive force-directed graph');
-
-      // Build D3 force simulation
-      const simulation = d3.forceSimulation(graph.posts as any)
-        .force('link', d3.forceLink(graph.edges)
-          .id((d: any) => d.id)
-          .distance(100))
-        .force('charge', d3.forceManyBody().strength(-300))
-        .force('center', d3.forceCenter(width / 2, height / 2));
-
-      // Draw edges
-      const link = svg.append('g')
-        .selectAll('line')
-        .data(graph.edges)
-        .join('line')
-        .attr('stroke', 'var(--border-color)')
-        .attr('stroke-opacity', 0.6)
-        .attr('stroke-width', (d: any) => Math.max(1, d.weight * 3));
-
-      // Draw nodes
-      const node = svg.append('g')
-        .selectAll('circle')
-        .data(graph.posts)
-        .join('circle')
-        .attr('r', 8)
-        .attr('fill', 'var(--accent-primary)')
-        .attr('stroke', 'var(--bg-primary)')
-        .attr('stroke-width', 2)
-        .call(drag(simulation) as any);
-
-      // Add labels
-      const label = svg.append('g')
-        .selectAll('text')
-        .data(graph.posts)
-        .join('text')
-        .text((d: any) => d.title)
-        .attr('font-size', 10)
-        .attr('dx', 12)
-        .attr('dy', 4);
-
-      // Update positions on tick
-      simulation.on('tick', () => {
-        link
-          .attr('x1', (d: any) => d.source.x)
-          .attr('y1', (d: any) => d.source.y)
-          .attr('x2', (d: any) => d.target.x)
-          .attr('y2', (d: any) => d.target.y);
-
-        node
-          .attr('cx', (d: any) => d.x)
-          .attr('cy', (d: any) => d.y);
-
-        label
-          .attr('x', (d: any) => d.x)
-          .attr('y', (d: any) => d.y);
-      });
-
-      // Drag behavior
-      function drag(simulation: any) {
-        function dragstarted(event: any) {
-          if (!event.active) simulation.alphaTarget(0.3).restart();
-          event.subject.fx = event.subject.x;
-          event.subject.fy = event.subject.y;
-        }
-
-        function dragged(event: any) {
-          event.subject.fx = event.x;
-          event.subject.fy = event.y;
-        }
-
-        function dragended(event: any) {
-          if (!event.active) simulation.alphaTarget(0);
-          event.subject.fx = null;
-          event.subject.fy = null;
-        }
-
-        return d3.drag()
-          .on('start', dragstarted)
-          .on('drag', dragged)
-          .on('end', dragended);
-      }
-    });
-
-    return () => {
-      // Cleanup
-      if (canvasRef.current) {
-        canvasRef.current.innerHTML = '';
-      }
-    };
-  }, [graph]);
-
-  return <div ref={canvasRef} className="graph-viz-canvas" />;
-}
+const topicGroups = graph
+  ? Object.entries(graph.topics)
+      .map(([topic, postIds]) => ({
+        topic,
+        posts: postIds
+          .map(id => graph!.posts.find(post => post.id === id))
+          .filter((post): post is KnowledgeGraph['posts'][number] => Boolean(post)),
+        count: postIds.length
+      }))
+      .filter(group => group.count > 0)
+      .sort((a, b) => b.count - a.count || a.topic.localeCompare(b.topic))
+  : [];
+---
 ```
 
-**Note**: This requires adding React to Astro. **Skip this task if you want to keep the site Astro-only.** The text fallback is sufficient.
+_Status: Completed 2025-11-18 — astro-only `/graph` page renders stats, a “most connected posts” list, collapsible topic groups, and a download link powered by `loadKnowledgeGraph()`._
+
+**Test**: `pnpm build && pnpm preview` (visit `/graph`, verify layout without JS)
+
+_Note: The optional D3/React visualization was intentionally skipped to preserve the zero-JS baseline._
 
 ---
 

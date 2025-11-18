@@ -1,0 +1,479 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import KeyboardShortcuts from '../components/KeyboardShortcuts.astro';
+import { SITE_TITLE } from '../consts';
+import type { KnowledgeGraph, PostNode } from '../types/graph';
+import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
+
+let graph: KnowledgeGraph | null = null;
+try {
+	graph = await loadKnowledgeGraph();
+} catch (error) {
+	console.warn('Unable to load knowledge graph for /graph page:', error);
+}
+
+const postsById = new Map<string, PostNode>(graph?.posts.map((post) => [post.id, post]) ?? []);
+
+const topicGroups = graph
+	? Object.entries(graph.topics)
+			.map(([topic, postIds]) => {
+				const posts = postIds
+					.map((id) => postsById.get(id))
+					.filter((post): post is PostNode => Boolean(post));
+				return { topic, posts, count: posts.length };
+			})
+			.filter((group) => group.count > 0)
+			.sort((a, b) => {
+				if (b.count !== a.count) return b.count - a.count;
+				return a.topic.localeCompare(b.topic);
+			})
+	: [];
+
+const connectionCounts = new Map<string, number>();
+if (graph) {
+	graph.edges.forEach((edge) => {
+		connectionCounts.set(edge.source, (connectionCounts.get(edge.source) ?? 0) + 1);
+		connectionCounts.set(edge.target, (connectionCounts.get(edge.target) ?? 0) + 1);
+	});
+}
+
+const mostConnectedPosts =
+	graph && graph.posts.length > 0
+		? Array.from(connectionCounts.entries())
+				.map(([id, count]) => {
+					const post = postsById.get(id);
+					if (!post) return null;
+					return { post, count };
+				})
+				.filter((entry): entry is { post: PostNode; count: number } => Boolean(entry))
+				.sort((a, b) => {
+					if (b.count !== a.count) return b.count - a.count;
+					return new Date(b.post.date).getTime() - new Date(a.post.date).getTime();
+				})
+				.slice(0, 8)
+		: [];
+
+const generatedDate = graph ? new Date(graph.generatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null;
+const pageTitle = `Knowledge Graph | ${SITE_TITLE}`;
+const pageDescription = 'Explore how posts connect through shared topics and ideas.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={pageTitle} description={pageDescription} />
+	</head>
+	<body>
+		<Header />
+		<KeyboardShortcuts />
+		<main class="graph-page">
+			<section class="graph-hero">
+				<p class="eyebrow">Knowledge Graph</p>
+				<h1>Ideas connected</h1>
+				<p class="lede">
+					This site tracks how posts relate to each other so you can jump between connected ideas without hunting through tags or archives.
+					The entire graph is generated during build, so it works even for readers with JavaScript disabled.
+				</p>
+				{graph ? (
+					<div class="stat-grid" role="list">
+						<div class="stat-card" role="listitem">
+							<span class="stat-value">{graph.stats.totalPosts}</span>
+							<span class="stat-label">Posts indexed</span>
+						</div>
+						<div class="stat-card" role="listitem">
+							<span class="stat-value">{graph.stats.totalEdges}</span>
+							<span class="stat-label">Connections</span>
+						</div>
+						<div class="stat-card" role="listitem">
+							<span class="stat-value">{graph.stats.totalTopics}</span>
+							<span class="stat-label">Topics</span>
+						</div>
+						<div class="stat-card" role="listitem">
+							<span class="stat-value">{graph.stats.avgConnectionsPerPost}</span>
+							<span class="stat-label">Avg connections/post</span>
+						</div>
+					</div>
+				) : (
+					<p class="graph-warning" role="alert">
+						The knowledge graph is temporarily unavailable. Posts still render normally, but this page cannot display connections right now.
+					</p>
+				)}
+				{generatedDate && <p class="generated-date">Generated {generatedDate}</p>}
+			</section>
+
+			{graph ? (
+				<>
+					<section class="connections-section">
+						<div class="section-header">
+							<h2>Most connected posts</h2>
+							<p>
+								Posts with the most edges in the graph. These typically revisit popular topics or synthesize ideas from earlier writing.
+							</p>
+						</div>
+						{mostConnectedPosts.length > 0 ? (
+							<ul class="connections-list">
+								{mostConnectedPosts.map(({ post, count }) => (
+									<li>
+										<div class="connection-info">
+											<span class="connection-count" aria-label={`${count} connections`}>{count}</span>
+											<div>
+												<a href={`/blog/${post.slug}/`}>{post.title}</a>
+												<p class="connection-date">
+													{new Date(post.date).toLocaleDateString('en-US', {
+														year: 'numeric',
+														month: 'short',
+														day: 'numeric',
+													})}
+												</p>
+											</div>
+										</div>
+										{post.topics.length > 0 && (
+											<div class="connection-topics">
+												{post.topics.slice(0, 3).map((topic) => (
+													<a href={`/topics/${topic}`} class="topic-chip">{topic}</a>
+												))}
+											</div>
+										)}
+									</li>
+								))}
+							</ul>
+						) : (
+							<p>No connections yet. Publish a few posts with overlapping topics to populate this list.</p>
+						)}
+					</section>
+
+					<section class="topics-section" aria-labelledby="topics-heading">
+						<h2 id="topics-heading">Topics & posts</h2>
+						<p class="section-subtitle">
+							Every topic below expands to show the posts that anchor it. This is a zero-JS fallback that mirrors the interactive visualization planned later.
+						</p>
+						<nav aria-label="Posts grouped by topic" class="topic-groups">
+							{topicGroups.map((group, index) => (
+								<details class="topic-panel" open={index === 0}>
+									<summary>
+										<strong>{group.topic}</strong>
+										<span class="post-count">{group.count} {group.count === 1 ? 'post' : 'posts'}</span>
+									</summary>
+									<ul>
+										{group.posts.map((post) => (
+											<li>
+												<a href={`/blog/${post.slug}/`}>{post.title}</a>
+												<time datetime={post.date}>
+													{new Date(post.date).toLocaleDateString('en-US', {
+														year: 'numeric',
+														month: 'short',
+														day: 'numeric',
+													})}
+												</time>
+											</li>
+										))}
+									</ul>
+								</details>
+							))}
+						</nav>
+					</section>
+
+					<section class="download-section">
+						<h2>Need the raw data?</h2>
+						<p>
+							The full graph (nodes, edges, topics, stats) is available as JSON. Use it for custom tooling, LLM context, or to experiment with your
+							own visualization.
+						</p>
+						<a class="download-link" href="/data/graph.json">Download graph.json</a>
+					</section>
+				</>
+			) : (
+				<section class="topics-section">
+					<h2>Graph unavailable</h2>
+					<p>
+						The graph could not be generated during this build. Try again later or run `pnpm build` locally to regenerate `.astro/data-store.json`
+						before visiting this page.
+					</p>
+				</section>
+			)}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.graph-page {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 2rem 1.5rem 4rem;
+	}
+
+	.graph-hero {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.eyebrow {
+		font-size: 0.875rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: rgb(var(--gray));
+		margin-bottom: 0.5rem;
+	}
+
+	.graph-hero h1 {
+		font-size: 2.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.lede {
+		max-width: 42rem;
+		margin: 0 auto 2rem;
+		font-size: 1.125rem;
+		line-height: 1.7;
+		color: rgb(var(--gray));
+	}
+
+	.stat-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 1rem;
+		text-align: left;
+	}
+
+	.stat-card {
+		padding: 1rem 1.5rem;
+		border: 1px solid rgba(var(--gray-light), 0.5);
+		border-radius: 0.75rem;
+		background: rgba(var(--gray-light), 0.08);
+	}
+
+	.stat-value {
+		font-size: 2rem;
+		font-weight: 600;
+		display: block;
+	}
+
+	.stat-label {
+		font-size: 0.875rem;
+		color: rgb(var(--gray));
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.generated-date {
+		margin-top: 1rem;
+		font-size: 0.875rem;
+		color: rgb(var(--gray));
+	}
+
+	.graph-warning {
+		color: #b91c1c;
+		background: rgba(185, 28, 28, 0.08);
+		padding: 1rem;
+		border-radius: 0.5rem;
+		border: 1px solid rgba(185, 28, 28, 0.2);
+	}
+
+	.section-header {
+		margin-bottom: 1.5rem;
+	}
+
+	.section-header h2 {
+		margin-bottom: 0.25rem;
+	}
+
+	.section-header p {
+		color: rgb(var(--gray));
+		margin: 0;
+	}
+
+	.connections-section {
+		margin-bottom: 3rem;
+	}
+
+	.connections-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.connections-list li {
+		border: 1px solid rgba(var(--gray-light), 0.6);
+		border-radius: 0.75rem;
+		padding: 1rem 1.25rem;
+		background: rgba(var(--gray-light), 0.04);
+	}
+
+	.connection-info {
+		display: flex;
+		gap: 1rem;
+		align-items: baseline;
+		justify-content: space-between;
+		flex-wrap: wrap;
+	}
+
+	.connection-count {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--accent);
+		margin-right: 1rem;
+	}
+
+	.connection-info a {
+		font-weight: 600;
+		color: rgb(var(--black));
+		text-decoration: none;
+	}
+
+	.connection-info a:hover {
+		color: var(--accent);
+	}
+
+	.connection-date {
+		color: rgb(var(--gray));
+		margin: 0.25rem 0 0;
+		font-size: 0.875rem;
+	}
+
+	.connection-topics {
+		margin-top: 0.75rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.topic-chip {
+		font-size: 0.8125rem;
+		color: var(--accent);
+		background: rgba(var(--accent-rgb), 0.15);
+		border-radius: 999px;
+		padding: 0.2rem 0.75rem;
+		text-decoration: none;
+	}
+
+	.topic-chip:hover {
+		background: rgba(var(--accent-rgb), 0.25);
+	}
+
+	.topics-section {
+		margin-bottom: 3rem;
+	}
+
+	.section-subtitle {
+		color: rgb(var(--gray));
+		margin-bottom: 1.25rem;
+	}
+
+	.topic-groups {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.topic-panel {
+		border: 1px solid rgba(var(--gray-light), 0.6);
+		border-radius: 0.75rem;
+		overflow: hidden;
+		background: rgba(var(--gray-light), 0.04);
+	}
+
+	.topic-panel summary {
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem 1.25rem;
+		font-weight: 600;
+	}
+
+	.topic-panel ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid rgba(var(--gray-light), 0.5);
+	}
+
+	.topic-panel li {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.85rem 1.25rem;
+		border-top: 1px solid rgba(var(--gray-light), 0.25);
+	}
+
+	.topic-panel li:first-child {
+		border-top: none;
+	}
+
+	.topic-panel a {
+		color: rgb(var(--black));
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.topic-panel a:hover {
+		color: var(--accent);
+	}
+
+	.topic-panel time {
+		font-size: 0.85rem;
+		color: rgb(var(--gray));
+		margin-left: 1rem;
+		white-space: nowrap;
+	}
+
+	.post-count {
+		font-size: 0.875rem;
+		color: rgb(var(--gray));
+	}
+
+	.download-section {
+		padding: 2rem;
+		border: 1px solid rgba(var(--gray-light), 0.6);
+		border-radius: 1rem;
+		text-align: center;
+		background: rgba(var(--gray-light), 0.05);
+	}
+
+	.download-link {
+		display: inline-flex;
+		margin-top: 1rem;
+		padding: 0.75rem 1.5rem;
+		background: var(--accent);
+		color: white;
+		text-decoration: none;
+		border-radius: 999px;
+		font-weight: 600;
+	}
+
+	.download-link:hover {
+		opacity: 0.9;
+	}
+
+	@media (max-width: 720px) {
+		.graph-page {
+			padding: 2rem 1rem 3rem;
+		}
+
+		.graph-hero h1 {
+			font-size: 2rem;
+		}
+
+		.connections-list li {
+			padding: 0.75rem 1rem;
+		}
+
+		.topic-panel summary {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.25rem;
+		}
+
+		.topic-panel li {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.25rem;
+		}
+	}
+</style>
