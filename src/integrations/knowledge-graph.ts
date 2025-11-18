@@ -1,8 +1,9 @@
 import type { AstroIntegration } from 'astro';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import type { KnowledgeGraph } from '../types/graph';
 import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
+import { findUnlinkedMentions } from '../lib/mention-detector';
 
 export default function knowledgeGraphIntegration(): AstroIntegration {
 	let graphData: KnowledgeGraph | null = null;
@@ -18,6 +19,14 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 					logger.info(`Found ${graphData.posts.length} posts for graph generation`);
 					logger.info(`Generated ${graphData.edges.length} connections`);
 					logger.info(`Indexed ${Object.keys(graphData.topics).length} topics`);
+
+					const mentions = findUnlinkedMentions(graphData.posts);
+					logger.info(`🔍 Found ${mentions.length} potential unlinked mentions`);
+
+					const suggestionsPath = join(process.cwd(), 'docs', 'graph-suggestions.json');
+					mkdirSync(dirname(suggestionsPath), { recursive: true });
+					writeFileSync(suggestionsPath, JSON.stringify(mentions, null, 2), 'utf-8');
+					logger.info(`💡 Suggestions saved to ${suggestionsPath}`);
 				} catch (error) {
 					logger.error(`❌ Failed to assemble knowledge graph data: ${error}`);
 					throw error;
