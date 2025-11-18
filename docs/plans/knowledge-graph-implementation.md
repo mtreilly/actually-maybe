@@ -363,7 +363,11 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 }
 ```
 
-**Test**: Add to `astro.config.ts`, run `pnpm build`, verify `dist/data/graph.json` exists
+_Status: Completed 2025-11-18 — integration reads `.astro/data-store.json`, builds the graph during `astro:build:setup`, and writes `dist/data/graph.json`._
+
+**Test**: `pnpm build && ls dist/data/graph.json`
+
+_Note: `astro:content` isn't available directly inside integrations, so the implementation pulls entries from the generated `.astro/data-store.json` using `devalue.unflatten`._
 
 ---
 
