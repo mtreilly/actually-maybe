@@ -854,7 +854,9 @@ export const GET: APIRoute = () => {
 };
 ```
 
-**Test**: Visit `/data/graph.json`, verify JSON served
+**Status**: Completed 2025-11-18 — implemented via `src/pages/data/graph.json.ts` using `loadKnowledgeGraph()`.
+
+**Test**: `pnpm build && pnpm preview` → `curl http://localhost:4321/data/graph.json | jq '.stats'`
 
 ---
 
@@ -873,6 +875,10 @@ export const GET: APIRoute = () => {
   <meta name="graph:connections" content={graphData.stats.totalEdges} />
 </head>
 ```
+
+**Status**: Completed — implemented inside `src/components/BaseHead.astro` so every page advertises the JSON graph along with basic stats.
+
+**Test**: `pnpm build` → inspect `<head>` markup
 
 ---
 
@@ -922,6 +928,10 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 }
 ```
 
+**Status**: Completed — integration now hashes `.astro/data-store.json`, reuses cached graphs, and stores `{ hash, graph }` payloads.
+
+**Test**: `pnpm build` (second run should log cache hit)
+
 ---
 
 #### 5.4 Add Performance Metrics
@@ -936,6 +946,10 @@ const startTime = Date.now();
 const duration = Date.now() - startTime;
 logger.info(`⏱️  Graph generation took ${duration}ms`);
 ```
+
+**Status**: Completed — duration logging added around graph prep.
+
+**Test**: `pnpm build` → check integration logs
 
 ---
 
@@ -983,6 +997,10 @@ relatedPosts:
 - Cached if posts unchanged
 - Zero runtime overhead
 ```
+
+**Status**: Completed — documented in `docs/knowledge-graph-usage.md`.
+
+**Test**: Review file locally / share with collaborators
 
 ---
 
