@@ -19,10 +19,22 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 				const startTime = Date.now();
 
 				try {
+					let posts: CollectionEntry<'blog'>[] = [];
+					let contentHash: string;
 					const dataStorePath = resolve(process.cwd(), '.astro/data-store.json');
-					const dataStoreRaw = readFileSync(dataStorePath, 'utf-8');
-					const posts = parseBlogEntries(JSON.parse(dataStoreRaw));
-					const contentHash = createHash('sha256').update(dataStoreRaw).digest('hex');
+
+					try {
+						const dataStoreRaw = readFileSync(dataStorePath, 'utf-8');
+						posts = parseBlogEntries(JSON.parse(dataStoreRaw));
+						contentHash = createHash('sha256').update(dataStoreRaw).digest('hex');
+					} catch (error) {
+						logger.warn(`⚠️ Unable to read data store (${error}); falling back to getCollection()`);
+						const { getCollection } = await import('astro:content');
+						posts = await getCollection('blog');
+						contentHash = createHash('sha256')
+							.update(JSON.stringify(posts.map((post) => [post.id, post.data.updatedDate ?? post.data.pubDate])))
+							.digest('hex');
+					}
 
 					const cachePath = resolve(process.cwd(), '.astro/graph-cache.json');
 					try {
