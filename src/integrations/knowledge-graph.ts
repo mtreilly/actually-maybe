@@ -28,12 +28,9 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 						posts = parseBlogEntries(JSON.parse(dataStoreRaw));
 						contentHash = createHash('sha256').update(dataStoreRaw).digest('hex');
 					} catch (error) {
-						logger.warn(`⚠️ Unable to read data store (${error}); falling back to getCollection()`);
-						const { getCollection } = await import('astro:content');
-						posts = await getCollection('blog');
-						contentHash = createHash('sha256')
-							.update(JSON.stringify(posts.map((post) => [post.id, post.data.updatedDate ?? post.data.pubDate])))
-							.digest('hex');
+						logger.warn(`⚠️ Unable to read data store (${error}); skipping knowledge graph generation`);
+						logger.warn('   The data store is typically created during local dev/build but may not exist in some deployment environments.');
+						return;
 					}
 
 					const cachePath = resolve(process.cwd(), '.astro/graph-cache.json');
