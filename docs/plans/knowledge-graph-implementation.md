@@ -424,7 +424,7 @@ Display related posts in post footer (zero JS, static HTML).
 
 ```astro
 ---
-import type { PostNode, GraphEdge } from '../types/graph';
+import type { KnowledgeGraph } from '../types/graph';
 
 interface Props {
   currentPostId: string;
@@ -432,33 +432,36 @@ interface Props {
   maxRelated?: number;
 }
 
-const { currentPostId, graph, maxRelated = 5 } = Astro.props;
+const { currentPostId, graph, maxRelated = 5 } = Astro.props as Props;
 
-// Find edges connected to current post
 const relatedEdges = graph.edges
   .filter(edge => edge.source === currentPostId || edge.target === currentPostId)
   .sort((a, b) => b.weight - a.weight)
   .slice(0, maxRelated);
 
-// Get related post nodes
-const relatedPosts = relatedEdges.map(edge => {
-  const relatedId = edge.source === currentPostId ? edge.target : edge.source;
-  return {
-    post: graph.posts.find(p => p.id === relatedId)!,
-    edge
-  };
-});
+const relatedPosts = relatedEdges
+  .map(edge => {
+    const relatedId = edge.source === currentPostId ? edge.target : edge.source;
+    const post = graph.posts.find(p => p.id === relatedId);
+    return post ? { post, edge } : null;
+  })
+  .filter(Boolean);
 
-if (relatedPosts.length === 0) return null;
+if (relatedPosts.length === 0) {
+  return null;
+}
 ---
 
 <aside class="related-posts" aria-labelledby="related-heading">
-  <h3 id="related-heading">Also discussed in:</h3>
+  <h3 id="related-heading">Also discussed in</h3>
   <ul role="list">
     {relatedPosts.map(({ post, edge }) => (
       <li>
-        <a href={`/blog/${post.slug}`}>
-          {post.title}
+        <a href={`/blog/${post.slug}/`}>
+          <span class="post-title">{post.title}</span>
+          <time datetime={post.date}>
+            {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+          </time>
         </a>
         {edge.sharedTopics && edge.sharedTopics.length > 0 && (
           <span class="shared-topics" aria-label={`Shared topics: ${edge.sharedTopics.join(', ')}`}>
@@ -471,76 +474,56 @@ if (relatedPosts.length === 0) return null;
     ))}
   </ul>
 </aside>
-
-<style>
-  .related-posts {
-    margin-top: 3rem;
-    padding: 1.5rem;
-    border-left: 3px solid var(--accent-primary);
-    background: var(--surface-secondary);
-    border-radius: 0 0.5rem 0.5rem 0;
-  }
-
-  .related-posts h3 {
-    margin: 0 0 1rem 0;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.8;
-    font-weight: 600;
-  }
-
-  .related-posts ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .related-posts li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .related-posts li:last-child {
-    border-bottom: none;
-  }
-
-  .related-posts a {
-    text-decoration: none;
-    color: var(--text-primary);
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-
-  .related-posts a:hover {
-    color: var(--accent-primary);
-  }
-
-  .shared-topics {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
-    flex-wrap: wrap;
-  }
-
-  .topic-badge {
-    font-size: 0.75rem;
-    padding: 0.125rem 0.5rem;
-    background: var(--accent-primary);
-    color: var(--bg-primary);
-    border-radius: 0.25rem;
-    opacity: 0.8;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .related-posts a {
-      transition: none;
-    }
-  }
-</style>
 ```
 
-**Test**: Render component with mock data, verify accessibility
+```css
+.related-posts {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  border-left: 3px solid rgb(var(--gray-light));
+  background: rgba(var(--gray-light), 0.05);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.related-posts h3 {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgb(var(--gray));
+}
+
+.related-posts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.related-posts li {
+  border-bottom: 1px solid rgba(var(--gray-light), 0.4);
+  padding-bottom: 0.75rem;
+}
+
+.related-posts li:last-child {
+  border-bottom: none;
+}
+
+.related-posts a {
+  text-decoration: none;
+  color: rgb(var(--black));
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+```
+
+_Status: Completed 2025-11-18 — component renders weighted related posts with shared topic badges._
+
+**Test**: `pnpm build && pnpm preview` (manual a11y + keyboard pass)
 
 ---
 
@@ -550,103 +533,65 @@ if (relatedPosts.length === 0) return null;
 
 ```astro
 ---
-import type { KnowledgeGraph } from '../types/graph';
 import RelatedPosts from '../components/RelatedPosts.astro';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import type { KnowledgeGraph } from '../types/graph';
+import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
 
-// ... existing frontmatter
-
-// Load graph data (at build time)
-let graph: KnowledgeGraph | null = null;
+let knowledgeGraph: KnowledgeGraph | null = null;
 try {
-  const graphPath = join(process.cwd(), 'dist', 'data', 'graph.json');
-  const graphJson = readFileSync(graphPath, 'utf-8');
-  graph = JSON.parse(graphJson);
+  knowledgeGraph = await loadKnowledgeGraph();
 } catch (error) {
-  console.warn('Graph data not found, skipping related posts');
+  console.warn('Unable to load knowledge graph:', error);
 }
-
-const currentPostId = Astro.props.id || Astro.props.slug;
 ---
 
-<!-- ... existing layout -->
-
-<article>
-  <!-- ... post content -->
-</article>
-
-{graph && (
-  <RelatedPosts
-    currentPostId={currentPostId}
-    graph={graph}
-    maxRelated={5}
-  />
+{knowledgeGraph && postId && (
+  <RelatedPosts currentPostId={postId} graph={knowledgeGraph} maxRelated={5} />
 )}
-
-<!-- ... rest of layout -->
 ```
 
-**Problem**: `dist/data/graph.json` doesn't exist during SSG build of individual posts.
+_Status: Completed 2025-11-18 — blog layout now loads cached graph data and renders the RelatedPosts footer._
 
-**Solution**: Move graph generation to `astro:build:start` or load from `src/` instead.
+**Test**: `pnpm build && pnpm preview` (verify "Also discussed in" footer on sample posts)
 
 ---
 
 #### 2.3 Fix Build Order Issue
 
-**Update**: `src/integrations/knowledge-graph.ts`
-
-Change hook from `astro:build:done` to `astro:build:setup`:
+**Update**: `src/lib/knowledge-graph-loader.ts` + `src/integrations/knowledge-graph.ts`
 
 ```typescript
-export default function knowledgeGraphIntegration(): AstroIntegration {
-  let graphData: KnowledgeGraph | null = null;
+export async function loadKnowledgeGraph(forceRebuild = false): Promise<KnowledgeGraph> {
+  if (memoryCache && !forceRebuild) return memoryCache;
 
-  return {
-    name: 'knowledge-graph',
-    hooks: {
-      // Generate graph BEFORE pages are rendered
-      'astro:build:setup': async ({ logger }) => {
-        logger.info('📊 Generating knowledge graph...');
+  if (!forceRebuild) {
+    const cached = await readGraphCache();
+    if (cached) return (memoryCache = cached);
+  }
 
-        const posts = await getCollection('blog');
-        // ... same graph building logic
+  const entries = await loadBlogEntriesFromDataStore();
+  const graph = buildGraph(entries);
+  await writeGraphCache(graph);
+  return (memoryCache = graph);
+}
 
-        graphData = graph;
-
-        // Write to src for access during build
-        const srcPath = join(process.cwd(), 'src', 'data', 'graph.json');
-        mkdirSync(dirname(srcPath), { recursive: true });
-        writeFileSync(srcPath, JSON.stringify(graph, null, 2));
-      },
-
-      // Also write to dist for runtime access
-      'astro:build:done': async ({ dir }) => {
-        if (graphData) {
-          const distPath = join(dir.pathname, 'data', 'graph.json');
-          mkdirSync(dirname(distPath), { recursive: true });
-          writeFileSync(distPath, JSON.stringify(graphData, null, 2));
-        }
-      }
-    }
-  };
+// Integration
+'astro:build:setup': async ({ logger }) => {
+  graphData = await loadKnowledgeGraph(true);
+  logger.info(`Found ${graphData.posts.length} posts`);
+},
+'astro:build:done': async ({ dir }) => {
+  if (graphData) {
+    const outputPath = join(dir.pathname, 'data', 'graph.json');
+    mkdirSync(dirname(outputPath), { recursive: true });
+    writeFileSync(outputPath, JSON.stringify(graphData, null, 2));
+  }
 }
 ```
 
-**Update**: `src/layouts/BlogPost.astro`
+_Status: Completed 2025-11-18 — shared loader reads `.astro/data-store.json`, caches to `.astro/graph-cache.json`, and integration writes `dist/data/graph.json`._
 
-```astro
----
-import graphData from '../data/graph.json';
-import type { KnowledgeGraph } from '../types/graph';
-
-const graph: KnowledgeGraph = graphData as KnowledgeGraph;
-const currentPostId = Astro.props.id;
----
-```
-
-**Test**: Build and verify backlinks appear on post pages
+**Test**: `pnpm build` → confirms integration logs + `dist/data/graph.json` emission
 
 ---
 

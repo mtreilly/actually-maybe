@@ -1,0 +1,149 @@
+---
+import type { KnowledgeGraph } from '../types/graph';
+
+interface Props {
+	currentPostId: string;
+	graph: KnowledgeGraph;
+	maxRelated?: number;
+}
+
+const { currentPostId, graph, maxRelated = 5 } = Astro.props as Props;
+
+const relatedEdges = graph.edges
+	.filter((edge) => edge.source === currentPostId || edge.target === currentPostId)
+	.sort((a, b) => b.weight - a.weight)
+	.slice(0, maxRelated);
+
+const relatedPosts = relatedEdges
+	.map((edge) => {
+		const relatedId = edge.source === currentPostId ? edge.target : edge.source;
+		const post = graph.posts.find((p) => p.id === relatedId);
+
+		if (!post) {
+			return null;
+		}
+
+		return { post, edge };
+	})
+	.filter((item): item is { post: KnowledgeGraph['posts'][number]; edge: KnowledgeGraph['edges'][number] } => Boolean(item));
+
+if (relatedPosts.length === 0) {
+	return null;
+}
+---
+
+<aside class="related-posts" aria-labelledby="related-heading">
+	<h3 id="related-heading">Also discussed in</h3>
+	<ul role="list">
+		{relatedPosts.map(({ post, edge }) => (
+			<li>
+				<a href={`/blog/${post.slug}/`}>
+					<span class="post-title">{post.title}</span>
+					<time datetime={post.date}>
+						{new Date(post.date).toLocaleDateString('en-US', {
+							year: 'numeric',
+							month: 'short',
+							day: 'numeric',
+						})}
+					</time>
+				</a>
+				{edge.sharedTopics && edge.sharedTopics.length > 0 && (
+					<span class="shared-topics" aria-label={`Shared topics: ${edge.sharedTopics.join(', ')}`}>
+						{edge.sharedTopics.map((topic) => (
+							<span class="topic-badge">{topic}</span>
+						))}
+					</span>
+				)}
+			</li>
+		))}
+	</ul>
+</aside>
+
+<style>
+	.related-posts {
+		margin-top: 3rem;
+		padding: 1.5rem;
+		border-left: 3px solid rgb(var(--gray-light));
+		background: rgba(var(--gray-light), 0.05);
+		border-radius: 0 0.5rem 0.5rem 0;
+		max-width: 45em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.related-posts h3 {
+		margin: 0 0 1rem 0;
+		font-size: 0.875rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: rgb(var(--gray));
+	}
+
+	.related-posts ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.related-posts li {
+		border-bottom: 1px solid rgba(var(--gray-light), 0.4);
+		padding-bottom: 0.75rem;
+	}
+
+	.related-posts li:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+
+	.related-posts a {
+		text-decoration: none;
+		color: rgb(var(--black));
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1rem;
+	}
+
+	.related-posts a:hover .post-title {
+		color: var(--accent);
+	}
+
+	.post-title {
+		font-weight: 600;
+	}
+
+	time {
+		font-size: 0.875rem;
+		color: rgb(var(--gray));
+		white-space: nowrap;
+	}
+
+	.shared-topics {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin-top: 0.5rem;
+	}
+
+	.topic-badge {
+		font-size: 0.75rem;
+		padding: 0.1rem 0.5rem;
+		background: rgba(var(--accent-rgb), 0.15);
+		color: var(--accent);
+		border-radius: 999px;
+	}
+
+	@media (max-width: 768px) {
+		.related-posts {
+			padding: 1rem;
+		}
+
+		.related-posts a {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+</style>

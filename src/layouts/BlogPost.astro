@@ -12,6 +12,9 @@ import MiniToc from '../components/MiniToc.astro';
 import SeriesNav from '../components/SeriesNav.astro';
 import LlmCopyMenu from '../components/LlmCopyMenu.astro';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+import RelatedPosts from '../components/RelatedPosts.astro';
+import type { KnowledgeGraph } from '../types/graph';
+import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	relatedPosts?: Array<CollectionEntry<'blog'> & { sharedTopics: number }>;
@@ -42,6 +45,13 @@ const {
 // Calculate reading time
 const readingTimeMinutes = calculateReadingTime(bodyText);
 const readingTimeFormatted = formatReadingTime(readingTimeMinutes);
+
+let knowledgeGraph: KnowledgeGraph | null = null;
+try {
+	knowledgeGraph = await loadKnowledgeGraph();
+} catch (error) {
+	console.warn('Unable to load knowledge graph:', error);
+}
 ---
 
 <script>
@@ -133,6 +143,10 @@ const readingTimeFormatted = formatReadingTime(readingTimeMinutes);
 								)}
 							</div>
 						</nav>
+					)}
+
+					{knowledgeGraph && postId && (
+						<RelatedPosts currentPostId={postId} graph={knowledgeGraph} maxRelated={5} />
 					)}
 				</article>
 			</main>
