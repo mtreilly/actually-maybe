@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
@@ -31,6 +32,7 @@ const {
 	description,
 	pubDate,
 	updatedDate,
+	heroImage,
 	topics,
 	series,
 	relatedPosts = [],
@@ -119,6 +121,12 @@ try {
 						</div>
 					)}
 				</header>
+
+				{heroImage && (
+					<div class="hero-image">
+						<Image src={heroImage} alt={title} />
+					</div>
+				)}
 
 					<div class="prose">
 						<slot />
@@ -240,6 +248,20 @@ try {
 		.post-header-actions {
 			width: 100%;
 		}
+	}
+
+	.hero-image {
+		width: 100%;
+		margin-bottom: 2rem;
+	}
+
+	.hero-image img {
+		display: block;
+		margin: 0 auto;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+		max-width: 100%;
+		height: auto;
 	}
 
 	.prose {
