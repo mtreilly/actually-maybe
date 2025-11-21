@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { post, variant = 'home' } = Astro.props;
-const readingTime = formatReadingTime(calculateReadingTime(post.data.description));
+const readingTime = formatReadingTime(calculateReadingTime(post.body || ''));
 ---
 
 <div class="post-item" data-type={post.data.type}>
