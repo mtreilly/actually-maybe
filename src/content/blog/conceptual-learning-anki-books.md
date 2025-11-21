@@ -1,5 +1,5 @@
 ---
-title: "Thoughts on Conceptual Learning, Anki, Books, and Physicality"
+title: "Thoughts on Conceptual Learning, Anki, Books & Physicality"
 description: "Exploring why spaced repetition works for languages but fails for abstract, ladder-like concepts, and where solutions might lie"
 pubDate: "Sep 16 2022"
 topics: ["learning", "spaced-repetition", "knowledge", "cognition", "anki"]
