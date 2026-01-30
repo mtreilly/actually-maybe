@@ -1,4 +1,10 @@
-# Software Architecture That Agents Actually Like
+---
+title: "Software Architecture That Agents Actually Like"
+description: "Structural patterns that make codebases easier for AI agents to navigate: composition over monoliths, stateless mini-CLIs, typed languages, and the editor navigation test."
+pubDate: "Jan 30 2026"
+topics: ["agents", "architecture", "software-design"]
+type: "note"
+---
 
 I've been thinking a lot about the structural techniques that agents seem to favor. There are patterns I keep noticing—things that make them work better, and things that confuse them.
 
