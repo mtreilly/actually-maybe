@@ -25,6 +25,12 @@ export const projects: Project[] = [
 		status: 'Active',
 	},
 	{
+		name: 'Mountain to Climb',
+		description: 'An interactive tool for exploring economic convergence between countries and regions—visualizing how long catch-up growth actually takes, what drives the timeline, and what development at scale implies.',
+		url: 'https://mountaintoclimb.com',
+		status: 'Active',
+	},
+	{
 		name: 'Minimal Blog Platform',
 		description: 'Scalable blog architecture with topics, types, and automatic discovery',
 		url: 'https://github.com/mtreilly/actually-maybe',
