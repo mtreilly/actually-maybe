@@ -6,7 +6,7 @@ topics: ["tools", "cli", "development", "agents"]
 type: "note"
 ---
 
-When running multiple development servers—especially during agentic coding sessions where processes spawn and die frequently—port conflicts become a recurring annoyance.
+When running multiple development servers, especially during agentic coding sessions where processes spawn and die frequently, port conflicts become a recurring annoyance.
 
 The native tools exist. You can cobble together `lsof -i :3000` and `kill -9` and get the job done. But the commands are fiddly enough that I never quite remember the exact incantation. So I built a small CLI wrapper called Freeport to make this slightly less tedious.[^1]
 
@@ -29,7 +29,7 @@ The honest answer is that you do not strictly need this. Everything Freeport doe
 
 I have also found it useful in agentic workflows where multiple agents might spawn development servers simultaneously. Having a tool that can atomically pick and lock a port prevents the race condition where two processes both think port 3000 is free and then collide.
 
-The implementation is straightforward Go—a single binary with no daemon, no background services. It queries the OS directly each time you run a command. Nothing clever, just a thin layer of convenience over existing system tools.
+The implementation is straightforward Go: a single binary with no daemon, no background services. It queries the OS directly each time you run a command. Nothing clever, just a thin layer of convenience over existing system tools.
 
 ## The Broader Point
 

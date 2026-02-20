@@ -1,6 +1,6 @@
 ---
 title: "Exploring the Primitives of an Agentic Coding Setup"
-description: "Reflecting on the foundational layers of agentic systems—from Git workflows and networking to storage and sandboxing—rather than high-level orchestration."
+description: "Reflecting on the foundational layers of agentic systems, from Git workflows and networking to storage and sandboxing, rather than high-level orchestration."
 pubDate: "Nov 18 2025"
 topics: ["agents", "git", "infrastructure", "networking", "sqlite"]
 type: "note"

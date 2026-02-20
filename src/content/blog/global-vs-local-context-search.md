@@ -26,7 +26,7 @@ Our tools are built with a global-context-first approach, with local context bol
 
 ### Thinking About Local Context
 
-Earlier, I mentioned the search term *"Python decorators"* as an example of global-context search. That's true—insofar as we're searching for information about decorators. But rarely is that the true goal of the search. Implicitly, the actual query might be something like:
+Earlier, I mentioned the search term *"Python decorators"* as an example of global-context search. That's true, insofar as we're searching for information about decorators. But rarely is that the true goal of the search. Implicitly, the actual query might be something like:
 
 > "Look for more details about Python decorators. I already understand wrapped functions, but I'm specifically looking for API design patterns related to decorators in a web framework context. I'm working on a new ASGI-based framework."
 
@@ -45,10 +45,10 @@ Exploring this in detail is something I want to tackle in later posts. But befor
 - We have enormous contextual knowledge embedded in our trail of interactions.
 - As a rule, our tastes and knowledge shift gradually, not abruptly.
 - Our local context forms a kind of graph. New knowledge integrates successfully when it aligns with existing nodes and with our directional interests.
-- This graph decays over time—older interests become less relevant.
+- This graph decays over time; older interests become less relevant.
 - Our local graph exists within a universe of other graphs:
   - the ones we've had over time
   - the ones others have
   - and those built from broader world knowledge
 
-Understanding these graphs—and searching within them—is the key to moving from global search to truly meaningful local-context search.
+Understanding these graphs, and searching within them, is the key to moving from global search to truly meaningful local-context search.
