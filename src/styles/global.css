@@ -391,6 +391,39 @@ blockquote p {
 	margin: 0;
 }
 
+/* Footnote tooltip */
+.footnote-tooltip {
+	position: fixed;
+	z-index: 200;
+	max-width: 300px;
+	background: rgb(var(--black));
+	color: var(--background);
+	padding: 0.5rem 0.75rem;
+	border-radius: 4px;
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+.footnote-tooltip.visible {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.footnote-tooltip {
+		transition: none;
+	}
+}
+
+[data-theme="dark"] .footnote-tooltip {
+	background: rgb(55, 65, 81);
+	color: rgb(243, 244, 246);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
 /* Footnotes styling */
 .footnotes {
 	margin-top: 3rem;

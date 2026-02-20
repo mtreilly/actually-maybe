@@ -62,6 +62,7 @@ try {
 	import { initTocScrollHighlight } from '~/scripts/tocScrollHighlight.ts';
 	import { initExternalLinks } from '~/scripts/externalLinks.ts';
 	import { initAssistantsMenu } from '~/scripts/assistantsMenu.ts';
+	import { initFootnoteTooltips } from '~/scripts/footnoteTooltips.ts';
 
 	// Initialize code block copy on page load
 	initCodeBlockCopy();
@@ -77,6 +78,9 @@ try {
 
 	// Initialize LLM copy/share helpers
 	initAssistantsMenu();
+
+	// Initialize footnote hover/focus previews
+	initFootnoteTooltips();
 </script>
 
 <html lang="en">
