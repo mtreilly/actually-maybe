@@ -1,6 +1,6 @@
 ---
 title: "The AI Tool That I Wish Existed"
-description: "Envisioning an AI-first productivity tool that anticipates, connects, and surfaces ideas rather than requiring explicit organization"
+description: "Envisioning an AI-first productivity tool that anticipates, connects, and surfaces ideas rather than requiring explicit organisation"
 pubDate: "Sep 26 2022"
 topics: ["ai", "tools", "productivity", "knowledge-management", "creativity"]
 type: "note"
@@ -8,7 +8,7 @@ type: "note"
 
 There is an explosion of productivity-oriented ideas and systems.
 
-Browsing YouTube, Twitter, or Reddit, one can find nine different ways to organize your Notion workspace, how Roam Research will transform your note-taking, the best ways to learn from notes, and how you *should* listen to podcasts.
+Browsing YouTube, Twitter, or Reddit, one can find nine different ways to organise your Notion workspace, how Roam Research will transform your note-taking, the best ways to learn from notes, and how you *should* listen to podcasts.
 
 Like any novel efflorescence, it has become the subject of memes about its excessive nature.
 
@@ -16,11 +16,11 @@ Systems for system's sake.
 
 It's not that any of these tools are bad. It's that an excessive focus on *building a system* diverts attention away from the actual goal: doing cool stuff. But for all these existing tools, they are still remarkably "old-style web" in conception.
 
-Yes, there are novel UI advancements, or new ways of organizing data. But they are still built from primitives a developer in 2015, 2005, or even 1995 would recognize.
+Yes, there are novel UI advancements, or new ways of organising data. But they are still built from primitives a developer in 2015, 2005, or even 1995 would recognise.
 
 ## A Vague Outline of the Dream Tool
 
-The tool I would love to exist, one that might fall into this semi-mocked category, is built around capturing, synthesizing, and making information useful for creation.
+The tool I would love to exist, one that might fall into this semi-mocked category, is built around capturing, synthesising, and making information useful for creation.
 
 But, critically, it would be as hands-off as possible. It would take an *AI-first* approach, integrating synthesis and usage directly into your current work habits. Existing tools would connect, existing applications could talk to each other, and your development tools would remain in place. All the while, this imagined tool quietly links everything together.
 
@@ -35,7 +35,7 @@ The differing platforms change the product. They filter, reshape, and constrain 
 
 AI-first versus old-web-first is a similar divide.
 
-With AI-first, explicit user actions are minimized. Anticipation, prediction, and curation take center stage. With old-web tooling, you are placed into a rigid frame of multi-layer menus, configuration options, and modular UI pieces.
+With AI-first, explicit user actions are minimised. Anticipation, prediction, and curation take centre stage. With old-web tooling, you are placed into a rigid frame of multi-layer menus, configuration options, and modular UI pieces.
 
 Of course, the two worlds overlap, just like desktop and mobile apps overlap. Some AI model configuration resembles setting up a Notion database. But this similarity is superficial. AI-first configuration has far-reaching effects that extend beyond the user's direct understanding, much like a fly-by-wire system intercepting and adjusting a pilot's control inputs in ways impossible for a human alone.
 
@@ -56,7 +56,7 @@ That Twitter thread about new deep-learning research? I want the tool to:
 - remind me about both the next time I open my mechanical-stress Python library
 - proactively surface connections I didn't explicitly create
 
-### Summarization and Co-Pilot
+### Summarisation and Co-Pilot
 
 The tool should pull from my marked content in Pocket or Instapaper, plus the articles linked in that Twitter thread, and generate useful summaries.
 
@@ -74,12 +74,12 @@ Let me search **"deep learning tesla model code"**, and have it surface a Reddit
 
 ## Conclusion
 
-A tool for ingestion, curation, organization, and search, sitting beside you as a creative copilot, connecting ideas you've encountered and surfacing them when relevant.
+A tool for ingestion, curation, organisation, and search, sitting beside you as a creative copilot, connecting ideas you've encountered and surfacing them when relevant.
 
 This is all possible. And it could massively expand the creative potential of millions of people.
 
 More than that, such a tool would break down the useless ideology of siloed data. Creativity thrives on connection. You want this GPT-Creative companion enhancing *every* piece of content you encounter.
 
-Discover a new application? Grant access to your creative partner. Let it chew through the possibilities and throw back new connections, so you can focus on building things first, without worrying about systems or optimal organization.
+Discover a new application? Grant access to your creative partner. Let it chew through the possibilities and throw back new connections, so you can focus on building things first, without worrying about systems or optimal organisation.
 
 A tool like this would not just store information. It would *unlock* it.

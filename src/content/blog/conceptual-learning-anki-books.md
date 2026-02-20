@@ -26,13 +26,13 @@ For language cards there is a lot of reverse data: learning a word in one direct
 
 So what do I find so difficult about abstract-ladder (AL) knowledge when placed into the spaced-repetition format of Anki?
 
-For one, the spatial relationship between pieces of knowledge is lost once placed in the context of a single, lone card floating in the ether. True, it's possible to organize cards, but depending on your recall, responses, or deck-selection habits, the cards themselves will never have consistent spatial relations.
+For one, the spatial relationship between pieces of knowledge is lost once placed in the context of a single, lone card floating in the ether. True, it's possible to organise cards, but depending on your recall, responses, or deck-selection habits, the cards themselves will never have consistent spatial relations.
 
 There are card-specific adjustments like cloze deletions, where you hide some aspect of an image or sentence to then reveal it on review. But these create spatial relations *within* a single card, not *between* pieces of knowledge.
 
 ## What Would a Solution Look Like?
 
-If we look outside the world of spaced repetition, there are hints at possible solutions. In the humble form of a physical book, you have natural spatial organization of knowledge. And to a surprising degree, when discussing how people learn technical topics, a consistent theme is the use of physical books over digital ones. The digital book is useful once the concept is understood or the general field is known. But the initial hard ingestion of information seems easier in a physical form. A well-constructed book also exhibits a form of spaced repetition, with later sections referring back to earlier concepts.
+If we look outside the world of spaced repetition, there are hints at possible solutions. In the humble form of a physical book, you have natural spatial organisation of knowledge. And to a surprising degree, when discussing how people learn technical topics, a consistent theme is the use of physical books over digital ones. The digital book is useful once the concept is understood or the general field is known. But the initial hard ingestion of information seems easier in a physical form. A well-constructed book also exhibits a form of spaced repetition, with later sections referring back to earlier concepts.
 
 There are also examples of knowledge progression and layered abstractions in gaming. Even in simple games, you have a gameplay loop where you learn a technique or concept and are then asked to use it to solve a problem. Over the life of the game, new ideas, mechanics, and concepts are introduced, leading to a surprisingly dense buildup of abstraction from the initial ideas.
 

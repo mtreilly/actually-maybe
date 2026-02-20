@@ -1,8 +1,8 @@
 ---
 title: "Notes on LLM Clock Face Limitations"
-description: "LLMs struggle to generalize clock face generation beyond the standard 12 divisions, highlighting a specific gap in reasoning versus training data memorization."
+description: "LLMs struggle to generalise clock face generation beyond the standard 12 divisions, highlighting a specific gap in reasoning versus training data memorisation."
 pubDate: "Nov 18 2025"
-topics: ["llms", "generative-ai", "failures", "generalization"]
+topics: ["llms", "generative-ai", "failures", "generalisation"]
 type: "note"
 ---
 

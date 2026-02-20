@@ -324,6 +324,17 @@ draft: true  # exclude from build
 - Code snippets over prose explanations (when appropriate)
 - No em dashes (use commas, colons, or split into separate sentences)
 
+**Language: Hiberno English (Irish/British spelling standard)**
+- `-ise` not `-ize`: organise, generalise, recognise, internalise, emphasise, specialise
+- `-our` not `-or`: colour, honour, favour, behaviour
+- `-re` not `-er`: centre, theatre (rare, but if needed)
+- `-ogue` endings: catalogue, dialogue
+- Past tense: `learnt`, `spelt`, `dreamt` (not learned, spelled, dreamed)
+- Noun/verb pairs: `practise` (verb), `practice` (noun); `licence` (noun), `license` (verb)
+- `whilst`, `amongst` preferred over `while`, `among` in formal constructions
+- Oxford comma: always use it
+- Compound modifiers: hyphenate before a noun (`spaced-repetition tool`), not when used as a noun phrase (`spaced repetition is effective`)
+
 **Formatting:**
 - Use `##` for main sections (never `#` in post body, that's the title)
 - Code blocks always have language: ` ```typescript `

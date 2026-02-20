@@ -6,15 +6,15 @@ topics: ["agents", "architecture", "software-design"]
 type: "note"
 ---
 
-I've been thinking a lot about the structural techniques that agents seem to favor. There are patterns I keep noticing: things that make them work better, and things that confuse them.
+I've been thinking a lot about the structural techniques that agents seem to favour. There are patterns I keep noticing: things that make them work better, and things that confuse them.
 
 ## Composition Over Monoliths
 
 Agents really like composition out of different parts. Monorepos where they can see over everything. One big project? They tend to get confused. But if you can break it down into multiple projects, things go smoother.
 
-So rather than have a CLI that does all the different things, what you want is lots of little tiny mini CLIs and a CLI router between them. Then try to think of each CLI as stateless as possible, or centralize all the data management in one place.
+So rather than have a CLI that does all the different things, what you want is lots of little tiny mini CLIs and a CLI router between them. Then try to think of each CLI as stateless as possible, or centralise all the data management in one place.
 
-These are ideas I've noticed agents seem to favor. And structurally, they're just good software practices anyway. If you can have a design that's limited in scope and stateless, you're gonna have a better outcome. This carries over to more complex systems too. You're just building them out of compositional pieces, smaller pieces.
+These are ideas I've noticed agents seem to favour. And structurally, they're just good software practices anyway. If you can have a design that's limited in scope and stateless, you're gonna have a better outcome. This carries over to more complex systems too. You're just building them out of compositional pieces, smaller pieces.
 
 ## The Multi-Service Sweet Spot
 
