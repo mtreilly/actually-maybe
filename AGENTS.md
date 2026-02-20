@@ -322,6 +322,7 @@ draft: true  # exclude from build
 - Active voice over passive
 - Concrete examples over abstract theory
 - Code snippets over prose explanations (when appropriate)
+- No em dashes (use commas, colons, or split into separate sentences)
 
 **Formatting:**
 - Use `##` for main sections (never `#` in post body, that's the title)
