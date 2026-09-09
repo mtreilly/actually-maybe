@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "tsx scripts/test-markdown.ts && tsx src/lib/__tests__/mention-detector.test.ts && tsx src/lib/__tests__/accept-negotiation.test.ts && tsx scripts/test-graph-page.ts && tsx scripts/test-middleware.ts && tsx scripts/test-agent-readiness.ts"
+    "test": "tsx scripts/test-markdown.ts && tsx src/lib/__tests__/mention-detector.test.ts && tsx src/lib/__tests__/accept-negotiation.test.ts && tsx scripts/test-graph-page.ts && tsx scripts/test-middleware.ts && tsx scripts/test-negotiation-e2e.ts && tsx scripts/test-agent-readiness.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",

@@ -8,15 +8,29 @@
   ],
   "headers": [
     {
+      "source": "/.well-known/ai-profile",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/about.llm",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Vary",
           "value": "Accept, Accept-Encoding"
-        },
-        {
-          "key": "Link",
-          "value": "</llms.txt>; rel=\"llms-txt\"; type=\"text/plain\", </about.llm>; rel=\"llm-context\"; type=\"text/plain\", </.well-known/ai-profile>; rel=\"ai-profile\"; type=\"application/json\""
         }
       ]
     }

@@ -46,8 +46,26 @@ const markdownRoutes: Record<string, string> = manifest.markdownRoutes;
 const htmlRoutes = new Set<string>(manifest.htmlRoutes);
 const files = new Set<string>(manifest.files);
 
-const markdownAlternateLink = (markdownPath: string) =>
-	`<${markdownPath}>; rel="alternate"; type="text/markdown"`;
+/**
+ * Discovery links advertised on every response. These used to live in
+ * astro.config.mjs under a `headers` key that is not part of Astro's config
+ * schema, so they were silently dropped and never reached the wire. They are
+ * emitted here rather than from vercel.json so a single Link header can also
+ * carry the per-page markdown alternate below.
+ */
+const DISCOVERY_LINKS = [
+	'</llms.txt>; rel="llms-txt"; type="text/plain"',
+	'</about.llm>; rel="llm-context"; type="text/plain"',
+	'</.well-known/ai-profile>; rel="ai-profile"; type="application/json"',
+];
+
+const linkHeader = (markdownPath?: string) => {
+	const links = [...DISCOVERY_LINKS];
+	if (markdownPath) {
+		links.unshift(`<${markdownPath}>; rel="alternate"; type="text/markdown"`);
+	}
+	return links.join(', ');
+};
 
 /** 406: we cannot produce anything this client said it would take. */
 const notAcceptable = () =>
@@ -89,10 +107,10 @@ export default function middleware(request: Request): Response {
 		return notAcceptable();
 	}
 
-	const headers: Record<string, string> = { Vary: VARY_VALUE };
-	if (markdownPath) {
-		headers.Link = markdownAlternateLink(markdownPath);
-	}
+	const headers: Record<string, string> = {
+		Vary: VARY_VALUE,
+		Link: linkHeader(markdownPath),
+	};
 
 	if (chosen === MARKDOWN_TYPE) {
 		if (markdownPath) {

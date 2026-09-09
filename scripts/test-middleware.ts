@@ -59,19 +59,23 @@ for (const [path, expected] of cases) {
 		`${path} with Accept: text/markdown should rewrite to ${expected}`,
 	);
 	assert.equal(response.headers.get('Vary'), VARY_VALUE, `${path} markdown response should carry Vary`);
-	assert.equal(
-		response.headers.get('Link'),
-		`<${expected}>; rel="alternate"; type="text/markdown"`,
-		`${path} should advertise its markdown alternate`,
+	assert.ok(
+		response.headers.get('Link')?.startsWith(`<${expected}>; rel="alternate"; type="text/markdown"`),
+		`${path} should advertise its markdown alternate first in the Link header`,
 	);
 }
 
 // --- the Link alternate is advertised on the HTML variant too ---
 const htmlWithAlternate = call('/about', { accept: BROWSER_ACCEPT });
-assert.equal(
-	htmlWithAlternate.headers.get('Link'),
-	'</about.md>; rel="alternate"; type="text/markdown"',
-);
+const htmlLink = htmlWithAlternate.headers.get('Link') ?? '';
+assert.ok(htmlLink.includes('</about.md>; rel="alternate"; type="text/markdown"'));
+for (const discovery of [
+	'</llms.txt>; rel="llms-txt"; type="text/plain"',
+	'</about.llm>; rel="llm-context"; type="text/plain"',
+	'</.well-known/ai-profile>; rel="ai-profile"; type="application/json"',
+]) {
+	assert.ok(htmlLink.includes(discovery), `Link should advertise ${discovery}`);
+}
 
 // --- q-values reach the middleware, not just the parser ---
 assert.equal(
