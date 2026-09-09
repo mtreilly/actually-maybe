@@ -1,6 +1,24 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
   "installCommand": "pnpm install --frozen-lockfile",
-  "regions": ["dub1"]
+  "regions": [
+    "dub1"
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Vary",
+          "value": "Accept, Accept-Encoding"
+        },
+        {
+          "key": "Link",
+          "value": "</llms.txt>; rel=\"llms-txt\"; type=\"text/plain\", </about.llm>; rel=\"llm-context\"; type=\"text/plain\", </.well-known/ai-profile>; rel=\"ai-profile\"; type=\"application/json\""
+        }
+      ]
+    }
+  ]
 }

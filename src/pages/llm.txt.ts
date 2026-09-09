@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { VARY_VALUE } from '../lib/accept-negotiation';
 
 const body = `LLM-ready documentation is enabled across actuallymaybe.com.
 
@@ -57,6 +58,6 @@ export const GET: APIRoute = () =>
 		headers: {
 			'Content-Type': 'text/plain; charset=utf-8',
 			'Cache-Control': 'public, max-age=3600',
-			Vary: 'Accept',
+			Vary: VARY_VALUE,
 		},
 	});

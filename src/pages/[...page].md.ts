@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { buildBlogMarkdown } from '../utils/markdownExport';
 import { buildStaticMarkdown } from '../utils/staticMarkdown';
+import { VARY_VALUE } from '../lib/accept-negotiation';
 
 const basePages = [
 	'index',
@@ -53,6 +54,7 @@ const respondWithMarkdown = (markdown: string) => {
 	const headers = {
 		'Content-Type': 'text/markdown; charset=utf-8',
 		'Cache-Control': 'public, max-age=86400, immutable',
+		Vary: VARY_VALUE,
 		ETag: etag,
 	};
 	return new Response(markdown, { headers });

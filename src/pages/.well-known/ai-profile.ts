@@ -5,6 +5,7 @@ import {
 	AGENT_USE_CASES,
 	POSTAL_ADDRESS,
 } from '../../data/identity';
+import { VARY_VALUE } from '../../lib/accept-negotiation';
 
 const profile = {
 	name: 'Micheál Reilly',
@@ -61,6 +62,6 @@ export const GET: APIRoute = () =>
 		headers: {
 			'Content-Type': 'application/json; charset=utf-8',
 			'Cache-Control': 'public, max-age=3600',
-			Vary: 'Accept',
+			Vary: VARY_VALUE,
 		},
 	});

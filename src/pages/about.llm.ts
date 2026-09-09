@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { AGENT_HOW_TO_CALL, AGENT_NOT_FOR, AGENT_USE_CASES } from '../data/identity';
+import { VARY_VALUE } from '../lib/accept-negotiation';
 
 const bullets = (items: string[]) => items.map((item) => `- ${item}`).join('\n');
 
@@ -79,6 +80,6 @@ export const GET: APIRoute = () =>
 		headers: {
 			'Content-Type': 'text/plain; charset=utf-8',
 			'Cache-Control': 'public, max-age=3600',
-			Vary: 'Accept',
+			Vary: VARY_VALUE,
 		},
 	});

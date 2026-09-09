@@ -52,6 +52,33 @@ const searchData = posts.map(post => ({
 			{posts.length === 0 && (
 				<p class="no-posts">No posts found.</p>
 			)}
+
+			{/* Search itself needs JavaScript. This fallback is the whole index in
+			    raw HTML, so the page is still useful to agents and to anyone
+			    without scripts. */}
+			<section id="all-posts" class="all-posts">
+				<h2>Every post</h2>
+				<p class="all-posts-note">
+					Search needs JavaScript. Without it, here is the full index. You can also
+					browse by <a href="/topics/">topic</a>, by <a href="/type/">type</a>, or by
+					year in the <a href="/archive/">archive</a>.
+				</p>
+				<ul class="all-posts-list">
+					{posts.map((post) => (
+						<li>
+							<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+							<span class="all-posts-meta">
+								<FormattedDate date={post.data.pubDate} />
+								<span aria-hidden="true"> · </span>
+								{post.data.type}
+							</span>
+							{post.data.description && (
+								<span class="all-posts-desc">{post.data.description}</span>
+							)}
+						</li>
+					))}
+				</ul>
+			</section>
 		</main>
 	<Footer />
 	</body>
@@ -197,6 +224,57 @@ const searchData = posts.map(post => ({
 		margin: 0;
 		font-size: 0.8125rem;
 		color: rgb(var(--gray));
+	}
+
+	.all-posts {
+		margin-top: 3rem;
+		padding-top: 2rem;
+		border-top: 1px solid rgba(128, 128, 128, 0.2);
+	}
+
+	.all-posts h2 {
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin: 0 0 0.75rem;
+	}
+
+	.all-posts-note {
+		color: rgb(var(--gray));
+		font-size: 0.9375rem;
+		line-height: 1.7;
+		margin: 0 0 1.5rem;
+		max-width: 60ch;
+	}
+
+	.all-posts-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.all-posts-list li {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.all-posts-list a {
+		color: rgb(var(--black));
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.all-posts-list a:hover {
+		color: var(--accent);
+	}
+
+	.all-posts-meta,
+	.all-posts-desc {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
 	}
 
 	:global(.no-results) {

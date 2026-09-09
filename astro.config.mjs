@@ -8,6 +8,7 @@ import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 import { defineConfig } from 'astro/config';
 import knowledgeGraph from './src/integrations/knowledge-graph';
+import routeManifest from './src/integrations/route-manifest';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const srcPath = resolve(__dirname, 'src');
@@ -22,7 +23,7 @@ export default defineConfig({
 		},
 		imageService: true,
 	}),
-	integrations: [mdx(), sitemap(), knowledgeGraph()],
+	integrations: [mdx(), sitemap(), knowledgeGraph(), routeManifest()],
 	vite: {
 		resolve: {
 			alias: {
@@ -30,12 +31,4 @@ export default defineConfig({
 			},
 		},
 	},
-	headers: [
-		{
-			match: 'all',
-			headers: {
-				'Link': '</about.llm>; rel="llm-context"; type="text/plain", </.well-known/ai-profile>; rel="ai-profile"; type="application/json"',
-			},
-		},
-	],
 });

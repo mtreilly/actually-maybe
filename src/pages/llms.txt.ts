@@ -17,6 +17,7 @@ import {
 	CONTACT_EMAIL,
 	SITE_ORIGIN,
 } from '../data/identity';
+import { VARY_VALUE } from '../lib/accept-negotiation';
 
 const bullets = (items: string[]) => items.map((item) => `- ${item}`).join('\n');
 
@@ -64,7 +65,7 @@ ${bullets(AGENT_NOT_FOR)}
 
 ${bullets(AGENT_HOW_TO_CALL)}
 
-Markdown responses are UTF-8, carry a YAML frontmatter block with \`title\`, \`description\`, \`canonicalUrl\`, \`pubDate\`, and \`topics\`, and are served with \`Content-Type: text/markdown; charset=utf-8\` and \`Vary: Accept\`. Requests for a media type this site cannot produce get a \`406\`. Paths that do not exist get a real \`404\`, with a markdown body listing these entry points when you ask for markdown. Content is stable at its canonical URL and safe to cache for a day. Attribute reuse to the canonical URL, and send corrections to ${CONTACT_EMAIL}.
+Markdown responses are UTF-8, carry a YAML frontmatter block with \`title\`, \`description\`, \`canonicalUrl\`, \`pubDate\`, and \`topics\`, and are served with \`Content-Type: text/markdown; charset=utf-8\` and \`Vary: Accept, Accept-Encoding\`. Requests for a media type this site cannot produce get a \`406\`. Paths that do not exist get a real \`404\`, with a markdown body listing these entry points when you ask for markdown. Content is stable at its canonical URL and safe to cache for a day. Attribute reuse to the canonical URL, and send corrections to ${CONTACT_EMAIL}.
 
 ## Start here
 
@@ -99,7 +100,7 @@ ${topics}
 		headers: {
 			'Content-Type': 'text/plain; charset=utf-8',
 			'Cache-Control': 'public, max-age=3600',
-			Vary: 'Accept',
+			Vary: VARY_VALUE,
 		},
 	});
 };
