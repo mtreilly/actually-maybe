@@ -320,14 +320,24 @@ assert.ok(
 	'pnpm-lock.yaml should stay on lockfileVersion 9.0',
 );
 
-// Vercel's build image offers Node 20.x, 22.x and 24.x only, so a floor above
-// 24 would be unsatisfiable there and the deploy would fail.
+// Vercel's build image offers Node 20.x, 22.x and 24.x only, so anything above
+// 24 is unsatisfiable there and the deploy would fail. .nvmrc must name the same
+// major so local builds match the deployed ones.
 const nodeEngine = packageJson.engines?.node ?? '';
-const nodeFloor = /^>=(\d+)/.exec(nodeEngine);
-assert.ok(nodeFloor, `engines.node must be a >= range, got ${JSON.stringify(nodeEngine)}`);
+const engineMajor = /^(?:>=)?(\d+)(?:\.|$)/.exec(nodeEngine);
+assert.ok(engineMajor, `engines.node must name a major version, got ${JSON.stringify(nodeEngine)}`);
 assert.ok(
-	Number(nodeFloor[1]) <= 24,
-	`engines.node floor is ${nodeFloor[1]}, but Vercel's build image tops out at Node 24`,
+	Number(engineMajor[1]) <= 24,
+	`engines.node asks for Node ${engineMajor[1]}, but Vercel's build image tops out at Node 24`,
+);
+
+const nvmrc = readFileSync(resolve(root, '.nvmrc'), 'utf-8').trim();
+const nvmrcMajor = /^v?(\d+)/.exec(nvmrc);
+assert.ok(nvmrcMajor, `.nvmrc must name a Node version, got ${JSON.stringify(nvmrc)}`);
+assert.equal(
+	nvmrcMajor[1],
+	engineMajor[1],
+	`.nvmrc pins Node ${nvmrcMajor[1]} but engines.node asks for ${engineMajor[1]}; local and Vercel must build on the same major`,
 );
 
 const workspaceSettings = readFileSync(resolve(root, 'pnpm-workspace.yaml'), 'utf-8');

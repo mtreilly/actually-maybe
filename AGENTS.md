@@ -347,13 +347,17 @@ draft: true  # exclude from build
 
 | Tool | Local | Vercel | Pinned in |
 |------|-------|--------|-----------|
-| Node | 26.8.1 | latest 24.x | `.nvmrc`, `engines.node` |
+| Node | latest 24.x | latest 24.x | `.nvmrc`, `engines.node` |
 | pnpm | 12.3.4 | 12.3.4 | `packageManager`, `vercel.json` `installCommand` |
 
-- `engines.node` is `>=24.0.0`, **not** `>=26`. Vercel's build image only offers
-  Node 20.x, 22.x and 24.x, so a floor above 24 is unsatisfiable there and the
-  deploy fails. Node 26 is pinned for local work in `.nvmrc`, and satisfies the
-  same range.
+- Node is pinned to the **24.x** major in both places, so local builds run on the
+  same major as the deployed ones. Vercel's build image only offers Node 20.x,
+  22.x and 24.x, so anything higher is unsatisfiable there and the deploy fails.
+  Both pins track the newest patch, which is what Vercel does.
+  `scripts/test-agent-readiness.ts` fails if `.nvmrc` and `engines.node`
+  disagree.
+- Run `nvm use` in the repo root to pick up `.nvmrc` (`nvm install` first if the
+  major is missing).
 - Vercel ships pnpm 10 at most natively, and its Corepack support sits behind an
   experimental flag, so `vercel.json` installs the exact pnpm that wrote
   `pnpm-lock.yaml`: `npm i -g pnpm@12.3.4 && pnpm install --frozen-lockfile`.
