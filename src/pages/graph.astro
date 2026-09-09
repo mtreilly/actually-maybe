@@ -1,5 +1,6 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
+import StructuredData from '../components/StructuredData.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import KeyboardShortcuts from '../components/KeyboardShortcuts.astro';
@@ -64,6 +65,7 @@ const pageDescription = 'Explore how posts connect through shared topics and ide
 <html lang="en">
 	<head>
 		<BaseHead title={pageTitle} description={pageDescription} />
+		<StructuredData page={{ kind: 'page', name: 'Knowledge graph', description: 'How the posts on actuallymaybe.com connect.', path: '/graph/' }} />
 	</head>
 	<body>
 		<Header />

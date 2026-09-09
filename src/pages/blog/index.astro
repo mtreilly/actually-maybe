@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
+import StructuredData from '../../components/StructuredData.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import PostItem from '../../components/PostItem.astro';
@@ -15,6 +16,7 @@ const posts = (await getCollection('blog')).sort(
 <html lang="en">
 	<head>
 		<BaseHead title={`Blog | ${SITE_TITLE}`} description="All blog posts" />
+		<StructuredData page={{ kind: 'collection', name: 'All posts', description: 'Every post on actuallymaybe.com, newest first.', path: '/blog/' }} />
 	</head>
 	<body>
 		<Header />
@@ -23,7 +25,7 @@ const posts = (await getCollection('blog')).sort(
 
 			<div class="post-list">
 				{posts.map((post) => (
-					<PostItem post={post} variant="blog" />
+					<PostItem post={post} variant="blog" headingLevel={2} />
 				))}
 			</div>
 		</main>

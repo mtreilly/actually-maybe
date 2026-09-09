@@ -1,0 +1,19 @@
+---
+/**
+ * Emits the site's JSON-LD `@graph` for the current page.
+ * Render inside <head>. See src/lib/structured-data.ts for the node shapes.
+ */
+import { buildStructuredData, type StructuredDataPage } from '../lib/structured-data';
+import { SITE_ORIGIN } from '../data/identity';
+
+interface Props {
+	page: StructuredDataPage;
+}
+
+const { page } = Astro.props;
+
+const origin = Astro.site?.origin ?? SITE_ORIGIN;
+const jsonLd = buildStructuredData({ origin, page });
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />

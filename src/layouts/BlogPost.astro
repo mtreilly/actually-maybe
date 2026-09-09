@@ -16,6 +16,7 @@ import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 import RelatedPosts from '../components/RelatedPosts.astro';
 import type { KnowledgeGraph } from '../types/graph';
 import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
+import StructuredData from '../components/StructuredData.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	relatedPosts?: Array<CollectionEntry<'blog'> & { sharedTopics: number }>;
@@ -86,6 +87,19 @@ try {
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
+		<StructuredData
+			page={{
+				kind: 'post',
+				name: title,
+				description,
+				path: postId ? `/blog/${postId}/` : Astro.url.pathname,
+				datePublished: pubDate,
+				dateModified: updatedDate,
+				topics,
+				imageUrl: heroImage ? new URL(heroImage.src, Astro.url).toString() : undefined,
+				wordCount: bodyText ? bodyText.trim().split(/\s+/).length : undefined,
+			}}
+		/>
 	</head>
 
 	<body>

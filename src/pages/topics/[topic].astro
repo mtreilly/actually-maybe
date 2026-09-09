@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
+import StructuredData from '../../components/StructuredData.astro';
 import Header from '../../components/Header.astro';
 import PostItem from '../../components/PostItem.astro';
 import { SITE_TITLE } from '../../consts';
@@ -51,6 +52,7 @@ const relatedTopics = Array.from(relatedTopicCounts.entries())
 			title={`${topic} | ${SITE_TITLE}`}
 			description={`Posts about ${topic}`}
 		/>
+		<StructuredData page={{ kind: 'collection', name: `Posts about ${topic}`, description: `Every post on actuallymaybe.com tagged ${topic}.`, path: `/topics/${topic}/` }} />
 	</head>
 	<body>
 		<Header />
@@ -89,7 +91,7 @@ const relatedTopics = Array.from(relatedTopicCounts.entries())
 				<h2 class="section-title">Posts</h2>
 				<div class="post-list">
 					{posts.map((post) => (
-						<PostItem post={post} variant="blog" />
+						<PostItem post={post} variant="blog" headingLevel={3} />
 					))}
 				</div>
 			</div>

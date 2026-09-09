@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import StructuredData from '../components/StructuredData.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
@@ -30,6 +31,7 @@ const searchData = posts.map(post => ({
 			title={`Search | ${SITE_TITLE}`}
 			description="Search posts"
 		/>
+		<StructuredData page={{ kind: 'page', name: 'Search', description: 'Search every post on actuallymaybe.com.', path: '/search/' }} />
 	</head>
 	<body>
 		<Header />
@@ -78,7 +80,7 @@ const searchData = posts.map(post => ({
 				const post = result.item;
 				return `
 					<a href="/blog/${post.id}/" class="search-result">
-						<h3 class="search-result-title">${post.title}</h3>
+						<h2 class="search-result-title">${post.title}</h2>
 						<p class="search-result-meta">
 							<span class="search-result-type">${post.type}</span>
 							<span class="search-result-sep">·</span>
@@ -145,7 +147,10 @@ const searchData = posts.map(post => ({
 		gap: 1rem;
 	}
 
-	.search-result {
+	/* Result cards and the empty state are injected by the script above, so Astro's
+	   scoped attribute is never applied to them. These rules must be global. */
+	:global(.search-result) {
+		display: block;
 		padding: 1rem;
 		border: 1px solid rgb(var(--gray-light));
 		border-radius: 4px;
@@ -153,32 +158,32 @@ const searchData = posts.map(post => ({
 		transition: all 0.2s;
 	}
 
-	.search-result:hover {
+	:global(.search-result:hover) {
 		border-color: var(--accent);
 		background-color: rgba(37, 99, 235, 0.02);
 	}
 
-	.search-result-title {
+	:global(.search-result-title) {
 		margin: 0 0 0.5rem 0;
 		font-size: 1.125rem;
 		color: rgb(var(--black));
 	}
 
-	.search-result:hover .search-result-title {
+	:global(.search-result:hover .search-result-title) {
 		color: var(--accent);
 	}
 
-	.search-result-meta {
+	:global(.search-result-meta) {
 		margin: 0 0 0.5rem 0;
 		font-size: 0.875rem;
 		color: rgb(var(--gray));
 	}
 
-	.search-result-sep {
+	:global(.search-result-sep) {
 		margin: 0 0.25rem;
 	}
 
-	.search-result-desc {
+	:global(.search-result-desc) {
 		margin: 0 0 0.5rem 0;
 		font-size: 0.9375rem;
 		color: rgb(var(--gray));
@@ -188,13 +193,13 @@ const searchData = posts.map(post => ({
 		overflow: hidden;
 	}
 
-	.search-result-topics {
+	:global(.search-result-topics) {
 		margin: 0;
 		font-size: 0.8125rem;
 		color: rgb(var(--gray));
 	}
 
-	.no-results {
+	:global(.no-results) {
 		text-align: center;
 		color: rgb(var(--gray));
 		padding: 2rem 0;

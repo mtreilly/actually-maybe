@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
+import StructuredData from '../../components/StructuredData.astro';
 import Header from '../../components/Header.astro';
 import { SITE_TITLE } from '../../consts';
 
@@ -32,6 +33,7 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 			title={`Post Types | ${SITE_TITLE}`}
 			description="Browse posts by type"
 		/>
+		<StructuredData page={{ kind: 'collection', name: 'Content types', description: 'Browse posts by content type.', path: '/type/' }} />
 	</head>
 	<body>
 		<Header />

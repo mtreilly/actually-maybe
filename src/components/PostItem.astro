@@ -6,9 +6,15 @@ import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 interface Props {
 	post: CollectionEntry<'blog'>;
 	variant?: 'home' | 'blog';
+	/**
+	 * Heading level for the post title. Set it to whatever keeps the host page's
+	 * outline sequential: 2 directly under the page <h1>, 3 under an <h2> section.
+	 */
+	headingLevel?: 2 | 3 | 4;
 }
 
-const { post, variant = 'home' } = Astro.props;
+const { post, variant = 'home', headingLevel = 2 } = Astro.props;
+const TitleHeading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
 const readingTime = formatReadingTime(calculateReadingTime(post.body || ''));
 ---
 
@@ -30,9 +36,11 @@ const readingTime = formatReadingTime(calculateReadingTime(post.body || ''));
 		)}
 	</div>
 	<div class="post-content">
-		<a href={`/blog/${post.id}/`} class="post-title">
-			{post.data.title}
-		</a>
+		<TitleHeading class="post-title-heading">
+			<a href={`/blog/${post.id}/`} class="post-title">
+				{post.data.title}
+			</a>
+		</TitleHeading>
 		{post.data.description && (
 			<p class="post-description">{post.data.description}</p>
 		)}
@@ -47,6 +55,15 @@ const readingTime = formatReadingTime(calculateReadingTime(post.body || ''));
 </div>
 
 <style>
+	/* The heading only exists to carry the outline. The anchor keeps all styling. */
+	.post-title-heading {
+		margin: 0;
+		font-size: inherit;
+		font-weight: inherit;
+		line-height: inherit;
+		letter-spacing: inherit;
+	}
+
 	.post-item {
 		display: flex;
 		gap: 1rem;

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import StructuredData from '../components/StructuredData.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
@@ -32,6 +33,7 @@ const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
 			title={`Archive | ${SITE_TITLE}`}
 			description="All posts by year"
 		/>
+		<StructuredData page={{ kind: 'collection', name: 'Archive', description: 'Every post grouped by year.', path: '/archive/' }} />
 	</head>
 	<body>
 		<Header />
