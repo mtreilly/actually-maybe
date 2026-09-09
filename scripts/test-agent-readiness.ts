@@ -306,6 +306,37 @@ for (const page of PAGES) {
 	}
 }
 
+// --- /data/graph.json is advertised in llms.txt, the 404 page and contact.md,
+//     so it must be emitted by a clean build, not only a cache-warm one ---
+const graph = JSON.parse(read('data/graph.json'));
+assert.ok(Array.isArray(graph.posts) && graph.posts.length > 0, 'graph.json must list posts');
+assert.ok(Array.isArray(graph.edges), 'graph.json must list edges');
+assert.equal(
+	graph.stats?.totalPosts,
+	graph.posts.length,
+	'graph.json stats must match its posts',
+);
+assert.ok(!('error' in graph), `graph.json fell back to its error body: ${read('data/graph.json').slice(0, 200)}`);
+
+// --- middleware must not sit on the deprecated edge runtime ---
+const middlewareSource = readFileSync(resolve(root, 'middleware.ts'), 'utf-8');
+assert.match(
+	middlewareSource,
+	/runtime: 'nodejs'/,
+	"middleware.ts must export config.runtime 'nodejs'; the file convention defaults to the deprecated edge runtime",
+);
+assert.match(
+	middlewareSource,
+	/route-manifest\.json' with \{ type: 'json' \}/,
+	'the JSON import needs an import attribute or Vercel reports TS1543',
+);
+for (const relative of ['./src/lib/accept-negotiation.js', './src/data/not-found.js']) {
+	assert.ok(
+		middlewareSource.includes(`'${relative}'`),
+		`middleware.ts must import ${relative} with an explicit extension or Vercel reports TS2835`,
+	);
+}
+
 // --- Toolchain pins must agree, or Vercel installs with a different pnpm
 //     than the one that wrote the lockfile ---
 const packageJson = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
@@ -338,6 +369,11 @@ assert.equal(
 	nvmrcMajor[1],
 	engineMajor[1],
 	`.nvmrc pins Node ${nvmrcMajor[1]} but engines.node asks for ${engineMajor[1]}; local and Vercel must build on the same major`,
+);
+
+assert.ok(
+	packageJson.devDependencies?.typescript,
+	'typescript must be a devDependency, or Vercel type-checks middleware.ts with its own built-in version',
 );
 
 const workspaceSettings = readFileSync(resolve(root, 'pnpm-workspace.yaml'), 'utf-8');

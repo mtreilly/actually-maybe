@@ -27,9 +27,12 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 						const dataStoreRaw = readFileSync(dataStorePath, 'utf-8');
 						posts = parseBlogEntries(JSON.parse(dataStoreRaw));
 						contentHash = createHash('sha256').update(dataStoreRaw).digest('hex');
-					} catch (error) {
-						logger.warn(`⚠️ Unable to read data store (${error}); skipping knowledge graph generation`);
-						logger.warn('   The data store is typically created during local dev/build but may not exist in some deployment environments.');
+					} catch {
+						// Astro only writes .astro/data-store.json in some situations, and
+						// never on a clean build, so this is a fast path rather than a
+						// requirement. astro:build:done picks the graph up from the cache
+						// that src/pages/data/graph.json.ts writes while rendering.
+						logger.info('Data store not present; deferring to the build-time graph cache');
 						return;
 					}
 
@@ -71,6 +74,13 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 			},
 			'astro:build:done': async ({ dir, logger }) => {
 				if (!graphData) {
+					// src/pages/data/graph.json.ts builds the graph from the content
+					// collection while rendering and caches it, so by now it exists even
+					// when astro:build:setup had nothing to read.
+					graphData = readGraphCacheSync();
+				}
+
+				if (!graphData) {
 					logger.warn('⚠️ Knowledge graph data unavailable; skipping graph.json output.');
 					return;
 				}
@@ -95,6 +105,20 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 			},
 		},
 	};
+}
+
+/**
+ * Reads the graph cache written during this build. Sync because integration
+ * hooks run after Astro has finished rendering and there is nothing to await.
+ */
+function readGraphCacheSync(): KnowledgeGraph | null {
+	try {
+		const cachePath = resolve(process.cwd(), '.astro/graph-cache.json');
+		const cached = JSON.parse(readFileSync(cachePath, 'utf-8'));
+		return (cached?.graph as KnowledgeGraph) ?? null;
+	} catch {
+		return null;
+	}
 }
 
 function parseBlogEntries(flattened: unknown): Array<CollectionEntry<'blog'>> {

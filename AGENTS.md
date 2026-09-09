@@ -402,7 +402,17 @@ q-values honoured.
 - Never use `vercel.json` `rewrites` on this project: Vercel documents them as
   unsupported for Astro. Rewrite from the middleware instead.
 - `src/lib/accept-negotiation.ts` holds the parsing. Keep it dependency free, it
-  is bundled into the edge runtime.
+  is bundled into the middleware.
+- **Vercel compiles `middleware.ts` on its own**, outside Astro's module graph
+  and with `module: nodenext`, not the `Bundler` resolution in `tsconfig.json`.
+  So its imports need `with { type: 'json' }` on the JSON import and explicit
+  `.js` extensions on relative ones, or `vercel build` reports TS1543/TS2835.
+  `pnpm typecheck:middleware` reproduces that compile via
+  `tsconfig.middleware.json`; it runs first in `pnpm test`.
+- `middleware.ts` exports `config.runtime = 'nodejs'`. The `middleware.ts` file
+  convention defaults to the Edge runtime, which Vercel has deprecated. Do not
+  switch to `vercel.json` `proxy.entrypoint`: Vercel does not support it for
+  Astro.
 - **`src/generated/route-manifest.json` is generated at build time and must be
   committed.** The middleware imports it to know which paths have a markdown
   sibling. `scripts/test-agent-readiness.ts` fails when the committed copy

@@ -21,8 +21,14 @@
  * asset requests behave exactly as they did before.
  */
 
+// Vercel compiles this file on its own, outside the Astro/Vite module graph and
+// with `module: nodenext`, so the imports below need the shapes NodeNext wants:
+// a `with { type: 'json' }` attribute on the JSON import, and explicit `.js`
+// extensions on relative ones (TypeScript resolves those to the `.ts` sources,
+// and so does tsx, which runs the tests). Without these, `vercel build` reports
+// TS1543 and TS2835.
 import { next, rewrite } from '@vercel/functions';
-import manifest from './src/generated/route-manifest.json';
+import manifest from './src/generated/route-manifest.json' with { type: 'json' };
 import {
 	HTML_TYPE,
 	MARKDOWN_TYPE,
@@ -30,10 +36,17 @@ import {
 	preferredType,
 	routeKey,
 	VARY_VALUE,
-} from './src/lib/accept-negotiation';
-import { buildNotFoundMarkdown } from './src/data/not-found';
+} from './src/lib/accept-negotiation.js';
+import { buildNotFoundMarkdown } from './src/data/not-found.js';
 
 export const config = {
+	/**
+	 * The `middleware.ts` file convention defaults to the Edge runtime, which
+	 * Vercel has deprecated. Same Request/Response API and the same
+	 * `@vercel/functions` helpers, so nothing below changes.
+	 */
+	runtime: 'nodejs',
+
 	/**
 	 * Skip hashed build assets, self-hosted fonts, and the favicon. Everything
 	 * else, page routes and machine-readable files alike, is negotiated so the

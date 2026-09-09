@@ -1,0 +1,15 @@
+{
+	"//": "Vercel compiles middleware.ts on its own with module/moduleResolution NodeNext, outside Astro's Bundler-resolution tsconfig. This mirrors that so `pnpm typecheck:middleware` catches the TS1543/TS2835 class of error before a deploy does.",
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"strict": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"lib": ["ESNext", "DOM"],
+		"types": []
+	},
+	"include": ["middleware.ts"]
+}
