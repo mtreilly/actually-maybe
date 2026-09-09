@@ -343,6 +343,68 @@ draft: true  # exclude from build
 
 ---
 
+## Agent Readiness (Do Not Regress)
+
+These invariants are enforced by `pnpm test`. If a test in this area fails, the
+site has become harder for AI agents to read, not just less tidy.
+
+### Headings
+
+- **Exactly one `<h1>` per page**, and it is the first heading in the document.
+  The site title in `Header.astro` is a `<p class="site-title">`, not a heading,
+  because it is branding rather than the page's subject.
+- **Heading levels never skip.** `PostItem` takes a `headingLevel` prop for this:
+  pass `2` when the list sits directly under the page `<h1>`, `3` when it sits
+  under an `<h2>` section title.
+- Every page renders at least 250 characters of text in raw HTML, and the
+  homepage, `/about`, `/contact`, `/privacy`, `/404` and blog posts at least 500.
+  A page whose content only appears after JavaScript runs needs a static
+  fallback, as `/search` has.
+
+### Markdown content negotiation
+
+Serving markdown from canonical URLs follows
+[acceptmarkdown.com](https://acceptmarkdown.com): markdown for
+`Accept: text/markdown`, `Vary: Accept`, `406` for a type we cannot produce, and
+q-values honoured.
+
+- `output: 'static'` means Astro middleware only runs at build time, so
+  negotiation lives in **`middleware.ts` at the repo root** (Vercel Routing
+  Middleware), which runs at the edge before the filesystem handler.
+- Never use `vercel.json` `rewrites` on this project: Vercel documents them as
+  unsupported for Astro. Rewrite from the middleware instead.
+- `src/lib/accept-negotiation.ts` holds the parsing. Keep it dependency free, it
+  is bundled into the edge runtime.
+- **`src/generated/route-manifest.json` is generated at build time and must be
+  committed.** The middleware imports it to know which paths have a markdown
+  sibling. `scripts/test-agent-readiness.ts` fails when the committed copy
+  drifts from a fresh build, so run `astro build` and commit the result after
+  adding, renaming, or removing a page.
+- Extensionless build outputs (`/.well-known/ai-profile`, `/about.llm`) need an
+  explicit `Content-Type` in `vercel.json`: a static host cannot infer one, and
+  the header the Astro endpoint sets is discarded.
+
+### Identity and agent instruction files
+
+`src/data/identity.ts` is the single source of truth for the name, contact
+address, postal address, social profiles, and the when-to-use guidance. It feeds
+`StructuredData.astro`, `/llms.txt`, `/llm.txt`, `/about.llm`,
+`/.well-known/ai-profile`, and the `/contact` page. Change it there, not in the
+individual endpoints.
+
+- Every page emits one JSON-LD `@graph` with `WebSite`, `Person` and
+  `Organization` nodes plus a page-specific node. `Organization` must keep both
+  `contactPoint` and a `PostalAddress`.
+- `/404` deliberately emits no JSON-LD: an error page should not claim to be an
+  identity page.
+- `/llms.txt` follows the llmstxt.org structure: H1, blockquote, heading-free
+  content sections, then `##` file lists of `- [name](url): notes`.
+- `/about`, `/contact` and `/privacy` are trust anchors. They are what an agent
+  checks before citing the site, so keep them real, current, and linked from the
+  footer on every page.
+
+---
+
 ## Performance Budgets
 
 | Metric | Target | Max |
