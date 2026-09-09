@@ -1,4 +1,7 @@
 import type { APIRoute } from 'astro';
+import { AGENT_HOW_TO_CALL, AGENT_NOT_FOR, AGENT_USE_CASES } from '../data/identity';
+
+const bullets = (items: string[]) => items.map((item) => `- ${item}`).join('\n');
 
 const context = `# About Micheál Reilly - LLM Context
 
@@ -55,6 +58,15 @@ const context = `# About Micheál Reilly - LLM Context
 4. **Economic Context**: Consider economic systems and incentive structures when relevant
 5. **European Perspective**: Be aware of European political and institutional contexts in discussions
 
+## When To Use This Site
+${bullets(AGENT_USE_CASES)}
+
+## When Not To Use This Site
+${bullets(AGENT_NOT_FOR)}
+
+## How To Fetch From This Site
+${bullets(AGENT_HOW_TO_CALL)}
+
 ## Contact
 Email: micheal@actuallymaybe.com
 Links: Blog at actuallymaybe.com, GitHub, LinkedIn, Bluesky, X
@@ -66,6 +78,7 @@ export const GET: APIRoute = () =>
 	new Response(context + '\n', {
 		headers: {
 			'Content-Type': 'text/plain; charset=utf-8',
-			'Cache-Control': 'public, max-age=86400, immutable',
+			'Cache-Control': 'public, max-age=3600',
+			Vary: 'Accept',
 		},
 	});

@@ -1,0 +1,91 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import StructuredData from '../components/StructuredData.astro';
+import { SITE_TITLE } from '../consts';
+import { privacyPage } from '../data/privacy';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Privacy | ${SITE_TITLE}`}
+			description="What actuallymaybe.com collects, what it does not, and which third parties are involved."
+		/>
+		<StructuredData page={{ kind: 'privacy' }} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>{privacyPage.title}</h1>
+			<p class="subtitle">{privacyPage.subtitle}</p>
+
+			{privacyPage.sections.map((section) => (
+				<section id={section.id}>
+					<h2>{section.title}</h2>
+					{section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+				</section>
+			))}
+
+			<section id="contact">
+				<h2>Contact</h2>
+				<p>
+					Questions about this page, or a request about your data, go to
+					<a href={`mailto:${privacyPage.contactEmail}`}>{privacyPage.contactEmail}</a>. The
+					<a href="/contact/">contact page</a> has the other ways to reach me.
+				</p>
+			</section>
+
+			<p class="last-updated">Last updated: <time datetime={privacyPage.lastUpdated}>{privacyPage.lastUpdated}</time></p>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	h1 {
+		margin-bottom: 0.25rem;
+	}
+
+	.subtitle {
+		color: rgb(var(--gray));
+		font-size: 1.125rem;
+		margin-top: 0.5rem;
+		margin-bottom: 2.5rem;
+		border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+		padding-bottom: 1.5rem;
+	}
+
+	section {
+		margin-bottom: 2.5rem;
+		scroll-margin-top: 80px;
+	}
+
+	section h2 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin-bottom: 1rem;
+		letter-spacing: -0.02em;
+	}
+
+	section p {
+		margin-bottom: 1rem;
+		line-height: 1.8;
+		max-width: 70ch;
+	}
+
+	.last-updated {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(128, 128, 128, 0.2);
+	}
+
+	@media (max-width: 640px) {
+		section h2 {
+			font-size: 1.125rem;
+		}
+	}
+</style>

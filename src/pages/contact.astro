@@ -1,0 +1,175 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import StructuredData from '../components/StructuredData.astro';
+import { SITE_TITLE } from '../consts';
+import { contactPage } from '../data/contact';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Contact | ${SITE_TITLE}`}
+			description="How to reach Micheál Reilly by email or on social platforms, and what to expect."
+		/>
+		<StructuredData page={{ kind: 'contact' }} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>{contactPage.title}</h1>
+			<p class="subtitle">{contactPage.subtitle}</p>
+
+			<section id="intro">
+				{contactPage.intro.map((paragraph) => <p>{paragraph}</p>)}
+			</section>
+
+			<section id="email" class="email-section">
+				<h2>Email</h2>
+				<p class="email-address">
+					<a href={`mailto:${contactPage.email}`} rel="me">{contactPage.email}</a>
+				</p>
+				<p>{contactPage.emailNote}</p>
+			</section>
+
+			<section id="elsewhere">
+				<h2>Elsewhere</h2>
+				<ul class="social-links">
+					{contactPage.social.map((profile) => (
+						<li data-platform={profile.platform}>
+							<a href={profile.url} rel="me">{profile.label}</a>
+							<span class="handle">{profile.handle}</span>
+						</li>
+					))}
+				</ul>
+				<p>{contactPage.socialNote}</p>
+			</section>
+
+			<section id="agents">
+				<h2>For automated agents</h2>
+				{contactPage.agents.map((paragraph) => <p>{paragraph}</p>)}
+				<ul class="agent-links">
+					<li><a href="/llms.txt">/llms.txt</a></li>
+					<li><a href="/.well-known/ai-profile">/.well-known/ai-profile</a></li>
+					<li><a href="/about.llm">/about.llm</a></li>
+					<li><a href="/sitemap-index.xml">/sitemap-index.xml</a></li>
+				</ul>
+			</section>
+
+			<section id="privacy-pointer">
+				<h2>Privacy</h2>
+				<p>
+					For what this site does and does not collect when you visit, see the
+					<a href="/privacy/">privacy page</a>.
+				</p>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	h1 {
+		margin-bottom: 0.25rem;
+	}
+
+	.subtitle {
+		color: rgb(var(--gray));
+		font-size: 1.125rem;
+		margin-top: 0.5rem;
+		margin-bottom: 2.5rem;
+		border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+		padding-bottom: 1.5rem;
+	}
+
+	section {
+		margin-bottom: 3rem;
+		scroll-margin-top: 80px;
+	}
+
+	section h2 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin-bottom: 1.25rem;
+		letter-spacing: -0.02em;
+	}
+
+	section p {
+		margin-bottom: 1rem;
+		line-height: 1.8;
+	}
+
+	.email-section {
+		background: rgba(128, 128, 128, 0.05);
+		padding: 1.5rem;
+		border-radius: 8px;
+		border-left: 3px solid var(--accent);
+	}
+
+	.email-address {
+		font-size: 1.125rem;
+		font-weight: 500;
+	}
+
+	.email-address a {
+		color: var(--accent);
+		text-decoration: none;
+		border-bottom: 1px solid transparent;
+	}
+
+	.email-address a:hover {
+		border-bottom-color: var(--accent);
+	}
+
+	.social-links,
+	.agent-links {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.social-links a,
+	.agent-links a {
+		color: rgb(var(--text));
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.social-links a:hover,
+	.agent-links a:hover {
+		color: var(--accent);
+	}
+
+	.social-links a:focus-visible,
+	.agent-links a:focus-visible,
+	.email-address a:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	.handle {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		margin-left: 0.5rem;
+	}
+
+	.agent-links {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.9375rem;
+	}
+
+	@media (max-width: 640px) {
+		section h2 {
+			font-size: 1.125rem;
+		}
+
+		.email-section {
+			padding: 1.25rem;
+		}
+	}
+</style>

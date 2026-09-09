@@ -5,7 +5,19 @@ import type { CollectionEntry } from 'astro:content';
 import { buildBlogMarkdown } from '../utils/markdownExport';
 import { buildStaticMarkdown } from '../utils/staticMarkdown';
 
-const basePages = ['index', 'about', 'projects', 'now', 'archive', 'blog', 'topics', 'type', 'search'];
+const basePages = [
+	'index',
+	'about',
+	'contact',
+	'privacy',
+	'projects',
+	'now',
+	'archive',
+	'blog',
+	'topics',
+	'type',
+	'search',
+];
 
 const normalizeSlug = (param?: string | string[]) => {
 	if (!param) return 'index';

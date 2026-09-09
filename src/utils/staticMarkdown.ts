@@ -3,6 +3,8 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { aboutProfile } from '../data/about';
 import { projects } from '../data/projects';
 import { nowPage } from '../data/now';
+import { contactPage } from '../data/contact';
+import { privacyPage } from '../data/privacy';
 import { serializeMarkdownDoc, type MarkdownDoc } from './markdownExport';
 
 type BlogEntry = CollectionEntry<'blog'>;
@@ -142,6 +144,29 @@ const buildTypeDoc = (origin: string, posts: BlogEntry[], type: string): Markdow
 	};
 };
 
+const buildContactDoc = (origin: string): MarkdownDoc => ({
+	title: `Contact | ${SITE_TITLE}`,
+	description: 'How to reach Micheál Reilly, and what to expect.',
+	canonicalUrl: new URL('/contact/', origin).toString(),
+	body: `# ${contactPage.title}\n${contactPage.subtitle}\n\n${contactPage.intro.join('\n\n')}\n\n## Email\n${contactPage.email}\n\n${contactPage.emailNote}\n\n## Elsewhere\n${renderList(
+		contactPage.social.map((profile) => `${profile.label} (${profile.handle}): ${profile.url}`),
+	)}\n\n${contactPage.socialNote}\n\n## For automated agents\n${contactPage.agents.join('\n\n')}\n\n${renderList([
+		`llms.txt: ${new URL('/llms.txt', origin).toString()}`,
+		`AI profile: ${new URL('/.well-known/ai-profile', origin).toString()}`,
+		`Author context: ${new URL('/about.llm', origin).toString()}`,
+		`Sitemap: ${new URL('/sitemap-index.xml', origin).toString()}`,
+	])}\n\n## Privacy\nSee ${new URL('/privacy/', origin).toString()}`,
+});
+
+const buildPrivacyDoc = (origin: string): MarkdownDoc => ({
+	title: `Privacy | ${SITE_TITLE}`,
+	description: 'What actuallymaybe.com collects, what it does not, and which third parties are involved.',
+	canonicalUrl: new URL('/privacy/', origin).toString(),
+	body: `# ${privacyPage.title}\n${privacyPage.subtitle}\n\n${privacyPage.sections
+		.map((section) => `## ${section.title}\n${section.paragraphs.join('\n\n')}`)
+		.join('\n\n')}\n\n## Contact\n${privacyPage.contactEmail}\n\n_Last updated: ${privacyPage.lastUpdated}_`,
+});
+
 const buildSearchDoc = (origin: string): MarkdownDoc => ({
 	title: `Search | ${SITE_TITLE}`,
 	description: 'Search the blog',
@@ -165,6 +190,8 @@ const builders = new Map<string, (origin: string, posts: BlogEntry[], slug: stri
 		return type ? buildTypeDoc(origin, posts, type) : buildTypeOverviewDoc(origin, posts);
 	}],
 	['search', (origin) => buildSearchDoc(origin)],
+	['contact', (origin) => buildContactDoc(origin)],
+	['privacy', (origin) => buildPrivacyDoc(origin)],
 ]);
 
 export const buildStaticMarkdown = ({

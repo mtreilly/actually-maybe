@@ -2,6 +2,12 @@ import type { APIRoute } from 'astro';
 
 const body = `LLM-ready documentation is enabled across actuallymaybe.com.
 
+## Canonical agent instructions
+
+Read https://actuallymaybe.com/llms.txt first. It follows the llmstxt.org
+structure and carries the when-to-use guidance, the full post index, and the
+fetching rules. This file is kept for older links and mirrors a subset of it.
+
 ## Content Access
 
 Usage:
@@ -35,8 +41,13 @@ Languages: English (native), French (B2), Polish (A2-B1), Spanish (A1)
 Current Projects: Agentic tools & vibe engineering, small models, language learning
 Unique Interests: Export juggling, punctuation innovation
 
+## Trust anchors
+- /about - who writes this
+- /contact - how to reach the author
+- /privacy - what the site collects
+
 ## Cache Policy
-max-age=86400, immutable.
+max-age=3600.
 
 ## Contact
 micheal@actuallymaybe.com`;
@@ -45,6 +56,7 @@ export const GET: APIRoute = () =>
 	new Response(body + '\n', {
 		headers: {
 			'Content-Type': 'text/plain; charset=utf-8',
-			'Cache-Control': 'public, max-age=86400, immutable',
+			'Cache-Control': 'public, max-age=3600',
+			Vary: 'Accept',
 		},
 	});

@@ -1,0 +1,156 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import {
+	AGENT_RECOVERY_LINKS,
+	HUMAN_RECOVERY_LINKS,
+	NOT_FOUND_MESSAGE,
+	NOT_FOUND_TITLE,
+} from '../data/not-found';
+
+// Astro emits this route as dist/404.html, which Vercel serves with a real
+// HTTP 404 status for any unmatched path. No JSON-LD here on purpose: an error
+// page should not claim to be an identity page.
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`404 ${NOT_FOUND_TITLE} | ${SITE_TITLE}`} description={NOT_FOUND_MESSAGE} />
+		<meta name="robots" content="noindex" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<p class="status">HTTP 404</p>
+			<h1>{NOT_FOUND_TITLE}</h1>
+			<p class="message">{NOT_FOUND_MESSAGE}</p>
+
+			<section id="pages">
+				<h2>Pages</h2>
+				<ul class="recovery-list">
+					{HUMAN_RECOVERY_LINKS.map((link) => (
+						<li>
+							<a href={link.href}>{link.label}</a>
+							<span class="note">{link.note}</span>
+						</li>
+					))}
+				</ul>
+			</section>
+
+			<section id="machine-readable">
+				<h2>Machine-readable entry points</h2>
+				<p>
+					If you are an agent, start from <a href="/llms.txt">llms.txt</a>. Every page
+					below is also available as markdown: append <code>.md</code> to the URL, or
+					request it with <code>Accept: text/markdown</code>.
+				</p>
+				<ul class="recovery-list mono">
+					{AGENT_RECOVERY_LINKS.map((link) => (
+						<li>
+							<a href={link.href}>{link.label}</a>
+							<span class="note">{link.note}</span>
+						</li>
+					))}
+				</ul>
+			</section>
+
+			<p class="report">
+				If a link on this site sent you here, please
+				<a href="/contact/">tell me</a> which page it was on.
+			</p>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.status {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.875rem;
+		color: rgb(var(--gray));
+		margin: 0 0 0.25rem;
+		letter-spacing: 0.04em;
+	}
+
+	h1 {
+		margin-bottom: 0.5rem;
+	}
+
+	.message {
+		color: rgb(var(--gray));
+		line-height: 1.8;
+		max-width: 65ch;
+		margin-bottom: 2.5rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+	}
+
+	section {
+		margin-bottom: 2.5rem;
+	}
+
+	section h2 {
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin-bottom: 1rem;
+		letter-spacing: -0.02em;
+	}
+
+	section p {
+		line-height: 1.8;
+		color: rgb(var(--gray));
+		max-width: 65ch;
+	}
+
+	.recovery-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.625rem;
+	}
+
+	.recovery-list a {
+		color: rgb(var(--text));
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.recovery-list a:hover {
+		color: var(--accent);
+	}
+
+	.recovery-list a:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	.recovery-list.mono a {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.9375rem;
+	}
+
+	.note {
+		color: rgb(var(--gray));
+		font-size: 0.875rem;
+		margin-left: 0.5rem;
+	}
+
+	.report {
+		color: rgb(var(--gray));
+		font-size: 0.9375rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(128, 128, 128, 0.2);
+	}
+
+	@media (max-width: 640px) {
+		.note {
+			display: block;
+			margin-left: 0;
+		}
+	}
+</style>
