@@ -253,6 +253,30 @@ for (const field of ['name', 'url', 'contact', 'when_to_use', 'when_not_to_use',
 assert.ok(Array.isArray(aiProfile.when_to_use) && aiProfile.when_to_use.length >= 3);
 assert.equal(aiProfile.agent_instructions_url, 'https://actuallymaybe.com/llms.txt');
 
+// --- Finding 4 support: crawler and brand discovery signals ---
+const robots = read('robots.txt');
+assert.match(robots, /^User-agent: \*$/m, 'robots.txt must declare a user-agent group');
+assert.match(robots, /^Allow: \/$/m, 'robots.txt must allow crawling');
+assert.match(
+	robots,
+	/^Sitemap: https:\/\/actuallymaybe\.com\/sitemap-index\.xml$/m,
+	'robots.txt must point at the sitemap so the domain gets indexed',
+);
+assert.ok(robots.includes('/llms.txt'), 'robots.txt should point agents at llms.txt');
+
+for (const page of PAGES) {
+	const html = read(page);
+	assert.ok(
+		html.includes('<meta name="author" content="Micheál Reilly">'),
+		`${page} should name the author consistently`,
+	);
+	assert.ok(html.includes('rel="canonical"'), `${page} needs a canonical URL`);
+	assert.ok(
+		html.includes('rel="llms-txt"'),
+		`${page} should advertise llms.txt for discovery`,
+	);
+}
+
 // --- Finding 8: trust anchor pages ---
 for (const [page, minimumChars] of [
 	['about/index.html', 500],
