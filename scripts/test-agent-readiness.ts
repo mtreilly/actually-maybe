@@ -306,6 +306,39 @@ for (const page of PAGES) {
 	}
 }
 
+// --- Toolchain pins must agree, or Vercel installs with a different pnpm
+//     than the one that wrote the lockfile ---
+const packageJson = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
+const pinnedPnpm = /^pnpm@(\d+\.\d+\.\d+)$/.exec(packageJson.packageManager);
+assert.ok(pinnedPnpm, 'package.json must pin an exact pnpm version in packageManager');
+assert.ok(
+	vercelConfig.installCommand.includes(`pnpm@${pinnedPnpm[1]}`),
+	`vercel.json installCommand must install pnpm@${pinnedPnpm[1]}, the version that wrote pnpm-lock.yaml, got ${JSON.stringify(vercelConfig.installCommand)}`,
+);
+assert.ok(
+	readFileSync(resolve(root, 'pnpm-lock.yaml'), 'utf-8').includes("lockfileVersion: '9.0'"),
+	'pnpm-lock.yaml should stay on lockfileVersion 9.0',
+);
+
+// Vercel's build image offers Node 20.x, 22.x and 24.x only, so a floor above
+// 24 would be unsatisfiable there and the deploy would fail.
+const nodeEngine = packageJson.engines?.node ?? '';
+const nodeFloor = /^>=(\d+)/.exec(nodeEngine);
+assert.ok(nodeFloor, `engines.node must be a >= range, got ${JSON.stringify(nodeEngine)}`);
+assert.ok(
+	Number(nodeFloor[1]) <= 24,
+	`engines.node floor is ${nodeFloor[1]}, but Vercel's build image tops out at Node 24`,
+);
+
+const workspaceSettings = readFileSync(resolve(root, 'pnpm-workspace.yaml'), 'utf-8');
+for (const pkg of ['esbuild', 'sharp']) {
+	assert.match(
+		workspaceSettings,
+		new RegExp(`^\\s+${pkg}: true$`, 'm'),
+		`pnpm-workspace.yaml must allow ${pkg} to run its install script, or the build fails`,
+	);
+}
+
 // --- Sitemap covers the new pages ---
 const sitemap = read('sitemap-0.xml');
 for (const path of ['/contact/', '/privacy/']) {

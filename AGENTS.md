@@ -343,6 +343,30 @@ draft: true  # exclude from build
 
 ---
 
+## Toolchain
+
+| Tool | Local | Vercel | Pinned in |
+|------|-------|--------|-----------|
+| Node | 26.8.1 | latest 24.x | `.nvmrc`, `engines.node` |
+| pnpm | 12.3.4 | 12.3.4 | `packageManager`, `vercel.json` `installCommand` |
+
+- `engines.node` is `>=24.0.0`, **not** `>=26`. Vercel's build image only offers
+  Node 20.x, 22.x and 24.x, so a floor above 24 is unsatisfiable there and the
+  deploy fails. Node 26 is pinned for local work in `.nvmrc`, and satisfies the
+  same range.
+- Vercel ships pnpm 10 at most natively, and its Corepack support sits behind an
+  experimental flag, so `vercel.json` installs the exact pnpm that wrote
+  `pnpm-lock.yaml`: `npm i -g pnpm@12.3.4 && pnpm install --frozen-lockfile`.
+  **Bump the version in `packageManager` and `installCommand` together.**
+  `scripts/test-agent-readiness.ts` fails if they drift.
+- pnpm settings live in `pnpm-workspace.yaml`, not in a `pnpm` field in
+  `package.json`, which pnpm 12 no longer reads. `allowBuilds` there permits the
+  `esbuild` and `sharp` install scripts; without it the build stops with
+  `ERR_PNPM_IGNORED_BUILDS`. To allow another one, run
+  `pnpm approve-builds <pkg> --yes` and commit the change it writes.
+
+---
+
 ## Agent Readiness (Do Not Regress)
 
 These invariants are enforced by `pnpm test`. If a test in this area fails, the

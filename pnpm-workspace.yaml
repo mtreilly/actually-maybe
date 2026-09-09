@@ -1,3 +1,11 @@
+# pnpm >= 12 reads its settings from here, not from a "pnpm" field in
+# package.json. https://pnpm.io/settings
+
+# pnpm refuses to run dependency install scripts unless they are allowed here.
+# Both of these need a native or platform binary, and `astro build` fails with
+# ERR_PNPM_IGNORED_BUILDS without them:
+#   sharp   - the image service enabled in astro.config.mjs
+#   esbuild - the platform binary Vite uses to bundle
 allowBuilds:
-  esbuild: set this to true or false
-  sharp: set this to true or false
+  esbuild: true
+  sharp: true
