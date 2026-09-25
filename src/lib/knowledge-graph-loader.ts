@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import type { KnowledgeGraph } from '../types/graph';
 import {
@@ -27,16 +27,11 @@ type GraphCachePayload = {
 export async function loadKnowledgeGraph(options: LoadOptions = {}): Promise<KnowledgeGraph> {
 	const { forceRebuild = false, entries, skipCacheWrite = false } = options;
 
+	// The disk cache is only an output for the integration's astro:build:done
+	// hook. Reading it here would serve a graph from an earlier build, so a new
+	// post would render without related posts and never appear in the graph.
 	if (memoryCache && !forceRebuild) {
 		return memoryCache;
-	}
-
-	if (!forceRebuild) {
-		const cached = await readGraphCache();
-		if (cached) {
-			memoryCache = cached.graph;
-			return cached.graph;
-		}
 	}
 
 	const posts =
@@ -57,19 +52,6 @@ export async function loadKnowledgeGraph(options: LoadOptions = {}): Promise<Kno
 
 export function buildGraphFromEntries(entries: Array<CollectionEntry<'blog'>>): KnowledgeGraph {
 	return buildGraph(entries);
-}
-
-async function readGraphCache(): Promise<GraphCachePayload | null> {
-	try {
-		const raw = await readFile(GRAPH_CACHE_PATH, 'utf-8');
-		const parsed = JSON.parse(raw);
-		if (parsed && typeof parsed === 'object' && 'graph' in parsed) {
-			return parsed as GraphCachePayload;
-		}
-		return { graph: parsed as KnowledgeGraph };
-	} catch {
-		return null;
-	}
 }
 
 export async function writeGraphCache(payload: GraphCachePayload): Promise<void> {
