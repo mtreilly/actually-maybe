@@ -31,6 +31,12 @@ export const projects: Project[] = [
 		status: 'Active',
 	},
 	{
+		name: 'Who Keeps the Drone Up?',
+		description: 'An interactive, hand-drawn course that takes a curious beginner from "what is feedback?" to Laplace transforms, poles and PID control, told through a shower that won\'t behave and a drone that must hover at 2 m.',
+		url: 'https://drone.actuallymaybe.com',
+		status: 'Active',
+	},
+	{
 		name: 'Minimal Blog Platform',
 		description: 'Scalable blog architecture with topics, types, and automatic discovery',
 		url: 'https://github.com/mtreilly/actually-maybe',
