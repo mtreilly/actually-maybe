@@ -63,8 +63,9 @@ no current reason to complicate the graph algorithm or its caching.
 
 ## Remaining verification
 
-- Run Lighthouse and Biome. Neither is installed in this repository; attempted tooling installation failed because registry DNS could not resolve.
+- Run Lighthouse. Its CLI is unavailable, registry installation fails because DNS cannot resolve, and attempts to open Chrome's built-in DevTools through the available UI controls did not expose an audit panel.
+- Biome 2.5.14 is now available globally. `biome check` passes for the five changed TypeScript files after applying its formatter. This is a scoped check, not a claim that unrelated repository files pass. A fresh Node 24 build and all tests pass after formatting.
 - Remove the unused Sonner dependency when dependency tooling is available. `pnpm remove` failed with registry DNS errors, and offline removal lacks cached dependency metadata. No package/lock changes were made by that attempt.
 - The committed root lockfile currently lists only pnpm itself; the installed dependency lock is under `node_modules/.pnpm/lock.yaml`. This predates this audit and needs verification before dependency changes.
 
-The goal remains active pending broader verification. Current measurements justify these changes; they do not prove production network or device performance.
+The goal is blocked pending Lighthouse tooling, dependency tooling, and restored Git push access. Registry DNS and SSH user lookup failures were rechecked across three consecutive goal turns. All changes are committed locally; no push succeeded. Current measurements justify these changes; they do not prove production network or device performance.
