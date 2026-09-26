@@ -90,7 +90,7 @@ const searchData = posts.map(post => ({
 	const fuse = new Fuse(searchData, {
 		keys: ['title', 'description', 'topics'],
 		threshold: 0.3,
-		distance: 100,
+		ignoreLocation: true,
 	});
 
 	const searchInput = document.getElementById('search-input');
