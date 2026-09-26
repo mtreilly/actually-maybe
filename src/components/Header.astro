@@ -94,6 +94,7 @@ const isActive = (href: string) => {
 
 		const updateAria = (isOpen) => {
 			nav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+			nav.inert = !isOpen;
 		};
 
 		const closeMenu = () => {
