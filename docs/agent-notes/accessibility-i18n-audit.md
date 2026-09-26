@@ -210,3 +210,36 @@ archive, blog index, topics index, types index, search, graph, and 404) at 375,
 overflow. This is a geometry/heading check, not a complete visual or contrast audit.
 Viewport restored and test tab closed. The full local Node 24 test sequence passed
 again, including the new storage-denial check.
+
+## Recovery completion and text scaling
+
+The full no-JavaScript Markdown download path passed in Chrome: script execution
+was disabled, the document had no js class or generated heading-copy buttons,
+native summary opened only Download markdown, and Enter on the link produced a
+download event. A locator click initially failed because its evaluation timed out
+with scripts disabled; using native keyboard activation resolved the test.
+
+Using a temporary clipboard substitute on the loaded article, copy Markdown
+produced the correct title/frontmatter and Markdown copied status; copy link
+produced the canonical .md URL and Markdown link copied status. This verifies the
+success branch/output without altering or reading the system clipboard. Native
+clipboard permissions remain browser-controlled; denied access already has a
+verified recovery branch. Reload removed the substitute.
+
+At 375px with root font size doubled to 32px, the article and sections panel
+remained within the document width; Close remained visible. Temporary scale,
+script, cache, and viewport changes were restored and the tab closed.
+
+Shared colour contrast against light/dark body surfaces measured respectively:
+body 17.08/16.12, muted 4.55/6.99, and links 4.95/6.98. Tinted blockquote surfaces
+reduce muted contrast, so blockquotes now use body text colour. These ratios do
+not establish contrast for every custom surface or image. Biome/Lighthouse are
+not cached; another registry connectivity check failed with DNS resolution.
+They remain external verification limits, not successful checks.
+
+Unused NewsletterSignup and Sidenote components are not imported by published
+pages/posts; no live form submission or validation flow exists. Contact exposes
+email/social links with full names/addresses from identity data. There are no
+payments, currencies, app notifications, emails, or PDF generation paths to
+localise in the shipped reader interface. Published prose remains authored
+English content, separate from shared controls and semantic data exports.

@@ -361,7 +361,7 @@ blockquote {
 	padding: 0.5rem 0 0.5rem 1.5rem;
 	margin: 2rem 0;
 	font-style: italic;
-	color: rgb(var(--gray));
+	color: rgb(var(--black));
 	background-color: rgba(var(--accent-sage-rgb), 0.12);
 	border-radius: 0 4px 4px 0;
 }
