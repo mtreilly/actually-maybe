@@ -6,3 +6,14 @@ export function formatDate(date: Date, locale: string = SITE_LOCALE): string {
   year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
  }).format(date);
 }
+
+export function compareText(left: string, right: string, locale: string = SITE_LOCALE): number {
+ return new Intl.Collator(locale).compare(left, right);
+}
+
+export function formatReadingMinutes(minutes: number, locale: string = SITE_LOCALE): string {
+ const value = new Intl.NumberFormat(locale, {
+  style: 'unit', unit: 'minute', unitDisplay: 'short',
+ }).format(Math.max(1, minutes));
+ return minutes < 1 ? `< ${value}` : value;
+}

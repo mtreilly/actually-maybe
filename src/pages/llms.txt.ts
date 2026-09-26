@@ -1,3 +1,4 @@
+import { compareText } from '../i18n/format';
 /**
  * /llms.txt, following the llmstxt.org structure:
  *   H1 (required) -> blockquote summary -> heading-free content sections ->
@@ -43,7 +44,7 @@ export const GET: APIRoute = async ({ site, url }) => {
 			return acc;
 		}, new Map<string, number>()),
 	)
-		.sort((a, b) => (b[1] === a[1] ? a[0].localeCompare(b[0]) : b[1] - a[1]))
+		.sort((a, b) => (b[1] === a[1] ? compareText(a[0], b[0]) : b[1] - a[1]))
 		.map(([topic, count]) => `- [${topic}](${absolute(`/topics/${topic}.md`)}): ${count} post${count === 1 ? '' : 's'}`)
 		.join('\n');
 

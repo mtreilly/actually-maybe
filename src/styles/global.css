@@ -131,45 +131,16 @@ h6 {
 	scroll-margin-top: 80px; /* Account for fixed header when jumping to headings */
 }
 
-/* Headings in prose get anchor link styling */
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-	cursor: pointer;
-	transition: color 0.2s;
-}
-
-.prose h2:hover,
-.prose h3:hover,
-.prose h4:hover,
-.prose h5:hover,
-.prose h6:hover {
-	color: var(--accent);
-}
-
-/* Anchor link indicator */
-.prose h2::before,
-.prose h3::before,
-.prose h4::before,
-.prose h5::before,
-.prose h6::before {
-	content: '#';
-	opacity: 0;
-	position: absolute;
-	left: -1.5em;
-	color: var(--accent);
-	font-weight: 400;
-	transition: opacity 0.2s;
-}
-
-.prose h2:hover::before,
-.prose h3:hover::before,
-.prose h4:hover::before,
-.prose h5:hover::before,
-.prose h6:hover::before {
-	opacity: 1;
+/* The copy action stays visible for touch and keyboard users. */
+.heading-copy {
+ margin-inline-start: 0.5em;
+ min-width: 24px;
+ min-height: 24px;
+ border: none;
+ background: transparent;
+ color: var(--accent);
+ font: inherit;
+ cursor: pointer;
 }
 
 h1 {

@@ -1,3 +1,5 @@
+import { ui } from '../i18n/ui';
+
 /**
  * Add copy button and language label to code blocks
  */
@@ -34,19 +36,26 @@ export function initCodeBlockCopy(): void {
 		// Create copy button
 		const button = document.createElement('button');
 		button.className = 'copy-button';
-		button.setAttribute('aria-label', 'Copy code');
-		button.innerHTML = 'Copy';
+		button.setAttribute('aria-label', ui.copy.code);
+		button.textContent = ui.copy.button;
+		button.type = 'button';
+		const status = document.createElement('span');
+		status.className = 'sr-only';
+		status.setAttribute('role', 'status');
+		controlsWrapper.appendChild(status);
 
 		button.addEventListener('click', async () => {
 			const code = codeElement?.textContent || '';
 			try {
 				await navigator.clipboard.writeText(code);
 
-				button.textContent = 'Copied!';
-				setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+				button.textContent = ui.copy.success;
+				status.textContent = ui.copy.success;
+				setTimeout(() => { button.textContent = ui.copy.button; }, 2000);
 			} catch (err) {
 				console.error('Failed to copy code:', err);
-				button.textContent = 'Copy failed';
+				button.textContent = ui.copy.failure;
+				status.textContent = ui.copy.failure;
 			}
 		});
 

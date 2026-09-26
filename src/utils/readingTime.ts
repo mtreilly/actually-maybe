@@ -1,3 +1,5 @@
+import { formatReadingMinutes } from '../i18n/format';
+
 /**
  * Calculate reading time for a given text
  * Based on average reading speed of 200 words per minute
@@ -9,7 +11,5 @@ export function calculateReadingTime(text: string): number {
 }
 
 export function formatReadingTime(minutes: number): string {
-	if (minutes < 1) return '< 1 min';
-	if (minutes === 1) return '1 min';
-	return `${minutes} min`;
+ return formatReadingMinutes(minutes);
 }

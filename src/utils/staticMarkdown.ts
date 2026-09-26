@@ -1,3 +1,4 @@
+import { compareText } from '../i18n/format';
 import type { CollectionEntry } from 'astro:content';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { aboutProfile } from '../data/about';
@@ -94,7 +95,7 @@ const buildTopicsOverviewDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc
 		});
 	});
 	const list = Array.from(topicCounts.entries())
-		.sort((a, b) => (b[1] === a[1] ? a[0].localeCompare(b[0]) : b[1] - a[1]))
+		.sort((a, b) => (b[1] === a[1] ? compareText(a[0], b[0]) : b[1] - a[1]))
 		.map(([topic, count]) => `- [${topic}](${new URL(`/topics/${topic}/`, origin).toString()}) — ${count} posts`)
 		.join('\n');
 	return {
@@ -122,7 +123,7 @@ const buildTypeOverviewDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc =
 		counts.set(post.data.type, (counts.get(post.data.type) || 0) + 1);
 	});
 	const list = Array.from(counts.entries())
-		.sort((a, b) => a[0].localeCompare(b[0]))
+		.sort((a, b) => compareText(a[0], b[0]))
 		.map(([type, count]) => `- [${type}](${new URL(`/type/${type}/`, origin).toString()}) — ${count} posts`)
 		.join('\n');
 	return {

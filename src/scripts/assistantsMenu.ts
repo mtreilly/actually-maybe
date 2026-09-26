@@ -1,3 +1,5 @@
+import { ui } from '../i18n/ui';
+
 /**
  * Attach LLM-friendly copy/share interactions.
  */
@@ -75,10 +77,10 @@ const registerGlobalShortcut = (detail: AssistDetail) => {
 			event.preventDefault();
 			try {
 				await copyMarkdown(detail.markdownUrl);
-				showCopyStatus('Markdown copied for your LLM');
+				showCopyStatus(ui.copy.markdownSuccess);
 			} catch (error) {
 				console.error('Shortcut copy failed', error);
-				showCopyStatus('Unable to copy markdown');
+				showCopyStatus(ui.copy.markdownFailure);
 			}
 		}
 	};
@@ -89,11 +91,11 @@ const registerCopyActions = (detail: AssistDetail) => {
 	window.llmAssistant = {
 		copyMarkdown: async () => {
 			await copyMarkdown(detail.markdownUrl);
-			showCopyStatus('Markdown copied for your LLM');
+			showCopyStatus(ui.copy.markdownSuccess);
 		},
 		copyLink: async () => {
 			await copyText(detail.markdownLink);
-			showCopyStatus('.md link copied');
+			showCopyStatus(ui.copy.linkSuccess);
 		},
 	};
 	document.dispatchEvent(new CustomEvent('llm:ready', { detail }));
@@ -135,12 +137,12 @@ export function initAssistantsMenu(): void {
 				try {
 					if (action === 'copy-markdown') {
 						await copyMarkdown(detail.markdownUrl);
-						showCopyStatus('Markdown copied for your LLM');
+						showCopyStatus(ui.copy.markdownSuccess);
 						return;
 					}
 					if (action === 'copy-link') {
 						await copyText(detail.markdownLink);
-						showCopyStatus('.md link copied');
+						showCopyStatus(ui.copy.linkSuccess);
 						return;
 					}
 					if (action === 'open-chatgpt') {
@@ -153,7 +155,7 @@ export function initAssistantsMenu(): void {
 					}
 				} catch (error) {
 					console.error('LLM action failed', error);
-					showCopyStatus('Unable to complete the action');
+					showCopyStatus(ui.copy.actionFailure);
 				}
 			});
 		});
@@ -172,7 +174,9 @@ export function initAssistantsMenu(): void {
 
 		document.addEventListener('keydown', (event) => {
 			if (event.key === 'Escape') {
+				const toggle = activeMenu?.querySelector<HTMLElement>('[data-assist-toggle]');
 				closeActiveMenu();
+				toggle?.focus();
 			}
 		});
 	}
