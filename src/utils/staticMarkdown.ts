@@ -1,3 +1,4 @@
+import { ui } from '../i18n/ui';
 import { compareText } from '../i18n/format';
 import type { CollectionEntry } from 'astro:content';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
@@ -63,7 +64,7 @@ const buildNowDoc = (origin: string): MarkdownDoc => ({
 
 const buildArchiveDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => {
 	const byYear = posts.reduce<Record<string, BlogEntry[]>>((acc, post) => {
-		const year = post.data.pubDate.getFullYear().toString();
+		const year = post.data.pubDate.getUTCFullYear().toString();
 		acc[year] = acc[year] || [];
 		acc[year].push(post);
 		return acc;
@@ -76,7 +77,7 @@ const buildArchiveDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => {
 		title: `Archive | ${SITE_TITLE}`,
 		description: 'All posts by year',
 		canonicalUrl: new URL('/archive/', origin).toString(),
-		body: `# Archive\n${posts.length} posts total.\n\n${sections}`,
+		body: `# Archive\n${ui.collections.postCount(posts.length)}.\n\n${sections}`,
 	};
 };
 
@@ -113,7 +114,7 @@ const buildTopicDoc = (origin: string, posts: BlogEntry[], topic: string): Markd
 		title: `${topic} | ${SITE_TITLE}`,
 		description: `Posts about ${topic}`,
 		canonicalUrl: new URL(`/topics/${topic}/`, origin).toString(),
-		body: `# Topic: ${topic}\n${topicPosts.length} posts\n\n${renderPostsList(topicPosts, origin)}`,
+		body: `# Topic: ${topic}\n${ui.collections.postCount(topicPosts.length)}\n\n${renderPostsList(topicPosts, origin)}`,
 	};
 };
 

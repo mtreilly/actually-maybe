@@ -1,4 +1,6 @@
 ---
+import { ui } from '../../i18n/ui';
+import { SITE_LOCALE } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import StructuredData from '../../components/StructuredData.astro';
@@ -47,7 +49,7 @@ const relatedTopics = Array.from(relatedTopicCounts.entries())
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={SITE_LOCALE}>
 	<head>
 		<BaseHead
 			title={`${topic} | ${SITE_TITLE}`}
@@ -68,7 +70,7 @@ const relatedTopics = Array.from(relatedTopicCounts.entries())
 			<div class="topic-header">
 				<div>
 					<h1>{topic}</h1>
-					<p class="subtitle">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+					<p class="subtitle">{ui.collections.postCount(posts.length)}</p>
 				</div>
 			</div>
 

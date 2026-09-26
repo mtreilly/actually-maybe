@@ -1,6 +1,18 @@
 import { SITE_LOCALE } from './format';
 
 export const ui = {
+ collections: {
+  postCount: (count: number): string => new Intl.PluralRules(SITE_LOCALE).select(count) === 'one'
+   ? '1 post' : `${new Intl.NumberFormat(SITE_LOCALE).format(count)} posts`,
+  topicCount: (count: number): string => new Intl.PluralRules(SITE_LOCALE).select(count) === 'one'
+   ? '1 topic' : `${new Intl.NumberFormat(SITE_LOCALE).format(count)} topics`,
+ },
+ types: {
+  note: { plural: 'Notes', description: 'Quick thoughts and observations' },
+  essay: { plural: 'Essays', description: 'Long-form explorations and analysis' },
+  guide: { plural: 'Guides', description: 'How-tos and tutorials' },
+  link: { plural: 'Links', description: 'Links to external content with commentary' },
+ },
  contents: { sections: 'Sections', jump: 'Jump to section', close: 'Close' },
  navigation: {
   home: 'Home', topics: 'Topics', projects: 'Projects', about: 'About', search: 'Search',
@@ -35,3 +47,8 @@ export const ui = {
   allPosts: 'Showing every post.',
  },
 };
+
+export function typeLabel(type: string): string {
+ const entry = ui.types[type as keyof typeof ui.types];
+ return entry?.plural ?? type;
+}

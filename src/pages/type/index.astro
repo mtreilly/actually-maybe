@@ -1,4 +1,6 @@
 ---
+import { ui, typeLabel } from '../../i18n/ui';
+import { SITE_LOCALE } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import StructuredData from '../../components/StructuredData.astro';
@@ -16,19 +18,14 @@ posts.forEach(post => {
 });
 
 // Get all types with counts
-const types = [
-	{ name: 'note', count: typeCounts.get('note') || 0, description: 'Quick thoughts and observations' },
-	{ name: 'essay', count: typeCounts.get('essay') || 0, description: 'Long-form explorations and analysis' },
-	{ name: 'guide', count: typeCounts.get('guide') || 0, description: 'How-tos and tutorials' },
-	{ name: 'link', count: typeCounts.get('link') || 0, description: 'Links to external content with commentary' },
-];
+const types = Object.entries(ui.types).map(([name, copy]) => ({
+ name, count: typeCounts.get(name) || 0, description: copy.description,
+}));
 
-// Capitalize first letter
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={SITE_LOCALE}>
 	<head>
 		<BaseHead
 			title={`Post Types | ${SITE_TITLE}`}
@@ -46,7 +43,7 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 				{types.map(({ name, count, description }) => (
 					<a href={`/type/${name}`} class="type-item">
 						<div class="type-content">
-							<span class="type-name">{capitalize(name)}s</span>
+							<span class="type-name">{typeLabel(name)}</span>
 							<span class="type-description">{description}</span>
 						</div>
 						<span class="type-count">{count}</span>

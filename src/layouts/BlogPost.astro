@@ -1,4 +1,5 @@
 ---
+import { SITE_LOCALE } from '../i18n/format';
 import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
@@ -82,7 +83,7 @@ try {
 	initFootnoteTooltips();
 </script>
 
-<html lang="en">
+<html lang={SITE_LOCALE}>
 	<head>
 		<BaseHead title={title} description={description} />
 		<StructuredData

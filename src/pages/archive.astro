@@ -1,4 +1,6 @@
 ---
+import { ui } from '../i18n/ui';
+import { SITE_LOCALE } from '../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import StructuredData from '../components/StructuredData.astro';
@@ -15,7 +17,7 @@ const posts = (await getCollection('blog')).sort(
 // Group posts by year
 const postsByYear = new Map<number, typeof posts>();
 posts.forEach(post => {
-	const year = post.data.pubDate.getFullYear();
+	const year = post.data.pubDate.getUTCFullYear();
 	if (!postsByYear.has(year)) {
 		postsByYear.set(year, []);
 	}
@@ -27,7 +29,7 @@ const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={SITE_LOCALE}>
 	<head>
 		<BaseHead
 			title={`Archive | ${SITE_TITLE}`}
@@ -39,7 +41,7 @@ const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
 		<Header />
 		<main>
 			<h1>Archive</h1>
-			<p class="subtitle">{posts.length} posts total</p>
+			<p class="subtitle">{ui.collections.postCount(posts.length)}</p>
 
 			<div class="archive">
 				{years.map(year => {
@@ -50,9 +52,9 @@ const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
 							<div class="year-posts">
 								{yearPosts.map(post => (
 									<a href={`/blog/${post.id}/`} class="archive-item">
-										<time class="archive-date">
+										<span class="archive-date">
 											<FormattedDate date={post.data.pubDate} />
-										</time>
+										</span>
 										<span class="archive-title">{post.data.title}</span>
 										<span class="archive-meta">
 											<span class="archive-reading-time">{formatReadingTime(calculateReadingTime(post.data.description))}</span>

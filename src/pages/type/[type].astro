@@ -1,4 +1,6 @@
 ---
+import { ui, typeLabel } from '../../i18n/ui';
+import { SITE_LOCALE } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import StructuredData from '../../components/StructuredData.astro';
@@ -25,14 +27,14 @@ const { type } = Astro.params;
 const { posts } = Astro.props;
 
 // Capitalize first letter for display
-const typeDisplay = type.charAt(0).toUpperCase() + type.slice(1);
+const typeDisplay = typeLabel(type ?? '');
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={SITE_LOCALE}>
 	<head>
 		<BaseHead
-			title={`${typeDisplay}s | ${SITE_TITLE}`}
+			title={`${typeDisplay} | ${SITE_TITLE}`}
 			description={`All ${type} posts`}
 		/>
 		<StructuredData page={{ kind: 'collection', name: `${typeDisplay} posts`, description: `Every post on actuallymaybe.com of type ${type}.`, path: `/type/${type}/` }} />
@@ -40,15 +42,15 @@ const typeDisplay = type.charAt(0).toUpperCase() + type.slice(1);
 	<body>
 		<Header />
 		<main>
-			<h1>{typeDisplay}s</h1>
-			<p class="subtitle">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+			<h1>{typeDisplay}</h1>
+			<p class="subtitle">{ui.collections.postCount(posts.length)}</p>
 
 			<div class="post-list">
 				{posts.map((post) => (
 					<div class="post-item">
-						<time class="post-date">
+						<span class="post-date">
 							<FormattedDate date={post.data.pubDate} />
-						</time>
+						</span>
 						<div class="post-content">
 							<a href={`/blog/${post.id}/`} class="post-title">
 								{post.data.title}

@@ -1,4 +1,6 @@
 ---
+import { ui } from '../../i18n/ui';
+import { SITE_LOCALE } from '../../i18n/format';
 import { compareText } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
@@ -36,7 +38,7 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={SITE_LOCALE}>
 	<head>
 		<BaseHead
 			title={`Topics | ${SITE_TITLE}`}
@@ -48,7 +50,7 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 		<Header />
 		<main>
 			<h1>Topics</h1>
-			<p class="subtitle">{sortedTopics.length} {sortedTopics.length === 1 ? 'topic' : 'topics'}</p>
+			<p class="subtitle">{ui.collections.topicCount(sortedTopics.length)}</p>
 
 			{popular.length > 0 && (
 				<div class="topic-group">

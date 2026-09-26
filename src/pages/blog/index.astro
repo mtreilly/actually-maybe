@@ -1,4 +1,5 @@
 ---
+import { SITE_LOCALE } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import StructuredData from '../../components/StructuredData.astro';
@@ -13,7 +14,7 @@ const posts = (await getCollection('blog')).sort(
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={SITE_LOCALE}>
 	<head>
 		<BaseHead title={`Blog | ${SITE_TITLE}`} description="All blog posts" />
 		<StructuredData page={{ kind: 'collection', name: 'All posts', description: 'Every post on actuallymaybe.com, newest first.', path: '/blog/' }} />

@@ -84,3 +84,26 @@ destination heading. The nonfunctional toggle is hidden without JavaScript,
 whilst normal article headings and fragment URLs remain readable. These changes
 still require runtime verification. Removed nested time markup and its machine-
 time-zone date title from post-list dates; FormattedDate supplies the sole time.
+
+## Collection presentation and regression evidence
+
+Archive year grouping uses UTC in HTML and Markdown, matching displayed calendar
+dates. Page language attributes use the shared site locale rather than a separate
+hardcoded language. Post and topic counts use contextual plural resources and
+locale-aware numbers. Type headings and descriptions use explicit resources,
+without capitalising identifiers or appending an English plural suffix. Domain
+identifiers and canonical route segments remain unchanged. Archive and type lists
+now use a single time element per displayed date.
+
+The entire package test sequence passed using the installed Node 24 interpreter
+and locally installed executables: middleware compile, Markdown smoke tests,
+mention detection, Accept negotiation, graph snapshot, middleware negotiation,
+end-to-end negotiation, agent readiness, client-script syntax, and locale tests.
+Invoking those executables directly avoids pnpm's stalled policy verification;
+this is evidence for the same test commands, not a successful pnpm invocation.
+
+Remaining verification includes section-panel focus at runtime, clipboard failure
+and no-JavaScript recovery, storage-denied theme operation, expanded text/RTL,
+contrast, reduced motion, and visual layouts at required widths. Shared controls
+have resource boundaries; remaining reusable content and generated labels need a
+final localisation review. The goal is still active.
