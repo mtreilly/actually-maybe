@@ -20,7 +20,9 @@ function cancelHide(): void {
 
 function scheduleHide(): void {
  cancelHide();
- hideTimer = setTimeout(hideTooltip, POINTER_GRACE_MS);
+ hideTimer = setTimeout(() => {
+  if (document.activeElement !== activeReference) hideTooltip();
+ }, POINTER_GRACE_MS);
 }
 
 function getFootnoteText(href: string): string | null {

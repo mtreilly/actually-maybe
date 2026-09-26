@@ -1,6 +1,6 @@
 ---
 import { ui, typeLabel } from '../../i18n/ui';
-import { SITE_LOCALE, SITE_DIRECTION } from '../../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION, formatNumber } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import StructuredData from '../../components/StructuredData.astro';
@@ -46,7 +46,7 @@ const types = Object.entries(ui.types).map(([name, copy]) => ({
 							<span class="type-name">{typeLabel(name)}</span>
 							<span class="type-description">{description}</span>
 						</div>
-						<span class="type-count">{count}</span>
+						<span class="type-count">{formatNumber(count)}</span>
 					</a>
 				))}
 			</div>

@@ -1,3 +1,4 @@
+import { ui } from '../i18n/ui';
 import { compareText } from '../i18n/format';
 /**
  * /llms.txt, following the llmstxt.org structure:
@@ -45,7 +46,7 @@ export const GET: APIRoute = async ({ site, url }) => {
 		}, new Map<string, number>()),
 	)
 		.sort((a, b) => (b[1] === a[1] ? compareText(a[0], b[0]) : b[1] - a[1]))
-		.map(([topic, count]) => `- [${topic}](${absolute(`/topics/${topic}.md`)}): ${count} post${count === 1 ? '' : 's'}`)
+		.map(([topic, count]) => `- [${topic}](${absolute(`/topics/${topic}.md`)}): ${ui.collections.postCount(count)}`)
 		.join('\n');
 
 	const body = `# ${SITE_TITLE}

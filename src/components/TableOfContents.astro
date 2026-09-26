@@ -13,7 +13,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 {
 	tocHeadings.length > 0 && (
 		<nav class="toc-container" aria-label={ui.article.contents}>
-			<h3 class="toc-title">{ui.article.contents}</h3>
+			<p class="toc-title">{ui.article.contents}</p>
 			<ol class="toc-list">
 				{tocHeadings.map((heading) => (
 					<li class={`toc-item toc-depth-${heading.depth}`}>

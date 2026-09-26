@@ -97,7 +97,7 @@ const buildTopicsOverviewDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc
 	});
 	const list = Array.from(topicCounts.entries())
 		.sort((a, b) => (b[1] === a[1] ? compareText(a[0], b[0]) : b[1] - a[1]))
-		.map(([topic, count]) => `- [${topic}](${new URL(`/topics/${topic}/`, origin).toString()}) — ${count} posts`)
+		.map(([topic, count]) => `- [${topic}](${new URL(`/topics/${topic}/`, origin).toString()}) — ${ui.collections.postCount(count)}`)
 		.join('\n');
 	return {
 		title: `Topics | ${SITE_TITLE}`,
@@ -125,7 +125,7 @@ const buildTypeOverviewDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc =
 	});
 	const list = Array.from(counts.entries())
 		.sort((a, b) => compareText(a[0], b[0]))
-		.map(([type, count]) => `- [${type}](${new URL(`/type/${type}/`, origin).toString()}) — ${count} posts`)
+		.map(([type, count]) => `- [${type}](${new URL(`/type/${type}/`, origin).toString()}) — ${ui.collections.postCount(count)}`)
 		.join('\n');
 	return {
 		title: `Types | ${SITE_TITLE}`,

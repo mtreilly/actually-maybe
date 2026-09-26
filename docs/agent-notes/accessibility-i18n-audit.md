@@ -259,3 +259,28 @@ Graph statistics use the shared locale-aware number formatter. Connection labels
 and grouped-post counts use complete contextual plural resources. Decimal/group
 formatting is tested with German 1.234,5. Semantic JSON graph numbers remain
 numbers. The generated build and browser-script syntax checks pass.
+
+## Broad heading regression and remaining gates
+
+A scan of all generated HTML found H1-to-H3 skips in the two short posts
+mountain-to-climb and notes-on-robotics-untapped-potential. Related-post sections
+now use H2; sidebar/TOC labels are plain text within their navigation structures.
+The new test-page-headings command checks every HTML page, rather than only the
+readiness audit's representative routes. It passes for all 80 generated pages
+and is included in the package test sequence.
+
+Raw browser mouse movement from a footnote reference into its preview preserved
+visibility beyond the 200ms grace period; leaving dismissed it. The reference
+was initially focused by the test. Follow-up code preserves previews whilst the
+reference retains keyboard focus. Pointer-only verification of that final code
+and long-preview scrolling still need checking.
+
+Collection counts in HTML and generated Markdown/llms lists now use common
+locale-aware number/plural resources. Breadcrumb and graph grouping labels also
+live in resources. The full local test sequence passed before the final heading
+fix; the fresh build, all-page heading test, and readiness audit pass afterwards.
+
+Completion remains unproven: verify final preview focus/pointer/scroll behaviour,
+then run the final complete test sequence and review the full diff. Biome and
+Lighthouse remain unavailable because no cached tool exists and registry DNS
+fails. These required project gates must not be reported as passed.

@@ -148,7 +148,7 @@ const pageDescription = 'Explore how posts connect through shared topics and ide
 						<p class="section-subtitle">
 							Every topic below expands to show the posts that anchor it. This is a zero-JS fallback that mirrors the interactive visualization planned later.
 						</p>
-						<nav aria-label="Posts grouped by topic" class="topic-groups">
+						<nav aria-label={ui.article.groupedPosts} class="topic-groups">
 							{topicGroups.map((group, index) => (
 								<details class="topic-panel" open={index === 0}>
 									<summary>

@@ -1,6 +1,6 @@
 ---
 import { ui } from '../../i18n/ui';
-import { SITE_LOCALE, SITE_DIRECTION } from '../../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION, formatNumber } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import StructuredData from '../../components/StructuredData.astro';
@@ -61,7 +61,7 @@ const relatedTopics = Array.from(relatedTopicCounts.entries())
 		<Header />
 		<main>
 			<!-- Breadcrumb Navigation -->
-			<nav class="breadcrumb" aria-label="Breadcrumb">
+			<nav class="breadcrumb" aria-label={ui.article.breadcrumb}>
 				<a href="/topics/">Topics</a>
 				<span class="separator">/</span>
 				<span class="current">{topic}</span>
@@ -82,7 +82,7 @@ const relatedTopics = Array.from(relatedTopicCounts.entries())
 						{relatedTopics.map(([relatedTopic, count]) => (
 							<a href={`/topics/${relatedTopic}`} class="related-topic-tag">
 								<span>{relatedTopic}</span>
-								<span class="count">{count}</span>
+								<span class="count">{formatNumber(count)}</span>
 							</a>
 						))}
 					</div>

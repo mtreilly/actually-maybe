@@ -16,7 +16,7 @@ const topRelatedPosts = relatedPosts.slice(0, 3); // Limit to top 3 related post
 <aside class="sidebar">
 	<!-- Navigation -->
 	<div class="sidebar-section sidebar-nav-section">
-		<h3 class="sidebar-title">{ui.article.navigation}</h3>
+		<p class="sidebar-title">{ui.article.navigation}</p>
 		<div class="sidebar-nav">
 			<a href="/blog/" class="sidebar-nav-link">{ui.article.allPosts}</a>
 			<a href="/topics" class="sidebar-nav-link">{ui.article.allTopics}</a>
@@ -29,7 +29,7 @@ const topRelatedPosts = relatedPosts.slice(0, 3); // Limit to top 3 related post
 	{/* Related Posts - show only top 3 */}
 	{topRelatedPosts.length > 0 && (
 		<div class="sidebar-section">
-			<h3 class="sidebar-title">{ui.article.relatedReading}</h3>
+			<p class="sidebar-title">{ui.article.relatedReading}</p>
 			<div class="sidebar-list">
 				{topRelatedPosts.map((related) => (
 					<a href={`/blog/${related.id}/`} class="sidebar-item">

@@ -9,6 +9,7 @@ export const ui = {
   post: (part: number, title: string): string => `Part ${new Intl.NumberFormat(SITE_LOCALE).format(part)}: ${title}`,
  },
  article: {
+  breadcrumb: 'Breadcrumb', groupedPosts: 'Posts grouped by topic',
   updated: 'Updated', previous: 'Previous', next: 'Next',
   navigation: 'Navigation', allPosts: 'All Posts', allTopics: 'All Topics',
   relatedReading: 'Related Reading', contents: 'Table of Contents',

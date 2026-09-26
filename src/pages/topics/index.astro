@@ -1,6 +1,6 @@
 ---
 import { ui } from '../../i18n/ui';
-import { SITE_LOCALE, SITE_DIRECTION } from '../../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION, formatNumber } from '../../i18n/format';
 import { compareText } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
@@ -59,7 +59,7 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 						{popular.map(([topic, count]) => (
 							<a href={`/topics/${topic}`} class="topic-item popular">
 								<span class="topic-name">{topic}</span>
-								<span class="topic-count">{count}</span>
+								<span class="topic-count">{formatNumber(count)}</span>
 							</a>
 						))}
 					</div>
@@ -73,7 +73,7 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 						{regular.map(([topic, count]) => (
 							<a href={`/topics/${topic}`} class="topic-item regular">
 								<span class="topic-name">{topic}</span>
-								<span class="topic-count">{count}</span>
+								<span class="topic-count">{formatNumber(count)}</span>
 							</a>
 						))}
 					</div>
@@ -87,7 +87,7 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 						{emerging.map(([topic, count]) => (
 							<a href={`/topics/${topic}`} class="topic-item emerging">
 								<span class="topic-name">{topic}</span>
-								<span class="topic-count">{count}</span>
+								<span class="topic-count">{formatNumber(count)}</span>
 							</a>
 						))}
 					</div>
