@@ -43,3 +43,26 @@ markdown no-JavaScript recovery, storage-disabled theme controls, long text and 
 forms and unused components, contrast, and full regression checks. No translated blog
 content or language switcher is required by the goals; adding another locale should
 require presentation resources and formatting changes rather than domain changes.
+
+## Follow-up: native recovery and theme operation
+
+Removed single-character shortcuts and their unfocused custom modal. These keys
+could interfere with assistive navigation, had duplicate initialisation, and the
+modal contradicted the project's no-modal policy. Header Cmd/Ctrl+K search remains.
+
+Theme initialisation and changes tolerate unavailable storage. The dark-mode
+button exposes its pressed state, hides decorative SVGs from assistive technology,
+has a 44px target, and is hidden when JavaScript is unavailable.
+
+Markdown options retain native summary semantics and a plain Open markdown link.
+Without JavaScript, the details element opens the link and hides copy buttons;
+with JavaScript, the link also provides recovery from denied clipboard access.
+Shared navigation names and labels now live in UI resources. Footer branding no
+longer uses address semantics for text that is not contact information.
+
+A fresh Node 24 build, generated-script check, calendar/locale tests, and agent
+readiness checks pass after these changes. A standalone Playwright runtime check
+was prepared using the cached Playwright package and each installed Chrome
+executable. Both browser launches terminated before any test ran. No keyboard,
+no-JavaScript, or theme runtime pass is claimed from that attempt. Continue with
+another available browser surface or repair browser launching before completion.

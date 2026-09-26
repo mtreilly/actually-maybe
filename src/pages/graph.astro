@@ -4,7 +4,6 @@ import BaseHead from '../components/BaseHead.astro';
 import StructuredData from '../components/StructuredData.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import KeyboardShortcuts from '../components/KeyboardShortcuts.astro';
 import { SITE_TITLE } from '../consts';
 import type { KnowledgeGraph, PostNode } from '../types/graph';
 import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
@@ -70,7 +69,6 @@ const pageDescription = 'Explore how posts connect through shared topics and ide
 	</head>
 	<body>
 		<Header />
-		<KeyboardShortcuts />
 		<main class="graph-page">
 			<section class="graph-hero">
 				<p class="eyebrow">Knowledge Graph</p>

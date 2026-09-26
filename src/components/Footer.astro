@@ -1,24 +1,25 @@
 ---
+import { ui } from '../i18n/ui';
 import { SITE_TITLE } from '../consts';
 
 const currentYear = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-	<nav class="footer-nav">
+	<nav class="footer-nav" aria-label={ui.navigation.footer}>
 		<ul class="footer-list">
-			<li><a href="/rss.xml" rel="alternate">RSS Feed</a></li>
-			<li><a href="/archive" rel="archive">Archive</a></li>
-			<li><a href="/about" rel="author">About</a></li>
-			<li><a href="/contact">Contact</a></li>
-			<li><a href="/privacy" rel="privacy-policy">Privacy</a></li>
+			<li><a href="/rss.xml" rel="alternate">{ui.navigation.rss}</a></li>
+			<li><a href="/archive" rel="archive">{ui.navigation.archive}</a></li>
+			<li><a href="/about" rel="author">{ui.navigation.about}</a></li>
+			<li><a href="/contact">{ui.navigation.contact}</a></li>
+			<li><a href="/privacy" rel="privacy-policy">{ui.navigation.privacy}</a></li>
 		</ul>
 	</nav>
 
-	<address class="footer-meta">
+	<div class="footer-meta">
 		<p class="footer-copyright">© {currentYear} {SITE_TITLE}</p>
-		<p class="footer-note">Built with Astro.</p>
-	</address>
+		<p class="footer-note">{ui.navigation.builtWith}</p>
+	</div>
 </footer>
 
 <style>

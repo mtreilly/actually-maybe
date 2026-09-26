@@ -1,13 +1,14 @@
 ---
+import { ui } from '../i18n/ui';
 import { SITE_TITLE } from '../consts';
 import ThemeToggle from './ThemeToggle.astro';
 
 const navLinks = [
-	{ href: '/', label: 'Home' },
-	{ href: '/topics', label: 'Topics' },
-	{ href: '/projects', label: 'Projects' },
-	{ href: '/about', label: 'About' },
-	{ href: '/search', label: 'Search' },
+	{ href: '/', label: ui.navigation.home },
+	{ href: '/topics', label: ui.navigation.topics },
+	{ href: '/projects', label: ui.navigation.projects },
+	{ href: '/about', label: ui.navigation.about },
+	{ href: '/search', label: ui.navigation.search },
 ];
 
 const normalizePath = (value: string) => {
@@ -27,11 +28,11 @@ const isActive = (href: string) => {
 ---
 
 <header class="site-header">
-	<nav class="site-nav">
+	<nav class="site-nav" aria-label={ui.navigation.primary}>
 		<div class="brand">
 			<p class="site-title"><a href="/">{SITE_TITLE}</a></p>
 			<button class="menu-toggle" aria-expanded="false" aria-controls="primary-nav" data-nav-toggle type="button">
-				<span class="sr-only">Toggle navigation</span>
+				<span class="sr-only">{ui.navigation.toggle}</span>
 				<span class="menu-icon" aria-hidden="true">
 					<span></span>
 					<span></span>
