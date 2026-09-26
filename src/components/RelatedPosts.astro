@@ -44,7 +44,7 @@ if (relatedPosts.length === 0) {
 ---
 
 <aside class="related-posts" aria-labelledby="related-heading">
-	<h2 id="related-heading">{ui.article.discussedIn}</h2>
+	<h2 id="related-heading">{ui.article.topicConnections}</h2>
 	<ul role="list">
 		{relatedPosts.map(({ post, edge }) => (
 			<li>
@@ -78,7 +78,7 @@ if (relatedPosts.length === 0) {
 		margin-inline-end: auto;
 	}
 
-	.related-posts h3 {
+	.related-posts h2 {
 		margin: 0 0 1rem 0;
 		font-size: 0.875rem;
 		text-transform: uppercase;

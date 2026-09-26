@@ -32,3 +32,21 @@ regressions add two connected posts after deleting `.astro/`, edit title/topics
 and suggestion text on a warm build, remove a post, then restore baseline membership.
 Rendered graph, article metadata, JSON nodes/edges/topics, suggestions, direct files,
 and manifest agree. Passed on Node 24.21.0. Draft exclusion also passes this pipeline.
+
+## F-003: Related-reading policy and topic connections are explicit
+
+Resolved 2026-09-26. Three rankings previously served similar labels, and the
+sidebar compared an elapsed age to an epoch timestamp.
+
+`related-reading.ts` owns sidebar and Markdown recommendation order: shared-topic
+count, half weight for posts at least 365 days old, newest-first ties, then stable
+ID order. Display limits remain local (three sidebar, five Markdown). Graph footer
+weights retain proportional overlap and proximity between publication dates;
+its label is now “Topic connections”, not a claim that another post discusses this one.
+Series and chronological neighbours remain independent concepts.
+
+Verification: controlled-clock unit tests cover just inside/at/outside the age boundary,
+overlap, ties, input-order independence, self/draft/unrelated exclusions. Output tests
+compare the HTML sidebar to the Markdown selection prefix across all 15 posts.
+Build and all page heading outlines passed. Product meanings are recorded in the
+related-reading decision; no generic relevance framework was introduced.

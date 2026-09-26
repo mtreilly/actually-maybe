@@ -2,6 +2,7 @@
 import { type CollectionEntry, render } from "astro:content";
 import BlogPost from "../../layouts/BlogPost.astro";
 import { getPublishedPosts } from "../../lib/published-posts";
+import { rankRelatedReading } from "../../lib/related-reading";
 
 export async function getStaticPaths() {
 	const posts = await getPublishedPosts();
@@ -30,41 +31,7 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 const prevPost =
 	currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
-// Find related posts based on shared topics with improved relevance scoring
-const now = Date.now();
-const oneYearAgo = now - 365 * 24 * 60 * 60 * 1000;
-
-const relatedPosts = allPosts
-	.filter((p) => {
-		// Exclude current post
-		if (p.id === post.id) return false;
-		// Check if any topics overlap
-		return p.data.topics.some((topic) => post.data.topics.includes(topic));
-	})
-	.map((p) => {
-		const sharedTopics = p.data.topics.filter((topic) =>
-			post.data.topics.includes(topic),
-		).length;
-		// Calculate recency score (prefer posts from last year)
-		const postAge = now - p.data.pubDate.valueOf();
-		const recencyScore = postAge < oneYearAgo ? 0.5 : 1.0; // Penalize posts older than 1 year
-		// Combine shared topics with recency weighting
-		const relevanceScore = sharedTopics * recencyScore;
-
-		return {
-			...p,
-			sharedTopics,
-			relevanceScore,
-		};
-	})
-	.sort((a, b) => {
-		// Sort by combined relevance score (topics + recency)
-		if (b.relevanceScore !== a.relevanceScore)
-			return b.relevanceScore - a.relevanceScore;
-		// Break ties with most recent first
-		return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
-	})
-	.slice(0, 3); // Limit to 3 related posts
+const relatedPosts = rankRelatedReading(allPosts, post);
 ---
 
 <BlogPost

@@ -21,7 +21,7 @@ export const ui = {
 		allTopics: "All Topics",
 		relatedReading: "Related Reading",
 		contents: "Table of Contents",
-		discussedIn: "Also discussed in",
+		topicConnections: "Topic connections",
 		sharedTopics: (topics: string[]): string =>
 			`Shared topics: ${new Intl.ListFormat(SITE_LOCALE).format(topics)}`,
 	},

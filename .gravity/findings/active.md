@@ -3,56 +3,6 @@
 These are researched recommendations, not completed implementation tasks.
 Reviewed 2026-09-26. See [verification](../review.md) and [change traces](../traces/representative-changes.md).
 
-## F-003: Related-reading meaning is distributed across three rankings
-
-Classification: Uncertain boundary / duplicated policy (confusing)
-
-Confidence: High on divergence; Medium on desired unification
-
-Area: Discovery
-
-### Observation
-
-The sidebar ranks shared-topic counts with a binary recency factor and a date tie
-break, showing three. The footer ranks graph weights combining proportional topic
-overlap and pairwise date proximity, showing five. Markdown ranks shared-topic
-counts with decay relative to the build date, showing five.
-
-The sidebar compares `postAge` (elapsed milliseconds) to `oneYearAgo` (an absolute
-epoch timestamp), so its stated one-year rule does not do what its comment says.
-The footer's label suggests discussion/reference, but edges only mean shared topics.
-
-### Why it matters
-
-Changing recommendation relevance has three policy locations and cannot guarantee
-consistent selections across representations. Copying the sidebar ranking into
-Markdown would also copy a dimensional error. Yet making all three identical
-without deciding their meanings could erase useful distinctions.
-
-### Evidence
-
-- `src/pages/blog/[...slug].astro`: `postAge < oneYearAgo`, ranking and limit.
-- `src/pages/[...page].md.ts`: `relatedPostsFor`, continuous decay and limit.
-- `src/lib/graph-utils.ts`: `calculateEdgeWeight`, topic normalisation and pairwise dates.
-- `src/components/RelatedPosts.astro`, `BlogSidebar.astro`, `src/i18n/ui.ts`.
-
-### Recommendation
-
-Correct the sidebar age comparison with explicit elapsed duration and a controlled
-clock test. Decide whether sections mean topic similarity, actual references, or
-series membership. Share a selector only where the meaning is genuinely the same;
-keep rendering limits local. Use labels that describe the implemented relationship.
-
-### Do not do
-
-Do not turn all discovery into a generic strategy/plugin engine. Do not add semantic
-embeddings to resolve a basic ownership/meaning disagreement.
-
-### Revisit when
-
-The product meaning and boundary dates are tested, and format differences are
-intentional and documented rather than silently algorithm-dependent.
-
 ## F-004: Shared identity facts still have independent copies
 
 Classification: Stable duplication / ambiguous ownership (locally confusing)

@@ -1,8 +1,8 @@
-import type { CollectionEntry } from "astro:content";
 import { createHash } from "node:crypto";
 import type { APIRoute } from "astro";
 import { VARY_VALUE } from "../lib/accept-negotiation";
 import { getPublishedPosts } from "../lib/published-posts";
+import { rankRelatedReading } from "../lib/related-reading";
 import { buildBlogMarkdown } from "../utils/markdownExport";
 import { buildStaticMarkdown } from "../utils/staticMarkdown";
 
@@ -32,33 +32,6 @@ const normalizeSlug = (param?: string | string[]) => {
 const canonicalForSlug = (origin: string, slug: string) => {
 	if (slug === "index") return new URL("/", origin).toString();
 	return new URL(`/${slug.replace(/\/+$/, "")}/`, origin).toString();
-};
-
-const relatedPostsFor = (
-	posts: CollectionEntry<"blog">[],
-	target: CollectionEntry<"blog">,
-) => {
-	const now = Date.now();
-	const yearMs = 365 * 24 * 60 * 60 * 1000;
-	return posts
-		.filter(
-			(post) =>
-				post.id !== target.id &&
-				post.data.topics.some((topic) => target.data.topics.includes(topic)),
-		)
-		.map((post) => {
-			const sharedTopics = post.data.topics.filter((topic) =>
-				target.data.topics.includes(topic),
-			).length;
-			const recency = Math.max(
-				0.25,
-				1 - (now - post.data.pubDate.valueOf()) / (2 * yearMs),
-			);
-			return { post, score: sharedTopics * recency };
-		})
-		.sort((a, b) => b.score - a.score)
-		.slice(0, 5)
-		.map((entry) => entry.post);
 };
 
 const respondWithMarkdown = (markdown: string) => {
@@ -118,7 +91,7 @@ export const GET: APIRoute = async ({ params, site, url }) => {
 			post,
 			canonicalUrl,
 			origin,
-			relatedPosts: relatedPostsFor(posts, post),
+			relatedPosts: rankRelatedReading(posts, post).slice(0, 5),
 		});
 		return respondWithMarkdown(markdown);
 	}
