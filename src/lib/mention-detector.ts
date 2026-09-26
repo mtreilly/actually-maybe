@@ -1,4 +1,4 @@
-import type { PostNode, UnlinkedMention } from '../types/graph';
+import type { PostNode, UnlinkedMention } from "../types/graph";
 
 const MIN_TOPIC_LENGTH = 3;
 const DEFAULT_THRESHOLD = 0.6;
@@ -63,7 +63,7 @@ export function findUnlinkedMentions(
 }
 
 function countOccurrences(haystack: string, needle: string): number {
-	const matches = haystack.match(new RegExp(escapeRegExp(needle), 'g'));
+	const matches = haystack.match(new RegExp(escapeRegExp(needle), "g"));
 	return matches ? matches.length : 0;
 }
 
@@ -71,7 +71,7 @@ function extractSnippet(text: string, topic: string): string {
 	const lowerText = text.toLowerCase();
 	const index = lowerText.indexOf(topic.toLowerCase());
 	if (index === -1) {
-		return '';
+		return "";
 	}
 
 	const start = Math.max(0, index - SNIPPET_RADIUS);
@@ -80,5 +80,5 @@ function extractSnippet(text: string, topic: string): string {
 }
 
 function escapeRegExp(value: string): string {
-	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Actually Maybe</title>
   <style>
     .mark { fill: #0f172a; }
     @media (prefers-color-scheme: dark) {

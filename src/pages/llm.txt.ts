@@ -1,5 +1,5 @@
-import type { APIRoute } from 'astro';
-import { VARY_VALUE } from '../lib/accept-negotiation';
+import type { APIRoute } from "astro";
+import { VARY_VALUE } from "../lib/accept-negotiation";
 
 const body = `LLM-ready documentation is enabled across actuallymaybe.com.
 
@@ -54,10 +54,10 @@ max-age=3600.
 micheal@actuallymaybe.com`;
 
 export const GET: APIRoute = () =>
-	new Response(body + '\n', {
+	new Response(body + "\n", {
 		headers: {
-			'Content-Type': 'text/plain; charset=utf-8',
-			'Cache-Control': 'public, max-age=3600',
+			"Content-Type": "text/plain; charset=utf-8",
+			"Cache-Control": "public, max-age=3600",
 			Vary: VARY_VALUE,
 		},
 	});

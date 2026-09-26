@@ -59,20 +59,24 @@ current-part markup, and ordinary links. Fixtures were removed in a finally bloc
 and actual content rebuilt. Temporary browser mutations and emulation overrides
 were cleared, and review tabs closed.
 
-Biome 2.5.14 was located at `/opt/homebrew/bin/biome`. All 45 changed supported
-files pass with exit 0 after safe formatting and callback cleanup. There are 221
-warnings, largely template-use false positives from Astro's partial support;
-unsafe unused-value removal was not applied. No claim of zero warnings is made.
+Biome 2.5.14 was located at `/opt/homebrew/bin/biome`. The repository-wide
+check passes with exit 0 across 99 supported files. Safe formatting and import
+ordering cleared baseline errors, callbacks no longer return ignored Set values,
+and the frontmatter helper has an intent-revealing name. The favicon has a title.
+A minimal `biome.json` enables Git ignore handling so generated build outputs are
+excluded. Source-based middleware assertions now accept either quote style and
+multiline import attributes whilst retaining their required runtime and imports.
+There are 234 warnings and 7 informational diagnostics, largely template-use
+false positives from Astro's partial support. Unsafe unused-value removal was
+not applied. No claim of zero warnings is made. The Node 24 build and complete
+regression suite pass after this cleanup.
 
 ## Remaining project gates and limitations
 
-- Repository-wide Biome fails outside this patch. A clean archive of main reports
-  117 errors and 202 warnings. The worktree's source check also fails; build-output
-  scans are irrelevant. The changed-file check passes. This audit does not silently
-  fix unrelated baseline code or claim the project-wide gate passed.
-- Lighthouse is not installed/cached. Registry DNS fails. The available DevTools
-  Lighthouse connector cannot connect: Target closed. Its audit excludes
-  performance in any case. No Lighthouse >90 score is claimed.
+- A Lighthouse runner was found bundled in the cached DevTools MCP package.
+  Its isolated Puppeteer launch fails before connecting, with no stderr. The
+  DevTools connector also fails with Target closed. Registry DNS fails, preventing
+  installation of another CLI/browser. No Lighthouse >90 score is claimed.
 - Standalone Playwright cannot launch either installed Chrome binary. Runtime
   checks used the functioning Chrome extension instead.
 - Browser coverage is Chrome and representative interactions. No human screen-

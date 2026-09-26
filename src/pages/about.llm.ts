@@ -1,8 +1,13 @@
-import type { APIRoute } from 'astro';
-import { AGENT_HOW_TO_CALL, AGENT_NOT_FOR, AGENT_USE_CASES } from '../data/identity';
-import { VARY_VALUE } from '../lib/accept-negotiation';
+import type { APIRoute } from "astro";
+import {
+	AGENT_HOW_TO_CALL,
+	AGENT_NOT_FOR,
+	AGENT_USE_CASES,
+} from "../data/identity";
+import { VARY_VALUE } from "../lib/accept-negotiation";
 
-const bullets = (items: string[]) => items.map((item) => `- ${item}`).join('\n');
+const bullets = (items: string[]) =>
+	items.map((item) => `- ${item}`).join("\n");
 
 const context = `# About Micheál Reilly - LLM Context
 
@@ -76,10 +81,10 @@ Links: Blog at actuallymaybe.com, GitHub, LinkedIn, Bluesky, X
 This profile helps AI assistants understand Micheál's perspective, interests, and communication style for more contextually appropriate and valuable interactions.`;
 
 export const GET: APIRoute = () =>
-	new Response(context + '\n', {
+	new Response(context + "\n", {
 		headers: {
-			'Content-Type': 'text/plain; charset=utf-8',
-			'Cache-Control': 'public, max-age=3600',
+			"Content-Type": "text/plain; charset=utf-8",
+			"Cache-Control": "public, max-age=3600",
 			Vary: VARY_VALUE,
 		},
 	});

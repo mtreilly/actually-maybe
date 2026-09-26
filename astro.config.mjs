@@ -1,22 +1,22 @@
 // @ts-check
 
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
-import vercel from '@astrojs/vercel';
-import { defineConfig } from 'astro/config';
-import knowledgeGraph from './src/integrations/knowledge-graph';
-import routeManifest from './src/integrations/route-manifest';
+import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
+import vercel from "@astrojs/vercel";
+import { defineConfig } from "astro/config";
+import knowledgeGraph from "./src/integrations/knowledge-graph";
+import routeManifest from "./src/integrations/route-manifest";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const srcPath = resolve(__dirname, 'src');
+const srcPath = resolve(__dirname, "src");
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://actuallymaybe.com',
-	output: 'static',
+	site: "https://actuallymaybe.com",
+	output: "static",
 	adapter: vercel({
 		webAnalytics: {
 			enabled: true,
@@ -27,7 +27,7 @@ export default defineConfig({
 	vite: {
 		resolve: {
 			alias: {
-				'~/': `${srcPath}/`,
+				"~/": `${srcPath}/`,
 			},
 		},
 	},

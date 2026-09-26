@@ -11,8 +11,8 @@
  * src/lib/__tests__/accept-negotiation.test.ts. Keep it dependency free.
  */
 
-export const HTML_TYPE = 'text/html';
-export const MARKDOWN_TYPE = 'text/markdown';
+export const HTML_TYPE = "text/html";
+export const MARKDOWN_TYPE = "text/markdown";
 
 /** Variants this site can produce, in server preference order. */
 export const PRODUCES = [HTML_TYPE, MARKDOWN_TYPE] as const;
@@ -28,27 +28,28 @@ type AcceptEntry = {
 
 export const parseAccept = (header: string): AcceptEntry[] =>
 	header
-		.split(',')
+		.split(",")
 		.map((raw) => raw.trim())
 		.filter((raw) => raw.length > 0)
 		.map((raw) => {
-			const parts = raw.split(';').map((part) => part.trim());
+			const parts = raw.split(";").map((part) => part.trim());
 			const type = parts[0].toLowerCase();
 			let q = 1;
 			for (const param of parts.slice(1)) {
-				const [name, value] = param.split('=').map((piece) => piece.trim());
-				if (name?.toLowerCase() === 'q') {
+				const [name, value] = param.split("=").map((piece) => piece.trim());
+				if (name?.toLowerCase() === "q") {
 					const parsed = Number(value);
 					if (!Number.isNaN(parsed)) q = Math.max(0, Math.min(1, parsed));
 				}
 			}
-			const specificity = type === '*/*' ? 0 : type.endsWith('/*') ? 1 : 2;
+			const specificity = type === "*/*" ? 0 : type.endsWith("/*") ? 1 : 2;
 			return { type, q, specificity };
 		});
 
 const matches = (entry: AcceptEntry, candidate: string): boolean => {
-	if (entry.type === '*/*') return true;
-	if (entry.type.endsWith('/*')) return candidate.startsWith(entry.type.slice(0, -1));
+	if (entry.type === "*/*") return true;
+	if (entry.type.endsWith("/*"))
+		return candidate.startsWith(entry.type.slice(0, -1));
 	return entry.type === candidate;
 };
 
@@ -59,8 +60,10 @@ const matches = (entry: AcceptEntry, candidate: string): boolean => {
  * A missing or empty Accept header means "anything", which resolves to HTML so
  * browsers and bare curl calls are unaffected.
  */
-export const preferredType = (header: string | null | undefined): Produced | null => {
-	if (!header || header.trim() === '') return PRODUCES[0];
+export const preferredType = (
+	header: string | null | undefined,
+): Produced | null => {
+	if (!header || header.trim() === "") return PRODUCES[0];
 
 	const entries = parseAccept(header);
 	if (entries.length === 0) return PRODUCES[0];
@@ -90,7 +93,10 @@ export const preferredType = (header: string | null | undefined): Produced | nul
 		if (matched === null) continue;
 		if (matched.q <= 0) continue; // explicit rejection
 
-		if (matched.q > bestQ || (matched.q === bestQ && matchedPosition < bestPosition)) {
+		if (
+			matched.q > bestQ ||
+			(matched.q === bestQ && matchedPosition < bestPosition)
+		) {
 			bestQ = matched.q;
 			bestPosition = matchedPosition;
 			best = candidate;
@@ -106,19 +112,19 @@ export const preferredType = (header: string | null | undefined): Produced | nul
  * `Accept-Encoding` reflects the compression the CDN already negotiates.
  * Kept identical to the value in vercel.json so the two cannot disagree.
  */
-export const VARY_VALUE = 'Accept, Accept-Encoding';
+export const VARY_VALUE = "Accept, Accept-Encoding";
 
 /**
  * Normalised lookup key for a request path: no trailing slash, no query.
  * `/` and `/about/` become `/` and `/about`.
  */
 export const routeKey = (pathname: string): string => {
-	const trimmed = pathname.replace(/\/+$/, '');
-	return trimmed === '' ? '/' : trimmed;
+	const trimmed = pathname.replace(/\/+$/, "");
+	return trimmed === "" ? "/" : trimmed;
 };
 
 /** True when the last path segment looks like a file rather than a page route. */
 export const looksLikeFile = (pathname: string): boolean => {
-	const lastSegment = pathname.split('/').pop() ?? '';
-	return lastSegment.includes('.');
+	const lastSegment = pathname.split("/").pop() ?? "";
+	return lastSegment.includes(".");
 };

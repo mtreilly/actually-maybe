@@ -1,38 +1,36 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
-  "installCommand": "npm i -g pnpm@12.3.4 && pnpm install --frozen-lockfile",
-  "regions": [
-    "dub1"
-  ],
-  "headers": [
-    {
-      "source": "/.well-known/ai-profile",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/json; charset=utf-8"
-        }
-      ]
-    },
-    {
-      "source": "/about.llm",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/plain; charset=utf-8"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Vary",
-          "value": "Accept, Accept-Encoding"
-        }
-      ]
-    }
-  ]
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"buildCommand": "pnpm build",
+	"outputDirectory": "dist",
+	"installCommand": "npm i -g pnpm@12.3.4 && pnpm install --frozen-lockfile",
+	"regions": ["dub1"],
+	"headers": [
+		{
+			"source": "/.well-known/ai-profile",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "application/json; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/about.llm",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/plain; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/(.*)",
+			"headers": [
+				{
+					"key": "Vary",
+					"value": "Accept, Accept-Encoding"
+				}
+			]
+		}
+	]
 }

@@ -27,17 +27,19 @@
 // extensions on relative ones (TypeScript resolves those to the `.ts` sources,
 // and so does tsx, which runs the tests). Without these, `vercel build` reports
 // TS1543 and TS2835.
-import { next, rewrite } from '@vercel/functions';
-import manifest from './src/generated/route-manifest.json' with { type: 'json' };
+import { next, rewrite } from "@vercel/functions";
+import { buildNotFoundMarkdown } from "./src/data/not-found.js";
+import manifest from "./src/generated/route-manifest.json" with {
+	type: "json",
+};
 import {
 	HTML_TYPE,
-	MARKDOWN_TYPE,
 	looksLikeFile,
+	MARKDOWN_TYPE,
 	preferredType,
 	routeKey,
 	VARY_VALUE,
-} from './src/lib/accept-negotiation.js';
-import { buildNotFoundMarkdown } from './src/data/not-found.js';
+} from "./src/lib/accept-negotiation.js";
 
 export const config = {
 	/**
@@ -45,14 +47,14 @@ export const config = {
 	 * Vercel has deprecated. Same Request/Response API and the same
 	 * `@vercel/functions` helpers, so nothing below changes.
 	 */
-	runtime: 'nodejs',
+	runtime: "nodejs",
 
 	/**
 	 * Skip hashed build assets, self-hosted fonts, and the favicon. Everything
 	 * else, page routes and machine-readable files alike, is negotiated so the
 	 * `Vary: Accept` header is never missing from a cacheable response.
 	 */
-	matcher: ['/((?!_astro/|fonts/|favicon\\.svg).*)'],
+	matcher: ["/((?!_astro/|fonts/|favicon\\.svg).*)"],
 };
 
 const markdownRoutes: Record<string, string> = manifest.markdownRoutes;
@@ -77,7 +79,7 @@ const linkHeader = (markdownPath?: string) => {
 	if (markdownPath) {
 		links.unshift(`<${markdownPath}>; rel="alternate"; type="text/markdown"`);
 	}
-	return links.join(', ');
+	return links.join(", ");
 };
 
 /** 406: we cannot produce anything this client said it would take. */
@@ -87,9 +89,9 @@ const notAcceptable = () =>
 		{
 			status: 406,
 			headers: {
-				'Content-Type': 'text/plain; charset=utf-8',
+				"Content-Type": "text/plain; charset=utf-8",
 				Vary: VARY_VALUE,
-				'Cache-Control': 'public, max-age=0, must-revalidate',
+				"Cache-Control": "public, max-age=0, must-revalidate",
 			},
 		},
 	);
@@ -99,22 +101,22 @@ const markdownNotFound = (request: Request, pathname: string) =>
 	new Response(buildNotFoundMarkdown(new URL(request.url).origin, pathname), {
 		status: 404,
 		headers: {
-			'Content-Type': 'text/markdown; charset=utf-8',
+			"Content-Type": "text/markdown; charset=utf-8",
 			Vary: VARY_VALUE,
-			'Cache-Control': 'public, max-age=0, must-revalidate',
+			"Cache-Control": "public, max-age=0, must-revalidate",
 		},
 	});
 
 export default function middleware(request: Request): Response {
 	// Negotiation is only meaningful for safe, body-less reads.
-	if (request.method !== 'GET' && request.method !== 'HEAD') {
+	if (request.method !== "GET" && request.method !== "HEAD") {
 		return next();
 	}
 
 	const { pathname } = new URL(request.url);
 	const key = routeKey(pathname);
 	const markdownPath = markdownRoutes[key];
-	const chosen = preferredType(request.headers.get('accept'));
+	const chosen = preferredType(request.headers.get("accept"));
 
 	if (chosen === null) {
 		return notAcceptable();
@@ -131,7 +133,8 @@ export default function middleware(request: Request): Response {
 		}
 		// No markdown variant. Distinguish "page exists, HTML only" from a genuine
 		// 404 so an agent asking for markdown still gets a usable recovery body.
-		const exists = htmlRoutes.has(key) || files.has(pathname) || looksLikeFile(pathname);
+		const exists =
+			htmlRoutes.has(key) || files.has(pathname) || looksLikeFile(pathname);
 		if (!exists) {
 			return markdownNotFound(request, pathname);
 		}
