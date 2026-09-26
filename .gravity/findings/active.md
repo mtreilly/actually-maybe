@@ -3,62 +3,6 @@
 These are researched recommendations, not completed implementation tasks.
 Reviewed 2026-09-26. See [verification](../review.md) and [change traces](../traces/representative-changes.md).
 
-## F-002: A current build has competing graph snapshot owners
-
-Classification: Ambiguous ownership / accidental complexity (expensive)
-
-Confidence: High
-
-Area: Build-time discovery
-
-### Observation
-
-The integration builds a setup snapshot from Astro's serialised data store.
-Rendering builds another graph through the collection-backed loader. Both write a
-disk cache; the JSON endpoint renders the public file, and finalisation overwrites
-it with the setup graph when one exists. Mention suggestions run only on the setup
-path. The universal head also loads the graph for statistics.
-
-A changed-content warm probe produced a 16-post disk handoff and graph HTML, but
-final JSON contained 15 posts. The temporary post was missing from the final graph.
-
-### Why it matters
-
-Debugging one discovery result requires understanding a framework-internal format,
-module cache, integration closure, disk file, route render, and hook order. A new
-post can appear in rendered discovery whilst disappearing from the advertised JSON.
-Cache warmth changes derived output ownership. The prior stale-render-cache fix
-helps one path but does not establish a single build snapshot.
-
-### Evidence
-
-- `src/integrations/knowledge-graph.ts`: setup parsing, closure `graphData`,
-  conditional suggestions, and final JSON write.
-- `src/lib/knowledge-graph-loader.ts`: memory cache and disk handoff.
-- `src/pages/data/graph.json.ts`: another writer of the same public file.
-- `BaseHead.astro`, `BlogPost.astro`, `/graph`: collection-backed consumers.
-- Commits `8029b71` (cold-build handoff) and `1338494` (stale loader input fix).
-- [Warm and cold experiments](../review.md).
-
-### Recommendation
-
-Make finalisation consume the snapshot used by rendering, with one owner of public
-JSON. Derive suggestions from that same snapshot. Prefer the public collection API
-to parsing Astro internals. Treat disk persistence as a handoff/output rather than
-an alternative authority. Evaluate whether every head needs graph statistics.
-
-### Do not do
-
-Do not restore unconditional disk-cache reads in the loader. Do not add more hashes,
-locks, invalidation flags, or fallback writers to reconcile competing authorities.
-Do not remove necessary build/request separation with a browser graph fetch.
-
-### Revisit when
-
-Verify changed-content warm builds, builds without graph input caches, removed
-posts, and all consumers agreeing on the post set. Observe dev-session cache
-refresh separately: this review did not run a dev hot-reload experiment.
-
 ## F-003: Related-reading meaning is distributed across three rankings
 
 Classification: Uncertain boundary / duplicated policy (confusing)

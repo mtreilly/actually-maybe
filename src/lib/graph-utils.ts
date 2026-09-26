@@ -148,3 +148,15 @@ export function calculateStats(
 		mostConnectedPost: mostConnected?.[0],
 	};
 }
+
+/** Build the portable graph from the current published-post projection. */
+export function buildKnowledgeGraph(posts: PostNode[]): KnowledgeGraph {
+	const graph: Omit<KnowledgeGraph, "stats"> = {
+		posts,
+		edges: buildEdges(posts),
+		topics: buildTopicIndex(posts),
+		generatedAt: new Date().toISOString(),
+		version: 1,
+	};
+	return { ...graph, stats: calculateStats(graph) };
+}

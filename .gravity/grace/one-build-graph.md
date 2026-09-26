@@ -1,46 +1,42 @@
-# Candidate: one authoritative graph snapshot per build
+# One authoritative build graph
 
-Status: Investigated opportunity, not implemented
+Status: Implemented and verified, 2026-09-26
 
-Related finding: F-002
+Related finding: F-002, now in `findings/resolved.md`.
 
-## Complexity that exists
+## Before
 
-Graph setup parses Astro internals with devalue, hashes/reuses persistent cache,
-keeps an integration snapshot, and conditionally writes suggestions. Renderers use
-a collection-backed graph with module memory and a disk handoff. A route produces
-JSON, then finalisation writes over it. This has accumulated through legitimate
-fixes for clean-build availability and stale content, but those repairs have not
-removed the competing authorities.
+Graph setup parsed Astro's internal serialised data store, hashed/reused cache,
+kept a private snapshot, and conditionally wrote suggestions. Rendering computed
+another snapshot and wrote a disk handoff. The JSON endpoint rendered the graph,
+then finalisation could overwrite it with the setup snapshot.
 
-## The underlying insight
+## Insight and change
 
-Every public graph view represents the same published content at the same build.
-There is no independent setup-time graph product. The integration needs final
-outputs/suggestions, not its own definition of current content.
+Every public graph surface describes the same current published content. The
+integration needs derivative editorial output, not another source of content.
+The collection-backed loader owns the snapshot. It compares the current portable
+node projection to its previous input before reusing memory, so changed content
+refreshes without persistent cache authority. The endpoint alone emits JSON.
+Finalisation consumes that output to refresh suggestions on every successful build.
 
-Make the graph computed through the collection boundary authoritative for the build.
-Keep one producer for the JSON route. Finalisation can read that completed output
-(or an explicitly owned build handoff) to derive suggestions instead of recomputing
-or overwriting the graph. Explore this using actual hook/build order before changing it.
+## Complexity removed
 
-## Complexity that could disappear together
+- Astro internal data-store parsing and direct devalue use.
+- Setup hash/cache authority and integration-local snapshot.
+- Persistent graph handoff and cache-write options.
+- Final JSON overwrite and cold/warm fallback branches.
+- Cache-dependent mention suggestion generation.
 
-- Internal data-store shape knowledge and its devalue dependency if no other use remains.
-- Hash-based setup cache authority competing with fresh collection data.
-- Integration-local graph snapshot and final JSON overwrite.
-- Suggestions that refresh only when setup sees a persistent data store.
-- One entire cold/warm fallback branch and several paths to investigate stale output.
+## Remaining trade-offs and evidence
 
-This is a high-leverage boundary change, not a call to split an algorithm into
-smaller files or create a generic caching service.
+Universal head metadata still loads graph statistics; this is retained behaviour.
+Memoisation compares serialised portable nodes, a small O(n) cost that avoids
+rebuilding pairwise edges for unchanged content. Current collections are queried
+before cache reuse, so module lifetime alone cannot freeze changed graph inputs.
 
-## Trade-offs and proof required
-
-Finalisation must run after graph JSON is produced, and failure must not silently
-reuse previous output. Publication eligibility must be applied first (F-001).
-Builds without graph input caches, changed/removed posts on warm builds, graph
-HTML/footer/JSON agreement, and suggestion refresh need explicit experiments.
-Dev graph lifetime is a separate open question; do not claim build ownership fixes
-hot reload without testing it. Retain module memoisation only if its lifetime is
-clear. Removing universal head graph statistics is a separate product decision.
+`test-graph-builds.ts` verifies cold additions, warm edits/removal, suggestion
+refresh, and agreement with graph HTML and article metadata. Loader unit tests
+verify same-process content refresh. No claim of a complete Astro dev hot-reload
+browser audit is made. Build finalisation must remain after endpoint generation;
+missing or invalid graph output fails rather than reusing old suggestions silently.
