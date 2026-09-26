@@ -44,21 +44,18 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 	</div>
 )}
 
-<script is:inline>
+<script>
 	const initMiniToc = () => {
-		const container = document.querySelector('[data-mini-toc]');
+		const container = document.querySelector<HTMLElement>('[data-mini-toc]');
 		if (!container || container.dataset.initialized === 'true') return;
 		container.dataset.initialized = 'true';
 
 		const toggle = container.querySelector('[data-mini-toc-toggle]') as HTMLButtonElement | null;
 		const panel = container.querySelector('[data-mini-toc-panel]') as HTMLElement | null;
-		const label = container.querySelector('[data-mini-toc-label]') as HTMLElement | null;
 		const closeBtn = container.querySelector('[data-mini-toc-close]') as HTMLButtonElement | null;
-		const links = panel?.querySelectorAll('.mini-toc-link') ?? [];
 		let isOpen = false;
-		let activeHeading = '';
 
-		const setOpen = (value) => {
+		const setOpen = (value: boolean): void => {
 			isOpen = value;
 			container.dataset.open = value ? 'true' : 'false';
 			if (panel) {
@@ -72,43 +69,6 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 				});
 			}
 		};
-
-		const updateLabel = (text) => {
-			if (!label) return;
-			label.textContent = text || 'Sections';
-		};
-
-		const handleScrollUpdate = () => {
-			const headings = Array.from(links).map((link) => {
-				const id = link.getAttribute('data-heading');
-				return id ? document.getElementById(id) : null;
-			}).filter(Boolean);
-
-			let current = '';
-			const offset = window.scrollY + window.innerHeight * 0.2;
-			headings.forEach((heading) => {
-				const top = heading.getBoundingClientRect().top + window.scrollY;
-				if (top <= offset) {
-					current = heading.id;
-				}
-			});
-
-			if (current && current !== activeHeading) {
-				activeHeading = current;
-				const activeLink = panel.querySelector(`.mini-toc-link[data-heading="${current}"]`);
-				if (activeLink) {
-					updateLabel(activeLink.textContent?.trim() ?? 'Sections');
-				}
-			}
-		};
-
-		const throttledUpdate = () => {
-			window.requestAnimationFrame(handleScrollUpdate);
-		};
-
-		window.addEventListener('scroll', throttledUpdate, { passive: true });
-		window.addEventListener('resize', throttledUpdate, { passive: true });
-		throttledUpdate();
 
 		toggle?.addEventListener('click', () => setOpen(!isOpen));
 		closeBtn?.addEventListener('click', () => setOpen(false));
@@ -204,6 +164,10 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 	[data-theme='dark'] .mini-toc-panel {
 		background: rgba(17, 24, 39, 0.92);
 		border-color: rgba(75, 85, 99, 0.7);
+	}
+
+	.mini-toc-panel[hidden] {
+		display: none;
 	}
 
 	.mini-toc-header {

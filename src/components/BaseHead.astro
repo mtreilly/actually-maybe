@@ -54,6 +54,7 @@ try {
 <!-- Theme initialization script - runs before page renders to prevent flash -->
 <script is:inline>
 	(function() {
+		document.documentElement.classList.add('js');
 		const savedTheme = localStorage.getItem('theme');
 		const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 		const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');

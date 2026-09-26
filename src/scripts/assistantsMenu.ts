@@ -1,7 +1,6 @@
 /**
  * Attach LLM-friendly copy/share interactions.
  */
-let toastFn: any = null;
 let activeMenu: HTMLElement | null = null;
 let globalHandlersRegistered = false;
 
@@ -23,20 +22,9 @@ declare global {
 	}
 }
 
-const ensureToast = async () => {
-	if (toastFn) return toastFn;
-	try {
-		const sonner = await import('sonner');
-		toastFn = sonner.toast;
-	} catch (error) {
-		console.warn('Sonner not available for toast notifications', error);
-	}
-	return toastFn;
-};
-
-const showToast = (type: 'success' | 'error', message: string) => {
-	if (!toastFn) return;
-	toastFn[type](message);
+const showCopyStatus = (message: string): void => {
+	const status = document.querySelector<HTMLElement>('[data-assist-status]');
+	if (status) status.textContent = message;
 };
 
 const copyText = async (value: string) => {
@@ -87,39 +75,34 @@ const registerGlobalShortcut = (detail: AssistDetail) => {
 			event.preventDefault();
 			try {
 				await copyMarkdown(detail.markdownUrl);
-				await ensureToast();
-				showToast('success', 'Markdown copied for your LLM');
+				showCopyStatus('Markdown copied for your LLM');
 			} catch (error) {
 				console.error('Shortcut copy failed', error);
-				await ensureToast();
-				showToast('error', 'Unable to copy markdown');
+				showCopyStatus('Unable to copy markdown');
 			}
 		}
 	};
 	document.addEventListener('keydown', handler);
 };
 
-const registerCommandPaletteAction = (detail: AssistDetail) => {
+const registerCopyActions = (detail: AssistDetail) => {
 	window.llmAssistant = {
 		copyMarkdown: async () => {
 			await copyMarkdown(detail.markdownUrl);
-			await ensureToast();
-			showToast('success', 'Markdown copied for your LLM');
+			showCopyStatus('Markdown copied for your LLM');
 		},
 		copyLink: async () => {
 			await copyText(detail.markdownLink);
-			await ensureToast();
-			showToast('success', '.md link copied');
+			showCopyStatus('.md link copied');
 		},
 	};
 	document.dispatchEvent(new CustomEvent('llm:ready', { detail }));
 };
 
-export async function initAssistantsMenu() {
+export function initAssistantsMenu(): void {
 	if (typeof document === 'undefined') return;
 	const menus = document.querySelectorAll<HTMLElement>('[data-assist-menu]');
 	if (!menus.length) return;
-	await ensureToast();
 
 	menus.forEach((menu) => {
 		if (menu.dataset.assistInitialized === 'true') return;
@@ -152,12 +135,12 @@ export async function initAssistantsMenu() {
 				try {
 					if (action === 'copy-markdown') {
 						await copyMarkdown(detail.markdownUrl);
-						showToast('success', 'Markdown copied for your LLM');
+						showCopyStatus('Markdown copied for your LLM');
 						return;
 					}
 					if (action === 'copy-link') {
 						await copyText(detail.markdownLink);
-						showToast('success', '.md link copied');
+						showCopyStatus('.md link copied');
 						return;
 					}
 					if (action === 'open-chatgpt') {
@@ -170,13 +153,13 @@ export async function initAssistantsMenu() {
 					}
 				} catch (error) {
 					console.error('LLM action failed', error);
-					showToast('error', 'Unable to complete the action');
+					showCopyStatus('Unable to complete the action');
 				}
 			});
 		});
 
 		registerGlobalShortcut(detail);
-		registerCommandPaletteAction(detail);
+		registerCopyActions(detail);
 	});
 
 	if (!globalHandlersRegistered) {
@@ -193,9 +176,4 @@ export async function initAssistantsMenu() {
 			}
 		});
 	}
-}
-
-if (typeof document !== 'undefined') {
-	document.addEventListener('astro:page-load', initAssistantsMenu);
-	document.addEventListener('DOMContentLoaded', initAssistantsMenu);
 }

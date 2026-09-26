@@ -43,6 +43,7 @@ const assistantLinks = buildAssistantLinks({
 			<p class="panel-hint">Shortcut: Shift+Cmd+M</p>
 		</div>
 	</details>
+	<p class="copy-status" role="status" data-assist-status></p>
 </div>
 
 <style>
@@ -50,6 +51,13 @@ const assistantLinks = buildAssistantLinks({
 		margin-top: 0;
 		display: flex;
 		justify-content: flex-end;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+
+	.copy-status {
+		margin: 0;
+		font-size: 0.8rem;
 	}
 
 	.llm-menu {

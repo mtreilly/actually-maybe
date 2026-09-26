@@ -1,16 +1,7 @@
 /**
- * Add copy button and language label to code blocks with toast notifications
+ * Add copy button and language label to code blocks
  */
-export async function initCodeBlockCopy() {
-	// Dynamically import sonner's toast function
-	let toastFn: any = null;
-	try {
-		const sonner = await import('sonner');
-		toastFn = sonner.toast;
-	} catch (err) {
-		console.warn('Sonner not available for toast notifications');
-	}
-
+export function initCodeBlockCopy(): void {
 	const codeBlocks = document.querySelectorAll('pre');
 
 	codeBlocks.forEach(block => {
@@ -51,29 +42,11 @@ export async function initCodeBlockCopy() {
 			try {
 				await navigator.clipboard.writeText(code);
 
-				// Show toast notification if sonner is available
-				if (toastFn) {
-					const langLabel = language ? ` (${language})` : '';
-					toastFn.success('Code copied!', {
-						description: `Copied ${code.length} characters${langLabel}`,
-						duration: 2000,
-					});
-				} else {
-					// Fallback: update button text
-					const originalText = button.textContent;
-					button.textContent = 'Copied!';
-					setTimeout(() => {
-						button.textContent = originalText;
-					}, 2000);
-				}
+				button.textContent = 'Copied!';
+				setTimeout(() => { button.textContent = 'Copy'; }, 2000);
 			} catch (err) {
 				console.error('Failed to copy code:', err);
-				if (toastFn) {
-					toastFn.error('Failed to copy code', {
-						description: 'Please try again',
-						duration: 2000,
-					});
-				}
+				button.textContent = 'Copy failed';
 			}
 		});
 
@@ -81,11 +54,4 @@ export async function initCodeBlockCopy() {
 		block.style.position = 'relative';
 		block.appendChild(controlsWrapper);
 	});
-}
-
-// Run when DOM is ready
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initCodeBlockCopy);
-} else {
-	initCodeBlockCopy();
 }

@@ -12,7 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "pnpm typecheck:middleware && tsx scripts/test-markdown.ts && tsx src/lib/__tests__/mention-detector.test.ts && tsx src/lib/__tests__/accept-negotiation.test.ts && tsx scripts/test-graph-page.ts && tsx scripts/test-middleware.ts && tsx scripts/test-negotiation-e2e.ts && tsx scripts/test-agent-readiness.ts",
+    "test": "pnpm typecheck:middleware && tsx scripts/test-markdown.ts && tsx src/lib/__tests__/mention-detector.test.ts && tsx src/lib/__tests__/accept-negotiation.test.ts && tsx scripts/test-graph-page.ts && tsx scripts/test-middleware.ts && tsx scripts/test-negotiation-e2e.ts && tsx scripts/test-agent-readiness.ts && tsx scripts/test-client-scripts.ts",
     "typecheck:middleware": "tsc -p tsconfig.middleware.json"
   },
   "dependencies": {

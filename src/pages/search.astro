@@ -6,22 +6,11 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_TITLE } from '../consts';
-import { formatReadingTime, calculateReadingTime } from '../utils/readingTime';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
-// Create searchable data
-const searchData = posts.map(post => ({
-	id: post.id,
-	title: post.data.title,
-	description: post.data.description,
-	topics: post.data.topics.join(', '),
-	pubDate: post.data.pubDate,
-	type: post.data.type,
-	readingTime: formatReadingTime(calculateReadingTime(post.data.description)),
-}));
 ---
 
 <!doctype html>
@@ -41,6 +30,7 @@ const searchData = posts.map(post => ({
 				<input
 					type="search"
 					id="search-input"
+					aria-label="Search posts"
 					class="search-input"
 					placeholder="Search posts by title, description, or topic..."
 					autocomplete="off"
@@ -65,7 +55,7 @@ const searchData = posts.map(post => ({
 				</p>
 				<ul class="all-posts-list">
 					{posts.map((post) => (
-						<li>
+						<li data-search-post data-topics={post.data.topics.join(", ")}>
 							<a href={`/blog/${post.id}/`}>{post.data.title}</a>
 							<span class="all-posts-meta">
 								<FormattedDate date={post.data.pubDate} />
@@ -84,58 +74,47 @@ const searchData = posts.map(post => ({
 	</body>
 </html>
 
-<script define:vars={{ searchData }}>
+<script>
 	import Fuse from 'fuse.js';
 
-	const fuse = new Fuse(searchData, {
+	const searchInput = document.querySelector<HTMLInputElement>('#search-input');
+	const resultsContainer = document.querySelector<HTMLElement>('#search-results');
+	const allPosts = document.querySelector<HTMLElement>('#all-posts');
+	const posts = Array.from(document.querySelectorAll<HTMLElement>('[data-search-post]')).map(element => ({
+		element,
+		title: element.querySelector('a')?.textContent ?? '',
+		description: element.querySelector('.all-posts-desc')?.textContent ?? '',
+		topics: element.dataset.topics ?? '',
+	}));
+	const fuse = new Fuse(posts, {
 		keys: ['title', 'description', 'topics'],
 		threshold: 0.3,
 		ignoreLocation: true,
 	});
+	const RESULT_LIMIT = 20;
 
-	const searchInput = document.getElementById('search-input');
-	const resultsContainer = document.getElementById('search-results');
+	if (searchInput && resultsContainer && allPosts) {
+		searchInput.addEventListener('input', () => {
+			const query = searchInput.value.trim();
+			resultsContainer.replaceChildren();
+			allPosts.hidden = query.length > 0;
+			if (!query) return;
 
-	function renderResults(results) {
-		if (results.length === 0) {
-			resultsContainer.innerHTML = '<p class="no-results">No posts found. Try a different search.</p>';
-			return;
-		}
-
-		const html = results
-			.map(result => {
-				const post = result.item;
-				return `
-					<a href="/blog/${post.id}/" class="search-result">
-						<h2 class="search-result-title">${post.title}</h2>
-						<p class="search-result-meta">
-							<span class="search-result-type">${post.type}</span>
-							<span class="search-result-sep">·</span>
-							<span class="search-result-time">${post.readingTime}</span>
-						</p>
-						<p class="search-result-desc">${post.description}</p>
-						${post.topics ? `<p class="search-result-topics">Topics: ${post.topics}</p>` : ''}
-					</a>
-				`;
-			})
-			.join('');
-
-		resultsContainer.innerHTML = html;
+			const matches = fuse.search(query, { limit: RESULT_LIMIT });
+			if (!matches.length) {
+				const message = document.createElement('p');
+				message.className = 'no-results';
+				message.textContent = 'No posts found. Try a different search.';
+				resultsContainer.append(message);
+				return;
+			}
+			const list = document.createElement('ul');
+			list.className = 'all-posts-list';
+			for (const { item } of matches) list.append(item.element.cloneNode(true));
+			resultsContainer.append(list);
+		});
+		searchInput.focus();
 	}
-
-	searchInput.addEventListener('input', (e) => {
-		const query = e.target.value.trim();
-		if (query.length === 0) {
-			resultsContainer.innerHTML = '';
-			return;
-		}
-
-		const results = fuse.search(query);
-		renderResults(results);
-	});
-
-	// Focus on input
-	searchInput.focus();
 </script>
 
 <style>
@@ -174,58 +153,6 @@ const searchData = posts.map(post => ({
 		gap: 1rem;
 	}
 
-	/* Result cards and the empty state are injected by the script above, so Astro's
-	   scoped attribute is never applied to them. These rules must be global. */
-	:global(.search-result) {
-		display: block;
-		padding: 1rem;
-		border: 1px solid rgb(var(--gray-light));
-		border-radius: 4px;
-		text-decoration: none;
-		transition: all 0.2s;
-	}
-
-	:global(.search-result:hover) {
-		border-color: var(--accent);
-		background-color: rgba(37, 99, 235, 0.02);
-	}
-
-	:global(.search-result-title) {
-		margin: 0 0 0.5rem 0;
-		font-size: 1.125rem;
-		color: rgb(var(--black));
-	}
-
-	:global(.search-result:hover .search-result-title) {
-		color: var(--accent);
-	}
-
-	:global(.search-result-meta) {
-		margin: 0 0 0.5rem 0;
-		font-size: 0.875rem;
-		color: rgb(var(--gray));
-	}
-
-	:global(.search-result-sep) {
-		margin: 0 0.25rem;
-	}
-
-	:global(.search-result-desc) {
-		margin: 0 0 0.5rem 0;
-		font-size: 0.9375rem;
-		color: rgb(var(--gray));
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	:global(.search-result-topics) {
-		margin: 0;
-		font-size: 0.8125rem;
-		color: rgb(var(--gray));
-	}
-
 	.all-posts {
 		margin-top: 3rem;
 		padding-top: 2rem;
@@ -246,7 +173,7 @@ const searchData = posts.map(post => ({
 		max-width: 60ch;
 	}
 
-	.all-posts-list {
+	:global(.all-posts-list) {
 		list-style: none;
 		padding: 0;
 		margin: 0;
@@ -255,24 +182,24 @@ const searchData = posts.map(post => ({
 		gap: 1rem;
 	}
 
-	.all-posts-list li {
+	:global(.all-posts-list li) {
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
 	}
 
-	.all-posts-list a {
+	:global(.all-posts-list a) {
 		color: rgb(var(--black));
 		text-decoration: none;
 		font-weight: 500;
 	}
 
-	.all-posts-list a:hover {
+	:global(.all-posts-list a:hover) {
 		color: var(--accent);
 	}
 
-	.all-posts-meta,
-	.all-posts-desc {
+	:global(.all-posts-meta),
+	:global(.all-posts-desc) {
 		color: rgb(var(--gray));
 		font-size: 0.875rem;
 	}

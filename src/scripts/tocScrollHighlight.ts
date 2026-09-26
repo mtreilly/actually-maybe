@@ -1,67 +1,36 @@
-/**
- * Highlight the active heading in the table of contents as the user scrolls
- */
-export function initTocScrollHighlight() {
-	const tocLinks = document.querySelectorAll('.toc-link');
-
-	if (tocLinks.length === 0) return;
-
-	// Get all headings that are referenced in the TOC
-	const headingIds = Array.from(
-		new Set(
-			Array.from(tocLinks)
-				.map(link => {
-					const href = link.getAttribute('href');
-					return href?.startsWith('#') ? href.substring(1) : null;
-				})
-				.filter(Boolean) as string[],
-		),
-	) as string[];
-
-	// Function to find the currently visible heading
-	function updateActiveLink() {
-		let activeHeadingId: string | null = null;
-		const scrollPosition = window.scrollY + 150; // Offset for header height
-
-		// Find the heading closest to the top of the viewport
-		for (const id of headingIds) {
-			const heading = document.getElementById(id);
-			if (heading) {
-				const position = heading.getBoundingClientRect().top + window.scrollY;
-				if (position <= scrollPosition) {
-					activeHeadingId = id;
-				}
-			}
+/** Highlight section links and the mobile label once per animation frame. */
+export function initTocScrollHighlight(): (() => void) | undefined {
+	const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc-link'));
+	if (!links.length) return;
+	const headings = Array.from(new Set(links.map(link => link.hash.slice(1))))
+		.map(id => document.getElementById(id))
+		.filter((heading): heading is HTMLElement => heading !== null);
+	const label = document.querySelector<HTMLElement>('[data-mini-toc-label]');
+	let activeId: string | null = null;
+	let pendingFrame = 0;
+	const update = (): void => {
+		pendingFrame = 0;
+		const offset = window.innerWidth >= 1200 ? 150 : window.innerHeight * 0.2;
+		let currentId = '';
+		for (const heading of headings) {
+			if (heading.getBoundingClientRect().top <= offset) currentId = heading.id;
 		}
-
-		// Update active state for all links
-		tocLinks.forEach(link => {
-			const href = link.getAttribute('href');
-			const linkId = href?.startsWith('#') ? href.substring(1) : null;
-
-			if (linkId === activeHeadingId) {
-				link.classList.add('active');
-			} else {
-				link.classList.remove('active');
-			}
-		});
-	}
-
-	// Update on scroll
-	window.addEventListener('scroll', updateActiveLink, { passive: true });
-
-	// Initial call
-	updateActiveLink();
-
-	// Cleanup function
-	return () => {
-		window.removeEventListener('scroll', updateActiveLink);
+		if (currentId === activeId) return;
+		activeId = currentId;
+		for (const link of links) link.classList.toggle('active', link.hash.slice(1) === currentId);
+		if (label) {
+			label.textContent = links.find(link => link.hash.slice(1) === currentId)?.textContent?.trim() || 'Sections';
+		}
 	};
-}
-
-// Run when DOM is ready
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initTocScrollHighlight);
-} else {
-	initTocScrollHighlight();
+	const scheduleUpdate = (): void => {
+		if (!pendingFrame) pendingFrame = requestAnimationFrame(update);
+	};
+	window.addEventListener('scroll', scheduleUpdate, { passive: true });
+	window.addEventListener('resize', scheduleUpdate, { passive: true });
+	scheduleUpdate();
+	return () => {
+		window.removeEventListener('scroll', scheduleUpdate);
+		window.removeEventListener('resize', scheduleUpdate);
+		cancelAnimationFrame(pendingFrame);
+	};
 }
