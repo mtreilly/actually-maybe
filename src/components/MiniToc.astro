@@ -1,4 +1,5 @@
 ---
+import { ui } from '../i18n/ui';
 interface Props {
 	headings?: Array<{ depth: number; slug: string; text: string }>;
 }
@@ -22,13 +23,13 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 			<svg viewBox="0 0 24 24" aria-hidden="true" class="mini-toc-icon">
 				<path d="M5 7h14M5 12h10M5 17h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
 			</svg>
-			<span class="mini-toc-label" data-mini-toc-label>Sections</span>
+			<span class="mini-toc-label" data-mini-toc-label>{ui.contents.sections}</span>
 		</button>
 		<div class="mini-toc-panel" id={panelId} data-mini-toc-panel hidden>
 			<div class="mini-toc-header">
-				<span>Jump to section</span>
+				<span>{ui.contents.jump}</span>
 				<button type="button" class="mini-toc-close" data-mini-toc-close>
-					Close
+					{ui.contents.close}
 				</button>
 			</div>
 			<ol class="mini-toc-list">
@@ -71,17 +72,21 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 		};
 
 		toggle?.addEventListener('click', () => setOpen(!isOpen));
-		closeBtn?.addEventListener('click', () => setOpen(false));
+		closeBtn?.addEventListener('click', () => { setOpen(false); toggle?.focus(); });
 		panel?.addEventListener('click', (event) => {
 			const target = (event.target as HTMLElement)?.closest('.mini-toc-link');
 			if (target) {
 				setOpen(false);
+				const link = target as HTMLAnchorElement;
+				const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+				if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
 			}
 		});
 
 		document.addEventListener('keydown', (event) => {
 			if (event.key === 'Escape' && isOpen) {
 				setOpen(false);
+				toggle?.focus();
 			}
 		});
 	};
@@ -337,4 +342,8 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 			max-height: min(30vh, 200px);
 		}
 	}
+</style>
+
+<style>
+ :global(html:not(.js)) .mini-toc { display: none; }
 </style>

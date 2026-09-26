@@ -66,3 +66,21 @@ was prepared using the cached Playwright package and each installed Chrome
 executable. Both browser launches terminated before any test ran. No keyboard,
 no-JavaScript, or theme runtime pass is claimed from that attempt. Continue with
 another available browser surface or repair browser launching before completion.
+
+## Runtime evidence through Chrome extension
+
+The computer-use Chrome extension successfully opened this worktree's preview at
+`http://localhost:4322/search/`. Searching for robotics exposed the expected post
+and `1 post found.` in the native accessibility tree. At 375 × 812, collapsed
+navigation links were absent from that tree. Tab from Toggle navigation focused
+the search field. Enter opened the menu; Escape from Topics closed it and
+restored focus to Toggle navigation. The temporary viewport was reset and the
+review tab closed. This resolves the browser-access obstacle for ordinary UI
+checks, although standalone Playwright launch failures remain.
+
+Further inspection found that the mobile sections panel closed without returning
+focus. Close and Escape now return to its toggle; choosing a section focuses the
+destination heading. The nonfunctional toggle is hidden without JavaScript,
+whilst normal article headings and fragment URLs remain readable. These changes
+still require runtime verification. Removed nested time markup and its machine-
+time-zone date title from post-list dates; FormattedDate supplies the sole time.

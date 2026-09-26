@@ -1,6 +1,7 @@
 import { SITE_LOCALE } from './format';
 
 export const ui = {
+ contents: { sections: 'Sections', jump: 'Jump to section', close: 'Close' },
  navigation: {
   home: 'Home', topics: 'Topics', projects: 'Projects', about: 'About', search: 'Search',
   toggle: 'Toggle navigation', primary: 'Main navigation', footer: 'Site information',

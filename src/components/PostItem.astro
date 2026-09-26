@@ -21,9 +21,9 @@ const readingTime = formatReadingTime(calculateReadingTime(post.body || ''));
 <div class="post-item" data-type={post.data.type}>
 	<div class="post-meta">
 		<div class="meta-left">
-			<time class="post-date" title={post.data.pubDate.toDateString()}>
+			<span class="post-date">
 				<FormattedDate date={post.data.pubDate} />
-			</time>
+			</span>
 			<span class="post-reading-time">{readingTime}</span>
 		</div>
 		{variant === 'home' && (

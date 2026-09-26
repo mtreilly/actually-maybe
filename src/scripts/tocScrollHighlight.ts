@@ -1,3 +1,5 @@
+import { ui } from '../i18n/ui';
+
 /** Highlight section links and the mobile label once per animation frame. */
 export function initTocScrollHighlight(): (() => void) | undefined {
 	const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc-link'));
@@ -19,7 +21,7 @@ export function initTocScrollHighlight(): (() => void) | undefined {
 		activeId = currentId;
 		for (const link of links) link.classList.toggle('active', link.hash.slice(1) === currentId);
 		if (label) {
-			label.textContent = links.find(link => link.hash.slice(1) === currentId)?.textContent?.trim() || 'Sections';
+			label.textContent = links.find(link => link.hash.slice(1) === currentId)?.textContent?.trim() || ui.contents.sections;
 		}
 	};
 	const scheduleUpdate = (): void => {
