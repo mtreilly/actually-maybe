@@ -35,7 +35,7 @@ Memoisation compares serialised portable nodes, a small O(n) cost that avoids
 rebuilding pairwise edges for unchanged content. Current collections are queried
 before cache reuse, so module lifetime alone cannot freeze changed graph inputs.
 
-`test-graph-builds.ts` verifies cold additions, warm edits/removal, suggestion
+`test-graph-builds.ts` verifies cold additions, warm additions/edits/removal, suggestion
 refresh, and agreement with graph HTML and article metadata. Loader unit tests
 verify same-process content refresh. No claim of a complete Astro dev hot-reload
 browser audit is made. Build finalisation must remain after endpoint generation;

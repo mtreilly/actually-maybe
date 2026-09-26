@@ -10,17 +10,16 @@ subset repeats shared publishing, identity, and relevance decisions.
 
 ## Decision
 
-For this review, preserve filesystem routes, explicit output builders, local DOM
-state, and the graph projection. Recommend sharing public eligibility and factual
-identity through their natural owners. Investigate relevance meaning before sharing
-selectors. Record implementation opportunities rather than performing a broad rewrite.
+Preserve filesystem routes, explicit output builders, local DOM state, and the graph
+projection. Implementation shares public eligibility and identity facts through their
+natural owners. Sidebar/Markdown reading selection, latest home selection, post kinds,
+and graph-page selections share their actual invariants, without a generic registry.
 
 ## Reason
 
-Adding a post, editing a contact address, or changing recommendations should not
-require a generic feature framework. Boundaries should reduce coordination for
-these actual changes. The review objective asks for architectural knowledge and
-recommendations, not implementation of every recommendation.
+Adding a post or editing an identity fact should not require coordinated factual edits.
+Separate markup and local grouping still express different needs. The five fixes address
+observed ownership failures without reorganising unrelated workflows.
 
 ## Revisit when
 

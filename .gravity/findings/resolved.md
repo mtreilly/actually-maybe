@@ -12,7 +12,7 @@ entries remain available privately to Astro, but public route generation exclude
 
 Verification: `published-posts.test.ts` exercises explicit/default eligibility;
 `test-publication.ts` builds an actual draft with a private topic, inspects direct
-outputs and all textual public artefacts, checks graph suggestions/manifest, then
+outputs and all textual public artefacts, checks graph suggestions/manifest, on warm and cold builds, then
 removes the fixture and rebuilds. Passed on Node 24.21.0. No probe content remains.
 Graph snapshot ownership is addressed independently by F-002.
 
@@ -28,8 +28,8 @@ solely to refresh editorial suggestions. Internal Astro parsing, setup snapshot,
 hash cache, disk handoff, and final output overwrite were removed.
 
 Verification: loader tests cover reuse and refresh in one module lifetime; build
-regressions add two connected posts after deleting `.astro/`, edit title/topics
-and suggestion text on a warm build, remove a post, then restore baseline membership.
+regressions add two connected posts after deleting `.astro/`, add a third post on a warm build, edit title/topics
+and suggestion text, remove a post, then restore baseline membership.
 Rendered graph, article metadata, JSON nodes/edges/topics, suggestions, direct files,
 and manifest agree. Passed on Node 24.21.0. Draft exclusion also passes this pipeline.
 

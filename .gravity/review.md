@@ -155,3 +155,10 @@ eight trace entries, absence of the temporary fixture, and the restored 15-post 
 The final agent-readiness check passed against the restored output. The tracked
 manifest has no probe paths and matches its baseline. No runtime changes or
 implementation of the recommendations are required to complete this review scope.
+
+## Subsequent implementation
+
+The five findings were implemented after this review. See the
+[implementation audit](implementation.md) and [resolved history](findings/resolved.md)
+for current ownership and verification limits. The evidence above describes the
+original reviewed revision and is retained as history.

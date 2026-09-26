@@ -1,38 +1,31 @@
 # Decisions and state ownership
 
-| Decision/state | Current owner | Boundary or ambiguity |
+| Decision/state | Owner | Boundary |
 | --- | --- | --- |
-| Post text and metadata | Writer's files, effective `src/content.config.ts` | Legacy schema disagrees; neither public selection nor active schema owns drafts |
-| Public eligibility | No effective owner | All collection readers assume publishable; F-001 |
-| Calendar interpretation | `normaliseCalendarDate`, active schema | Display date uses UTC; preserve both parse and display sides |
-| Chronological neighbours | Blog route | Local product decision, distinct from series ordering |
-| Series neighbours | `SeriesNav.astro` | Ordered within a named series, not global chronology |
-| Sidebar recommendations | Blog route | Different from graph footer and Markdown; F-003 |
-| Footer recommendations | `RelatedPosts.astro` using graph weights | Rendering also chooses limit; graph builder owns edge weights |
-| Markdown further reading | `[...page].md.ts` | Independently ranks with a third recency policy |
-| Topic graph rules | `graph-utils.ts` | Pure computation, clear owner |
-| Current graph snapshot | Loader memory and integration closure | Competing computation, disk handoff, and output writers; F-002 |
-| Mention suggestions | Integration setup hook | Optional derived output depends on serialised data-store availability |
-| Contact/social facts | `identity.ts`, copied profile/context values | Intended owner exists but consumers bypass it; F-004 |
-| Editorial biographies | `about.ts` and agent context text | Different audiences legitimately need different prose |
-| Structured data shape | `structured-data.ts` | Component supplies origin and page descriptor; 404 exception deliberate |
-| Markdown path coverage | Endpoint `basePages` plus topic/type/post sets | Independently maintained from HTML pages and builder map; F-005 |
-| Route existence | Manifest scanner | Generated inventory, not route authoring policy |
-| Accept choice/error status | Accept parser and root middleware | Runtime request policy, separated from output generation |
-| Theme | Bootstrap, toggle, CSS | Bootstrap prevents flash; toggle owns interaction; CSS supplies no-JS system theme |
-| Search index/results | Static list, then search page script | DOM is shared data source; no second network index |
-| Browser interaction state | Specific script/component | Menus/tooltips/scroll have different lifecycles; keep local |
-| Verification orchestration | `package.json`, scripts | Graph-page script builds before downstream output checks; ordering implicit |
+| Authored metadata | `src/content.config.ts` | One effective schema; draft defaults false |
+| Public eligibility/access | `published-posts.ts` | Every public collection consumer uses it |
+| Calendar interpretation | `calendar-date.ts`, schema, `i18n/format.ts` | Calendar days and UTC display preserve dates |
+| Latest home selection | `latest-posts.ts` | Same ten-post selection for HTML/Markdown |
+| Post kinds | `post-types.ts` | Schema and route generation share vocabulary |
+| Chronological neighbours | Blog route | Distinct from named series order |
+| Series neighbours | `SeriesNav.astro` | Ordered within a series |
+| Sidebar/Markdown reading order | `related-reading.ts` | Shared policy, local display limits |
+| Footer topic connections | Graph weights, `RelatedPosts.astro` | Separate relationship and label |
+| Topic graph computation | `graph-utils.ts` | Pure node/edge/index/statistics projection |
+| Current graph snapshot | `knowledge-graph-loader.ts` | Content-sensitive memory reuse, no disk authority |
+| Public graph JSON | JSON endpoint | Sole serialization producer |
+| Editorial mention suggestions | Integration build-finalisation | Reads completed JSON and always regenerates |
+| Graph page selections | `graph-view.ts` | HTML/Markdown share groups and connected-post order |
+| Identity facts | `identity.ts` | Name, contact, social, postal, origin facts |
+| Editorial biographies | Human and agent page data | Audience-specific prose remains local |
+| Structured data shape | `structured-data.ts` | Page descriptor plus shared identity graph; 404 excluded |
+| Markdown content | Explicit endpoint/builders | Coverage/parity tests enforce intended siblings |
+| Route inventory | Manifest integration | Generated and committed after building |
+| Format choice/status | Accept parser, root middleware | Separate request/runtime boundary |
+| Theme/search/interaction state | Specific DOM scripts and CSS | Static fallback, optional enhancement |
+| Verification orchestration | `package.json`, scripts | Sequential mutation builds restore baseline |
 
-Temporal constraints worth knowing:
-
-1. Content synchronisation precedes rendering. Setup may see a data-store snapshot;
-   render-time graph consumers use the collection. Finalisation must use current data.
-2. The loader's disk file is a handoff to finalisation, not a trustworthy input for
-   rendering a new build. Commit `1338494` fixed a stale-cache regression here.
-3. Manifest scanning follows output generation. Middleware compiles separately;
-   commit regenerated inventory after route/asset changes.
-4. Output tests require a build. `test-graph-page.ts` performs it inside the current
-   test chain. Running a downstream test alone can inspect stale `dist/`.
-5. `graph-utils.test.ts` exists but is absent from the default test command. It was
-   run separately for this review. Green default tests do not validate every policy.
+Content synchronisation precedes render-time graph acquisition. Finalisation consumes
+completed outputs, never an earlier setup snapshot. Tests that inspect `dist` need a
+fresh build; the full chain includes one before output checks. Graph unit tests are
+now included in that chain. Middleware compiles independently with NodeNext imports.

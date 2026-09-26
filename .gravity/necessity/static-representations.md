@@ -28,9 +28,9 @@ builds agree. They are deployment constraints, not product settings to expose.
 
 ## Complexity that remains accidental
 
-The dual graph snapshot pipeline is not necessary for static publishing. Neither
-are the legacy schema, duplicated factual identity, or independently drifting
-content selections. A manifest derived from outputs should not be mistaken for
+The dual graph snapshot pipeline, legacy schema, duplicated identity facts, and
+accidental selection drift were removed during remediation. They were not necessary
+for static publishing. A manifest derived from outputs should not be mistaken for
 proof that intended Markdown projections exist. The local negotiation harness
 simulates static serving; it is not a live Vercel deployment check.
 
