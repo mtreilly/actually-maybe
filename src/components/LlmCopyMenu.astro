@@ -1,6 +1,6 @@
 ---
-import { ui } from '../i18n/ui';
-import { buildAssistantLinks } from '../utils/aiLinks';
+import { ui } from "../i18n/ui";
+import { buildAssistantLinks } from "../utils/aiLinks";
 
 type Props = {
 	postId: string;
@@ -8,7 +8,7 @@ type Props = {
 	description?: string;
 };
 
-const { postId, title, description = '' } = Astro.props as Props;
+const { postId, title, description = "" } = Astro.props as Props;
 const markdownPath = `/blog/${postId}.md`;
 const absoluteMarkdownUrl = new URL(markdownPath, Astro.url).toString();
 const canonicalPageUrl = new URL(`/blog/${postId}/`, Astro.url).toString();

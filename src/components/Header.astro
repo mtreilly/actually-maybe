@@ -1,29 +1,32 @@
 ---
-import { ui } from '../i18n/ui';
-import { SITE_TITLE } from '../consts';
-import ThemeToggle from './ThemeToggle.astro';
+import { SITE_TITLE } from "../consts";
+import { ui } from "../i18n/ui";
+import ThemeToggle from "./ThemeToggle.astro";
 
 const navLinks = [
-	{ href: '/', label: ui.navigation.home },
-	{ href: '/topics', label: ui.navigation.topics },
-	{ href: '/projects', label: ui.navigation.projects },
-	{ href: '/about', label: ui.navigation.about },
-	{ href: '/search', label: ui.navigation.search },
+	{ href: "/", label: ui.navigation.home },
+	{ href: "/topics", label: ui.navigation.topics },
+	{ href: "/projects", label: ui.navigation.projects },
+	{ href: "/about", label: ui.navigation.about },
+	{ href: "/search", label: ui.navigation.search },
 ];
 
 const normalizePath = (value: string) => {
-	if (value === '/') return '/';
-	return value.replace(/\/+$/, '') || '/';
+	if (value === "/") return "/";
+	return value.replace(/\/+$/, "") || "/";
 };
 
 const currentPath = normalizePath(Astro.url.pathname);
 
 const isActive = (href: string) => {
 	const normalizedHref = normalizePath(href);
-	if (normalizedHref === '/') {
-		return currentPath === '/';
+	if (normalizedHref === "/") {
+		return currentPath === "/";
 	}
-	return currentPath === normalizedHref || currentPath.startsWith(`${normalizedHref}/`);
+	return (
+		currentPath === normalizedHref ||
+		currentPath.startsWith(`${normalizedHref}/`)
+	);
 };
 ---
 

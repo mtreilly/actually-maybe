@@ -1,4 +1,4 @@
-import { formatReadingMinutes } from '../i18n/format';
+import { formatReadingMinutes } from "../i18n/format";
 
 /**
  * Calculate reading time for a given text
@@ -11,5 +11,5 @@ export function calculateReadingTime(text: string): number {
 }
 
 export function formatReadingTime(minutes: number): string {
- return formatReadingMinutes(minutes);
+	return formatReadingMinutes(minutes);
 }

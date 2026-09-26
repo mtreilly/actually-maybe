@@ -1,23 +1,30 @@
 ---
-import { ui } from '../i18n/ui';
-import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
-import { formatDate, compareText, formatNumber } from '../i18n/format';
-import BaseHead from '../components/BaseHead.astro';
-import StructuredData from '../components/StructuredData.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_TITLE } from '../consts';
-import type { KnowledgeGraph, PostNode } from '../types/graph';
-import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import StructuredData from "../components/StructuredData.astro";
+import { SITE_TITLE } from "../consts";
+import {
+	compareText,
+	formatDate,
+	formatNumber,
+	SITE_DIRECTION,
+	SITE_LOCALE,
+} from "../i18n/format";
+import { ui } from "../i18n/ui";
+import { loadKnowledgeGraph } from "../lib/knowledge-graph-loader";
+import type { KnowledgeGraph, PostNode } from "../types/graph";
 
 let graph: KnowledgeGraph | null = null;
 try {
 	graph = await loadKnowledgeGraph();
 } catch (error) {
-	console.warn('Unable to load knowledge graph for /graph page:', error);
+	console.warn("Unable to load knowledge graph for /graph page:", error);
 }
 
-const postsById = new Map<string, PostNode>(graph?.posts.map((post) => [post.id, post]) ?? []);
+const postsById = new Map<string, PostNode>(
+	graph?.posts.map((post) => [post.id, post]) ?? [],
+);
 
 const topicGroups = graph
 	? Object.entries(graph.topics)
@@ -37,8 +44,14 @@ const topicGroups = graph
 const connectionCounts = new Map<string, number>();
 if (graph) {
 	graph.edges.forEach((edge) => {
-		connectionCounts.set(edge.source, (connectionCounts.get(edge.source) ?? 0) + 1);
-		connectionCounts.set(edge.target, (connectionCounts.get(edge.target) ?? 0) + 1);
+		connectionCounts.set(
+			edge.source,
+			(connectionCounts.get(edge.source) ?? 0) + 1,
+		);
+		connectionCounts.set(
+			edge.target,
+			(connectionCounts.get(edge.target) ?? 0) + 1,
+		);
 	});
 }
 
@@ -50,17 +63,22 @@ const mostConnectedPosts =
 					if (!post) return null;
 					return { post, count };
 				})
-				.filter((entry): entry is { post: PostNode; count: number } => Boolean(entry))
+				.filter((entry): entry is { post: PostNode; count: number } =>
+					Boolean(entry),
+				)
 				.sort((a, b) => {
 					if (b.count !== a.count) return b.count - a.count;
-					return new Date(b.post.date).getTime() - new Date(a.post.date).getTime();
+					return (
+						new Date(b.post.date).getTime() - new Date(a.post.date).getTime()
+					);
 				})
 				.slice(0, 8)
 		: [];
 
 const generatedDate = graph ? formatDate(new Date(graph.generatedAt)) : null;
 const pageTitle = `Knowledge Graph | ${SITE_TITLE}`;
-const pageDescription = 'Explore how posts connect through shared topics and ideas.';
+const pageDescription =
+	"Explore how posts connect through shared topics and ideas.";
 ---
 
 <!doctype html>

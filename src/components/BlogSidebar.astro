@@ -1,11 +1,11 @@
 ---
-import { ui } from '../i18n/ui';
-import type { CollectionEntry } from 'astro:content';
-import FormattedDate from '../components/FormattedDate.astro';
-import TableOfContents from './TableOfContents.astro';
+import type { CollectionEntry } from "astro:content";
+import FormattedDate from "../components/FormattedDate.astro";
+import { ui } from "../i18n/ui";
+import TableOfContents from "./TableOfContents.astro";
 
 type Props = {
-	relatedPosts?: Array<CollectionEntry<'blog'> & { sharedTopics: number }>;
+	relatedPosts?: Array<CollectionEntry<"blog"> & { sharedTopics: number }>;
 	headings?: Array<{ depth: number; slug: string; text: string }>;
 };
 

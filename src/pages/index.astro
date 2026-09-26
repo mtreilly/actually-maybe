@@ -1,14 +1,14 @@
 ---
-import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
-import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import PostItem from '../components/PostItem.astro';
-import StructuredData from '../components/StructuredData.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import PostItem from "../components/PostItem.astro";
+import StructuredData from "../components/StructuredData.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import { SITE_DIRECTION, SITE_LOCALE } from "../i18n/format";
 
-const allPosts = (await getCollection('blog')).sort(
+const allPosts = (await getCollection("blog")).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
@@ -16,7 +16,6 @@ const LATEST_POSTS_COUNT = 10;
 const posts = allPosts.slice(0, LATEST_POSTS_COUNT);
 const totalPosts = allPosts.length;
 const hasMorePosts = totalPosts > LATEST_POSTS_COUNT;
-
 ---
 
 <!doctype html>

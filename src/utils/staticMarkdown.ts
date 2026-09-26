@@ -1,41 +1,46 @@
-import { ui } from '../i18n/ui';
-import { compareText } from '../i18n/format';
-import type { CollectionEntry } from 'astro:content';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { aboutProfile } from '../data/about';
-import { projects } from '../data/projects';
-import { nowPage } from '../data/now';
-import { contactPage } from '../data/contact';
-import { privacyPage } from '../data/privacy';
-import { serializeMarkdownDoc, type MarkdownDoc } from './markdownExport';
+import type { CollectionEntry } from "astro:content";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import { aboutProfile } from "../data/about";
+import { contactPage } from "../data/contact";
+import { nowPage } from "../data/now";
+import { privacyPage } from "../data/privacy";
+import { projects } from "../data/projects";
+import { compareText } from "../i18n/format";
+import { ui } from "../i18n/ui";
+import { type MarkdownDoc, serializeMarkdownDoc } from "./markdownExport";
 
-type BlogEntry = CollectionEntry<'blog'>;
+type BlogEntry = CollectionEntry<"blog">;
 
-const formatDate = (date: Date) => date.toISOString().split('T')[0];
+const formatDate = (date: Date) => date.toISOString().split("T")[0];
 
-const renderList = (items: string[]) => items.map((item) => `- ${item}`).join('\n');
+const renderList = (items: string[]) =>
+	items.map((item) => `- ${item}`).join("\n");
 
 const renderPostsList = (posts: BlogEntry[], origin: string) =>
 	posts
 		.map((post) => {
-			const summary = post.data.description ?? `${formatDate(post.data.pubDate)} • ${post.data.type}`;
+			const summary =
+				post.data.description ??
+				`${formatDate(post.data.pubDate)} • ${post.data.type}`;
 			return `- [${post.data.title}](${new URL(`/blog/${post.id}/`, origin).toString()}) — ${summary}`;
 		})
-		.join('\n');
+		.join("\n");
 
 const buildHomeDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => ({
 	title: SITE_TITLE,
 	description: SITE_DESCRIPTION,
-	canonicalUrl: new URL('/', origin).toString(),
+	canonicalUrl: new URL("/", origin).toString(),
 	body: `# ${SITE_TITLE}\n${SITE_DESCRIPTION}\n\n## Latest writing\n${renderPostsList(posts.slice(0, 8), origin)}`,
 });
 
 const buildAboutDoc = (origin: string): MarkdownDoc => ({
 	title: `About | ${SITE_TITLE}`,
-	description: 'About Micheál Reilly',
-	canonicalUrl: new URL('/about/', origin).toString(),
-	body: `# ${aboutProfile.name}\n${aboutProfile.subtitle}\n\n${aboutProfile.intro.paragraphs.map((p) => p.text).join('\n\n')}\n\n## ${aboutProfile.currently.title}\n${renderList(
-		aboutProfile.currently.items.map((item) => `**${item.category}:** ${item.text}`),
+	description: "About Micheál Reilly",
+	canonicalUrl: new URL("/about/", origin).toString(),
+	body: `# ${aboutProfile.name}\n${aboutProfile.subtitle}\n\n${aboutProfile.intro.paragraphs.map((p) => p.text).join("\n\n")}\n\n## ${aboutProfile.currently.title}\n${renderList(
+		aboutProfile.currently.items.map(
+			(item) => `**${item.category}:** ${item.text}`,
+		),
 	)}\n\n## ${aboutProfile.elsewhere.title}\n${renderList(
 		aboutProfile.elsewhere.links.map((link) => `${link.platform}: ${link.url}`),
 	)}\n\n## ${aboutProfile.writing.title}\n- ${aboutProfile.writing.label} ${new URL(aboutProfile.writing.url, origin).toString()}`,
@@ -43,23 +48,23 @@ const buildAboutDoc = (origin: string): MarkdownDoc => ({
 
 const buildProjectsDoc = (origin: string): MarkdownDoc => ({
 	title: `Projects | ${SITE_TITLE}`,
-	description: 'Selected projects and work',
-	canonicalUrl: new URL('/projects/', origin).toString(),
+	description: "Selected projects and work",
+	canonicalUrl: new URL("/projects/", origin).toString(),
 	body: `# Projects\nSelected work and ongoing explorations.\n\n${projects
 		.map(
 			(project) =>
-				`## ${project.name}\nStatus: ${project.status}\n\n${project.description}${project.url !== '#' ? `\nLink: ${project.url}` : ''}`,
+				`## ${project.name}\nStatus: ${project.status}\n\n${project.description}${project.url !== "#" ? `\nLink: ${project.url}` : ""}`,
 		)
-		.join('\n\n')}`,
+		.join("\n\n")}`,
 });
 
 const buildNowDoc = (origin: string): MarkdownDoc => ({
 	title: `Now | ${SITE_TITLE}`,
-	description: 'What I\'m doing now',
-	canonicalUrl: new URL('/now/', origin).toString(),
+	description: "What I'm doing now",
+	canonicalUrl: new URL("/now/", origin).toString(),
 	body: `# Now\n${nowPage.subtitle}\n\n${nowPage.sections
 		.map((section) => `## ${section.title}\n${renderList(section.items)}`)
-		.join('\n\n')}\n\n_Last updated: ${nowPage.lastUpdated}_`,
+		.join("\n\n")}\n\n_Last updated: ${nowPage.lastUpdated}_`,
 });
 
 const buildArchiveDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => {
@@ -72,23 +77,29 @@ const buildArchiveDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => {
 	const sections = Object.keys(byYear)
 		.sort((a, b) => Number(b) - Number(a))
 		.map((year) => `### ${year}\n${renderPostsList(byYear[year], origin)}`)
-		.join('\n\n');
+		.join("\n\n");
 	return {
 		title: `Archive | ${SITE_TITLE}`,
-		description: 'All posts by year',
-		canonicalUrl: new URL('/archive/', origin).toString(),
+		description: "All posts by year",
+		canonicalUrl: new URL("/archive/", origin).toString(),
 		body: `# Archive\n${ui.collections.postCount(posts.length)}.\n\n${sections}`,
 	};
 };
 
-const buildBlogIndexDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => ({
+const buildBlogIndexDoc = (
+	origin: string,
+	posts: BlogEntry[],
+): MarkdownDoc => ({
 	title: `Blog | ${SITE_TITLE}`,
-	description: 'All blog posts',
-	canonicalUrl: new URL('/blog/', origin).toString(),
+	description: "All blog posts",
+	canonicalUrl: new URL("/blog/", origin).toString(),
 	body: `# Blog\nBrowse all posts.\n\n${renderPostsList(posts, origin)}`,
 });
 
-const buildTopicsOverviewDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => {
+const buildTopicsOverviewDoc = (
+	origin: string,
+	posts: BlogEntry[],
+): MarkdownDoc => {
 	const topicCounts = new Map<string, number>();
 	posts.forEach((post) => {
 		post.data.topics.forEach((topic) => {
@@ -97,17 +108,24 @@ const buildTopicsOverviewDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc
 	});
 	const list = Array.from(topicCounts.entries())
 		.sort((a, b) => (b[1] === a[1] ? compareText(a[0], b[0]) : b[1] - a[1]))
-		.map(([topic, count]) => `- [${topic}](${new URL(`/topics/${topic}/`, origin).toString()}) — ${ui.collections.postCount(count)}`)
-		.join('\n');
+		.map(
+			([topic, count]) =>
+				`- [${topic}](${new URL(`/topics/${topic}/`, origin).toString()}) — ${ui.collections.postCount(count)}`,
+		)
+		.join("\n");
 	return {
 		title: `Topics | ${SITE_TITLE}`,
-		description: 'Browse all topics',
-		canonicalUrl: new URL('/topics/', origin).toString(),
+		description: "Browse all topics",
+		canonicalUrl: new URL("/topics/", origin).toString(),
 		body: `# Topics\n${topicCounts.size} topics\n\n${list}`,
 	};
 };
 
-const buildTopicDoc = (origin: string, posts: BlogEntry[], topic: string): MarkdownDoc | null => {
+const buildTopicDoc = (
+	origin: string,
+	posts: BlogEntry[],
+	topic: string,
+): MarkdownDoc | null => {
 	const topicPosts = posts.filter((post) => post.data.topics.includes(topic));
 	if (!topicPosts.length) return null;
 	return {
@@ -118,24 +136,34 @@ const buildTopicDoc = (origin: string, posts: BlogEntry[], topic: string): Markd
 	};
 };
 
-const buildTypeOverviewDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => {
+const buildTypeOverviewDoc = (
+	origin: string,
+	posts: BlogEntry[],
+): MarkdownDoc => {
 	const counts = new Map<string, number>();
 	posts.forEach((post) => {
 		counts.set(post.data.type, (counts.get(post.data.type) || 0) + 1);
 	});
 	const list = Array.from(counts.entries())
 		.sort((a, b) => compareText(a[0], b[0]))
-		.map(([type, count]) => `- [${type}](${new URL(`/type/${type}/`, origin).toString()}) — ${ui.collections.postCount(count)}`)
-		.join('\n');
+		.map(
+			([type, count]) =>
+				`- [${type}](${new URL(`/type/${type}/`, origin).toString()}) — ${ui.collections.postCount(count)}`,
+		)
+		.join("\n");
 	return {
 		title: `Types | ${SITE_TITLE}`,
-		description: 'Browse by content type',
-		canonicalUrl: new URL('/type/', origin).toString(),
+		description: "Browse by content type",
+		canonicalUrl: new URL("/type/", origin).toString(),
 		body: `# Types\n${list}`,
 	};
 };
 
-const buildTypeDoc = (origin: string, posts: BlogEntry[], type: string): MarkdownDoc | null => {
+const buildTypeDoc = (
+	origin: string,
+	posts: BlogEntry[],
+	type: string,
+): MarkdownDoc | null => {
 	const typePosts = posts.filter((post) => post.data.type === type);
 	if (!typePosts.length) return null;
 	return {
@@ -148,57 +176,76 @@ const buildTypeDoc = (origin: string, posts: BlogEntry[], type: string): Markdow
 
 const buildContactDoc = (origin: string): MarkdownDoc => ({
 	title: `Contact | ${SITE_TITLE}`,
-	description: 'How to reach Micheál Reilly, and what to expect.',
-	canonicalUrl: new URL('/contact/', origin).toString(),
-	body: `# ${contactPage.title}\n${contactPage.subtitle}\n\n${contactPage.intro.join('\n\n')}\n\n## Email\n${contactPage.email}\n\n${contactPage.emailNote}\n\n## Elsewhere\n${renderList(
-		contactPage.social.map((profile) => `${profile.label} (${profile.handle}): ${profile.url}`),
-	)}\n\n${contactPage.socialNote}\n\n## For automated agents\n${contactPage.agents.join('\n\n')}\n\n${renderList([
-		`llms.txt: ${new URL('/llms.txt', origin).toString()}`,
-		`AI profile: ${new URL('/.well-known/ai-profile', origin).toString()}`,
-		`Author context: ${new URL('/about.llm', origin).toString()}`,
-		`Sitemap: ${new URL('/sitemap-index.xml', origin).toString()}`,
-	])}\n\n## Privacy\nSee ${new URL('/privacy/', origin).toString()}`,
+	description: "How to reach Micheál Reilly, and what to expect.",
+	canonicalUrl: new URL("/contact/", origin).toString(),
+	body: `# ${contactPage.title}\n${contactPage.subtitle}\n\n${contactPage.intro.join("\n\n")}\n\n## Email\n${contactPage.email}\n\n${contactPage.emailNote}\n\n## Elsewhere\n${renderList(
+		contactPage.social.map(
+			(profile) => `${profile.label} (${profile.handle}): ${profile.url}`,
+		),
+	)}\n\n${contactPage.socialNote}\n\n## For automated agents\n${contactPage.agents.join("\n\n")}\n\n${renderList(
+		[
+			`llms.txt: ${new URL("/llms.txt", origin).toString()}`,
+			`AI profile: ${new URL("/.well-known/ai-profile", origin).toString()}`,
+			`Author context: ${new URL("/about.llm", origin).toString()}`,
+			`Sitemap: ${new URL("/sitemap-index.xml", origin).toString()}`,
+		],
+	)}\n\n## Privacy\nSee ${new URL("/privacy/", origin).toString()}`,
 });
 
 const buildPrivacyDoc = (origin: string): MarkdownDoc => ({
 	title: `Privacy | ${SITE_TITLE}`,
-	description: 'What actuallymaybe.com collects, what it does not, and which third parties are involved.',
-	canonicalUrl: new URL('/privacy/', origin).toString(),
+	description:
+		"What actuallymaybe.com collects, what it does not, and which third parties are involved.",
+	canonicalUrl: new URL("/privacy/", origin).toString(),
 	body: `# ${privacyPage.title}\n${privacyPage.subtitle}\n\n${privacyPage.sections
-		.map((section) => `## ${section.title}\n${section.paragraphs.join('\n\n')}`)
-		.join('\n\n')}\n\n## Contact\n${privacyPage.contactEmail}\n\n_Last updated: ${privacyPage.lastUpdated}_`,
+		.map((section) => `## ${section.title}\n${section.paragraphs.join("\n\n")}`)
+		.join(
+			"\n\n",
+		)}\n\n## Contact\n${privacyPage.contactEmail}\n\n_Last updated: ${privacyPage.lastUpdated}_`,
 });
 
 const buildSearchDoc = (origin: string): MarkdownDoc => ({
 	title: `Search | ${SITE_TITLE}`,
-	description: 'Search the blog',
-	canonicalUrl: new URL('/search/', origin).toString(),
-	body: `# Search\nThe on-site search experience is interactive. Use the command palette (⌘K / Ctrl+K) or visit ${new URL('/search/', origin).toString()} for the full UI.`,
+	description: "Search the blog",
+	canonicalUrl: new URL("/search/", origin).toString(),
+	body: `# Search\nThe on-site search experience is interactive. Use the command palette (⌘K / Ctrl+K) or visit ${new URL("/search/", origin).toString()} for the full UI.`,
 });
 
-const builders = new Map<string, (origin: string, posts: BlogEntry[], slug: string) => MarkdownDoc | null>([
-	['index', (origin, posts) => buildHomeDoc(origin, posts)],
-	['about', (origin) => buildAboutDoc(origin)],
-	['projects', (origin) => buildProjectsDoc(origin)],
-	['now', (origin) => buildNowDoc(origin)],
-	['archive', (origin, posts) => buildArchiveDoc(origin, posts)],
-	['blog', (origin, posts) => buildBlogIndexDoc(origin, posts)],
-	['topics', (origin, posts, slug) => {
-		const [, topic] = slug.split('/', 2);
-		return topic ? buildTopicDoc(origin, posts, topic) : buildTopicsOverviewDoc(origin, posts);
-	}],
-	['type', (origin, posts, slug) => {
-		const [, type] = slug.split('/', 2);
-		return type ? buildTypeDoc(origin, posts, type) : buildTypeOverviewDoc(origin, posts);
-	}],
-	['search', (origin) => buildSearchDoc(origin)],
-	['contact', (origin) => buildContactDoc(origin)],
-	['privacy', (origin) => buildPrivacyDoc(origin)],
+const builders = new Map<
+	string,
+	(origin: string, posts: BlogEntry[], slug: string) => MarkdownDoc | null
+>([
+	["index", (origin, posts) => buildHomeDoc(origin, posts)],
+	["about", (origin) => buildAboutDoc(origin)],
+	["projects", (origin) => buildProjectsDoc(origin)],
+	["now", (origin) => buildNowDoc(origin)],
+	["archive", (origin, posts) => buildArchiveDoc(origin, posts)],
+	["blog", (origin, posts) => buildBlogIndexDoc(origin, posts)],
+	[
+		"topics",
+		(origin, posts, slug) => {
+			const [, topic] = slug.split("/", 2);
+			return topic
+				? buildTopicDoc(origin, posts, topic)
+				: buildTopicsOverviewDoc(origin, posts);
+		},
+	],
+	[
+		"type",
+		(origin, posts, slug) => {
+			const [, type] = slug.split("/", 2);
+			return type
+				? buildTypeDoc(origin, posts, type)
+				: buildTypeOverviewDoc(origin, posts);
+		},
+	],
+	["search", (origin) => buildSearchDoc(origin)],
+	["contact", (origin) => buildContactDoc(origin)],
+	["privacy", (origin) => buildPrivacyDoc(origin)],
 ]);
 
 export const buildStaticMarkdown = ({
 	slug,
-	canonicalUrl,
 	origin,
 	posts,
 }: {
@@ -207,9 +254,9 @@ export const buildStaticMarkdown = ({
 	origin: string;
 	posts: BlogEntry[];
 }) => {
-	const normalized = slug.replace(/\/index$/, '') || 'index';
-	if (normalized.startsWith('blog/')) return null;
-	const root = normalized.split('/')[0];
+	const normalized = slug.replace(/\/index$/, "") || "index";
+	if (normalized.startsWith("blog/")) return null;
+	const root = normalized.split("/")[0];
 	const builder = builders.get(root);
 	if (!builder) return null;
 	const doc = builder(origin, posts, normalized);

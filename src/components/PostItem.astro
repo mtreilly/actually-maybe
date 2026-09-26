@@ -1,11 +1,11 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import FormattedDate from './FormattedDate.astro';
-import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+import type { CollectionEntry } from "astro:content";
+import { calculateReadingTime, formatReadingTime } from "../utils/readingTime";
+import FormattedDate from "./FormattedDate.astro";
 
 interface Props {
-	post: CollectionEntry<'blog'>;
-	variant?: 'home' | 'blog';
+	post: CollectionEntry<"blog">;
+	variant?: "home" | "blog";
 	/**
 	 * Heading level for the post title. Set it to whatever keeps the host page's
 	 * outline sequential: 2 directly under the page <h1>, 3 under an <h2> section.
@@ -13,9 +13,9 @@ interface Props {
 	headingLevel?: 2 | 3 | 4;
 }
 
-const { post, variant = 'home', headingLevel = 2 } = Astro.props;
-const TitleHeading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
-const readingTime = formatReadingTime(calculateReadingTime(post.body || ''));
+const { post, variant = "home", headingLevel = 2 } = Astro.props;
+const TitleHeading = `h${headingLevel}` as "h2" | "h3" | "h4";
+const readingTime = formatReadingTime(calculateReadingTime(post.body || ""));
 ---
 
 <div class="post-item" data-type={post.data.type}>

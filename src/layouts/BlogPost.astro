@@ -1,30 +1,30 @@
 ---
-import { ui } from '../i18n/ui';
-import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
-import type { CollectionEntry } from 'astro:content';
-import { Image } from 'astro:assets';
-import BaseHead from '../components/BaseHead.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
-import BlogSidebar from '../components/BlogSidebar.astro';
-import Footer from '../components/Footer.astro';
-import ReadingProgress from '../components/ReadingProgress.astro';
-import MiniToc from '../components/MiniToc.astro';
-import SeriesNav from '../components/SeriesNav.astro';
-import LlmCopyMenu from '../components/LlmCopyMenu.astro';
-import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
-import RelatedPosts from '../components/RelatedPosts.astro';
-import type { KnowledgeGraph } from '../types/graph';
-import { loadKnowledgeGraph } from '../lib/knowledge-graph-loader';
-import StructuredData from '../components/StructuredData.astro';
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import BlogSidebar from "../components/BlogSidebar.astro";
+import Footer from "../components/Footer.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import Header from "../components/Header.astro";
+import LlmCopyMenu from "../components/LlmCopyMenu.astro";
+import MiniToc from "../components/MiniToc.astro";
+import ReadingProgress from "../components/ReadingProgress.astro";
+import RelatedPosts from "../components/RelatedPosts.astro";
+import SeriesNav from "../components/SeriesNav.astro";
+import StructuredData from "../components/StructuredData.astro";
+import { SITE_DIRECTION, SITE_LOCALE } from "../i18n/format";
+import { ui } from "../i18n/ui";
+import { loadKnowledgeGraph } from "../lib/knowledge-graph-loader";
+import type { KnowledgeGraph } from "../types/graph";
+import { calculateReadingTime, formatReadingTime } from "../utils/readingTime";
 
-type Props = CollectionEntry<'blog'>['data'] & {
-	relatedPosts?: Array<CollectionEntry<'blog'> & { sharedTopics: number }>;
-	nextPost?: CollectionEntry<'blog'> | null;
-	prevPost?: CollectionEntry<'blog'> | null;
+type Props = CollectionEntry<"blog">["data"] & {
+	relatedPosts?: Array<CollectionEntry<"blog"> & { sharedTopics: number }>;
+	nextPost?: CollectionEntry<"blog"> | null;
+	prevPost?: CollectionEntry<"blog"> | null;
 	headings?: Array<{ depth: number; slug: string; text: string }>;
 	bodyText?: string;
-	allPosts?: CollectionEntry<'blog'>[];
+	allPosts?: CollectionEntry<"blog">[];
 	postId?: string;
 };
 
@@ -40,9 +40,9 @@ const {
 	nextPost = null,
 	prevPost = null,
 	headings = [],
-	bodyText = '',
+	bodyText = "",
 	allPosts = [],
-	postId = ''
+	postId = "",
 } = Astro.props;
 
 // Calculate reading time
@@ -53,7 +53,7 @@ let knowledgeGraph: KnowledgeGraph | null = null;
 try {
 	knowledgeGraph = await loadKnowledgeGraph();
 } catch (error) {
-	console.warn('Unable to load knowledge graph:', error);
+	console.warn("Unable to load knowledge graph:", error);
 }
 ---
 

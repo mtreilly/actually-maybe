@@ -1,286 +1,83 @@
-# Accessibility and localisation review
+# Accessibility and localisation audit
 
-Worktree: `../actually-maybe-accessibility-i18n`, branch `quality/accessibility-i18n`.
-Tracking: `actually-maybe-zxb`.
+Worktree: `../actually-maybe-accessibility-i18n`.
+Branch: `quality/accessibility-i18n`. Issue: `actually-maybe-zxb`.
 
-## Barriers addressed
+The implementation and verification below follow both quality-goal documents.
+Completion remains unproven because the project-wide lint and Lighthouse gates
+are not satisfied. No merge or deployment has been performed.
 
-- Closed mobile navigation was visually hidden but its links remained focusable.
-  It now uses `inert`, and Escape closes it and restores focus to its toggle.
-- Several controls removed focus outlines. Global visible focus styling preserves
-  the keyboard indicator, including code-copy controls previously visible only on hover.
-- Search updated results without announcing them. A separate polite status announces
-  results and recovery advice without reading the entire result list.
-- Heading-copy actions were mouse-only. Each heading now keeps its heading semantics
-  and exposes a labelled keyboard-operable button.
-- Code-copy success and failure now announce through a live region. Clipboard
-  failures provide manual-copy advice. Escape from the markdown panel restores focus.
-- Reduced-motion styling removes transitions and animations across components.
+## Accessibility requirements and evidence
 
-## Localisation boundaries addressed
+| Concern | Change or scope | Evidence |
+| --- | --- | --- |
+| Keyboard navigation | Closed mobile navigation is inert; Escape restores toggle focus. Removed single-character shortcuts and their unfocused modal. Cmd/Ctrl+K remains. | Chrome at 375px: Tab skips closed links; Enter opens; Escape from Topics returns to toggle. |
+| Article navigation | Section close/Escape returns focus; selecting a section focuses its heading. | Chrome keyboard checks on representative article. |
+| Semantics | Exactly one first H1; related content is an H2 section; sidebar/TOC labels are text in navigation; series follows article header. No nested time elements. | All 80 generated HTML pages pass heading regression; representative article has zero nested time elements. |
+| Names and descriptions | Theme exposes pressed state; decorative SVG hidden. Heading copy actions are labelled buttons and preserve heading names. Footnote preview describes reference without replacing original description. | Native AX tree and browser DOM inspection; five article heading/button names checked. |
+| Dynamic states and recovery | Search announces results. Copy success/failure announces status with manual recovery advice. Native Markdown download works without scripts. | Expected robotics result and status; copy output/status checked using clipboard substitute; denied clipboard checked; no-script Enter generated download event. |
+| Forms | No shipped form exists. NewsletterSignup and Sidenote are unused by published routes/posts. Contact uses email/social links. | Import/content search and contact-page source. No external submission performed. |
+| Focus visibility and targets | Visible focus across controls, code buttons visible on keyboard/touch, mobile nav/theme/section Close enlarged. | Keyboard operation verified; Close remains visible with doubled text. |
+| Contrast | Body/link/muted text checked on both main surfaces; tinted blockquotes now use body colour. | Light ratios 17.08/4.95/4.55; dark 16.12/6.98/6.99. Does not prove every custom surface/image. |
+| Layout and text size | Logical alignment/spacing; long TOC labels wrap. | 13 page families at 375/768/1440px: all 39 combinations one H1/no document overflow. Article at 200% root text and 375px fits. Desktop main 680px. |
+| Motion | Reduced-motion removes transitions/animations. | Chrome emulation: search nav and article progress transitions 0s. |
+| Temporary previews | Pointer can travel into footnote preview; focused reference keeps it visible; Escape removes it; long preview scrolls within viewport. | Final Chrome checks: focus retention, pointer-only enter/exit, native footnote jump. At 320×400, long preview bounds 10–390px and wheel scrolling advances 400px. |
+| Cognitive load | Native summary, ordinary links, clear recovery messages, no shortcut modal. | Runtime menu and no-script checks. |
 
-- Dates use a shared formatter with the Irish English locale and UTC calendar-day
-  interpretation, avoiding build-machine time-zone shifts.
-- Graph dates and related-post dates use the same formatter.
-- Presentation sorting uses an explicit locale-aware collator.
-- Reading durations use Intl unit and number formatting.
-- Dynamic search, copy feedback, and generated accessible names live in meaningful
-  UI resources. Stable action identifiers and exported ISO timestamps remain semantic.
+## Internationalisation requirements and evidence
 
-## Evidence and remaining work
+| Concern | Boundary or scope | Evidence |
+| --- | --- | --- |
+| UI and accessibility copy | Meaningful resources for shared navigation, search, copy, theme, article, series, collections, and type labels. Author prose remains content. | `src/i18n/ui.ts`, shared components and scripts. |
+| Grammar and pluralisation | Full messages for search/collection/connection counts and series progress; explicit type plural labels; no identifier capitalisation or appended s. | Resources and rendered two-part series fixture. |
+| Dates and time zones | Shared Irish English date formatter uses UTC calendar days. Archive HTML/Markdown group by UTC year. | Tests in opposite time zones and German date locale; rendered dates. |
+| Numbers and lists | Intl number/unit/list formatting, explicit collation locale. | German grouping/decimal, Swedish/German sorting, Arabic numbering tests. Graph JSON keeps numeric values. |
+| Language and direction | Site locale/direction are presentation constants, used by every HTML page. Logical text alignment/spacing. | Source scan; synthetic Arabic expanded labels at 375px RTL wrap without overflow. |
+| Names and addresses | Identity data retains full names, email, postal address, and profiles. No parsing into cultural name components. | `src/data/identity.ts`, contact and structured-data output tests. |
+| Exports | Markdown HTML equivalents share count resources; ISO dates, route/domain identifiers, graph numbers remain semantic. | Markdown and negotiation regression suite. |
+| Unsupported product paths | No payment/currency, application email/notification, or PDF generation flow exists. No language-bearing UI images were added. | Route/component/data review. Blog images/prose remain authored content. |
+| Translation context | Resources group copy by interaction and accept semantic parameters. Adding a language requires translated resources/content plus locale/direction changes, not domain/schema changes. | Resource and formatting APIs. No claim of a reviewed second-language translation. |
 
-Node 24 Astro build, middleware TypeScript compile, and generated inline browser-script
-syntax checks pass. Formatting tests exercise opposite time zones, German dates,
-Swedish/German collation, and Arabic numbering.
+## Validation
 
-This is not a completed audit. Runtime keyboard, accessibility-tree, clipboard failure,
-mobile/zoom, dark-mode, and reduced-motion checks remain. Playwright MCP cannot launch
-because its configured Chrome-for-Testing binary is missing; Chrome DevTools MCP
-returned Target closed. These are tooling observations, not evidence of usable UI.
+A fresh build and the complete package test sequence pass with installed Node
+24.21.0 and local executables. Commands cover middleware TypeScript compilation,
+Markdown smoke tests, mention detection, Accept parsing, graph snapshot,
+middleware and end-to-end negotiation, agent readiness, generated browser-script
+syntax, locale formatting, storage-denied theme bootstrap, and all-page headings.
+Direct executables were used because pnpm policy verification stalled.
 
-Review still needs to cover static navigation labels and page copy boundaries,
-markdown no-JavaScript recovery, storage-disabled theme controls, long text and RTL,
-forms and unused components, contrast, and full regression checks. No translated blog
-content or language switcher is required by the goals; adding another locale should
-require presentation resources and formatting changes rather than domain changes.
+The generated theme bootstrap was executed with storage access throwing for both
+system themes. It still enables progressive enhancement and selects the expected
+theme. Chrome also verified theme operation after storage becomes unavailable.
+Copy success tests use a temporary clipboard substitute and verify actual Markdown
+and canonical URL output; they do not read or overwrite the system clipboard.
+Native clipboard permission behaviour remains browser-controlled.
 
-## Follow-up: native recovery and theme operation
+Temporary two-part series fixtures verified H1 order, named navigation, progress,
+current-part markup, and ordinary links. Fixtures were removed in a finally block
+and actual content rebuilt. Temporary browser mutations and emulation overrides
+were cleared, and review tabs closed.
 
-Removed single-character shortcuts and their unfocused custom modal. These keys
-could interfere with assistive navigation, had duplicate initialisation, and the
-modal contradicted the project's no-modal policy. Header Cmd/Ctrl+K search remains.
+Biome 2.5.14 was located at `/opt/homebrew/bin/biome`. All 45 changed supported
+files pass with exit 0 after safe formatting and callback cleanup. There are 221
+warnings, largely template-use false positives from Astro's partial support;
+unsafe unused-value removal was not applied. No claim of zero warnings is made.
 
-Theme initialisation and changes tolerate unavailable storage. The dark-mode
-button exposes its pressed state, hides decorative SVGs from assistive technology,
-has a 44px target, and is hidden when JavaScript is unavailable.
+## Remaining project gates and limitations
 
-Markdown options retain native summary semantics and a plain Open markdown link.
-Without JavaScript, the details element opens the link and hides copy buttons;
-with JavaScript, the link also provides recovery from denied clipboard access.
-Shared navigation names and labels now live in UI resources. Footer branding no
-longer uses address semantics for text that is not contact information.
+- Repository-wide Biome fails outside this patch. A clean archive of main reports
+  117 errors and 202 warnings. The worktree's source check also fails; build-output
+  scans are irrelevant. The changed-file check passes. This audit does not silently
+  fix unrelated baseline code or claim the project-wide gate passed.
+- Lighthouse is not installed/cached. Registry DNS fails. The available DevTools
+  Lighthouse connector cannot connect: Target closed. Its audit excludes
+  performance in any case. No Lighthouse >90 score is claimed.
+- Standalone Playwright cannot launch either installed Chrome binary. Runtime
+  checks used the functioning Chrome extension instead.
+- Browser coverage is Chrome and representative interactions. No human screen-
+  reader session, second-language content review, exhaustive image contrast audit,
+  or cross-browser certification is claimed.
 
-A fresh Node 24 build, generated-script check, calendar/locale tests, and agent
-readiness checks pass after these changes. A standalone Playwright runtime check
-was prepared using the cached Playwright package and each installed Chrome
-executable. Both browser launches terminated before any test ran. No keyboard,
-no-JavaScript, or theme runtime pass is claimed from that attempt. Continue with
-another available browser surface or repair browser launching before completion.
-
-## Runtime evidence through Chrome extension
-
-The computer-use Chrome extension successfully opened this worktree's preview at
-`http://localhost:4322/search/`. Searching for robotics exposed the expected post
-and `1 post found.` in the native accessibility tree. At 375 × 812, collapsed
-navigation links were absent from that tree. Tab from Toggle navigation focused
-the search field. Enter opened the menu; Escape from Topics closed it and
-restored focus to Toggle navigation. The temporary viewport was reset and the
-review tab closed. This resolves the browser-access obstacle for ordinary UI
-checks, although standalone Playwright launch failures remain.
-
-Further inspection found that the mobile sections panel closed without returning
-focus. Close and Escape now return to its toggle; choosing a section focuses the
-destination heading. The nonfunctional toggle is hidden without JavaScript,
-whilst normal article headings and fragment URLs remain readable. These changes
-still require runtime verification. Removed nested time markup and its machine-
-time-zone date title from post-list dates; FormattedDate supplies the sole time.
-
-## Collection presentation and regression evidence
-
-Archive year grouping uses UTC in HTML and Markdown, matching displayed calendar
-dates. Page language attributes use the shared site locale rather than a separate
-hardcoded language. Post and topic counts use contextual plural resources and
-locale-aware numbers. Type headings and descriptions use explicit resources,
-without capitalising identifiers or appending an English plural suffix. Domain
-identifiers and canonical route segments remain unchanged. Archive and type lists
-now use a single time element per displayed date.
-
-The entire package test sequence passed using the installed Node 24 interpreter
-and locally installed executables: middleware compile, Markdown smoke tests,
-mention detection, Accept negotiation, graph snapshot, middleware negotiation,
-end-to-end negotiation, agent readiness, client-script syntax, and locale tests.
-Invoking those executables directly avoids pnpm's stalled policy verification;
-this is evidence for the same test commands, not a successful pnpm invocation.
-
-Remaining verification includes section-panel focus at runtime, clipboard failure
-and no-JavaScript recovery, storage-denied theme operation, expanded text/RTL,
-contrast, reduced motion, and visual layouts at required widths. Shared controls
-have resource boundaries; remaining reusable content and generated labels need a
-final localisation review. The goal is still active.
-
-## Article interaction evidence
-
-At 375 × 812 in Chrome, Enter on Sections opened its panel and focused the first
-section link. Escape returned focus to Sections with aria-expanded false.
-Selecting the first link focused `building-up-the-intuition` and navigated to its
-fragment. Enter on the Markdown summary exposed both copy buttons and the Open
-markdown recovery link. Escape from a copy button closed it and returned focus
-to Markdown. No horizontal document overflow was present during these checks.
-
-The native accessibility tree revealed copy-button labels appended to heading
-names. Heading enhancement now preserves the original heading name independently
-of the action's label. Read-only browser inspection verified both names on all
-five headings in the representative article after rebuilding. The same page has
-zero nested time elements after the sidebar date fix. Article sidebar, TOC, and
-related labels now use UI resources; shared topic names use Intl.ListFormat;
-TOC indentation uses logical CSS properties. Browser viewport restored afterwards.
-
-These checks do not prove clipboard success/failure, no-JavaScript recovery,
-storage denial, contrast, full zoom/RTL/text expansion, or all page layouts.
-
-## No-script search and Markdown download
-
-With script execution disabled and a 375px viewport, search retained all 15 static
-posts, mobile navigation had opacity 1, the theme button was hidden, and the page
-had no horizontal overflow. Native Markdown details opened and exposed its link
-without the nonfunctional copy buttons.
-
-Following Open markdown to a valid text/markdown response did not give Chrome a
-readable page. HTTP inspection confirmed 200, text/markdown, and the correct post
-body. Changed recovery to an explicitly labelled Download markdown link with the
-native download attribute, and aligned failure messages with downloading the file
-and copying its text. After rebuilding and disabling cache, browser inspection
-confirmed the new label; clicking it produced a successful download event.
-That final download check had scripts enabled. The complete no-script download
-path remains to verify. An earlier download-observation timeout reset the tool
-session; it was not counted as a test pass. Script/cache/viewport overrides were
-restored, and the test tab closed.
-
-## Motion, widths, and series presentation
-
-On the representative article at 375, 768, and 1440px in Chrome, document width
-stayed within the viewport. At 1440px, the main reading column measured 680px.
-The 375px screenshot showed readable dark-mode text and wrapping title/topic
-links, with navigation and the sections control visible. Computed colours were
-background rgb(17,24,39), body rgb(243,244,246), muted rgb(156,163,175), and prose
-links rgb(96,165,250). These observations cover this representative layout, not
-all page families or expanded translations.
-
-Emulated reduced motion yielded 0s navigation transitions on search and 0s on
-the article reading-progress pseudo-element. Media and viewport overrides were
-reset and the review tab closed.
-
-Series messages now use complete progress/post functions with locale-aware
-numbers; previous/next/updated copy is in article resources. SeriesNav accepts
-only the post identifier and real typed series metadata, removing the fabricated
-post and its any cast. No currently published series fixture exists to prove
-that path's rendered output; it still needs representative verification.
-
-## Expanded text and denied APIs
-
-Removed mobile TOC no-wrap clipping: section labels wrap fully instead of becoming
-indistinguishable truncated titles. Close has a 44px target. Text alignment,
-indentation, margins, and leading borders use logical properties across reader
-layouts. HTML direction is defined next to the site locale.
-
-In a fresh Chrome article tab at 375px, temporarily setting document direction to
-RTL and prepending long Arabic section labels produced wrapping links (44–61px
-high), equal client/scroll widths, and no horizontal document overflow. These
-synthetic labels test layout only; they are not reviewed translations.
-
-At desktop width, temporarily making localStorage throw and clipboard.writeText
-reject still allowed the theme button to update its pressed state. Markdown copy
-reported: `Unable to copy. Download the markdown file and copy its text manually.`
-This checks operation after storage becomes unavailable, not initial page loading
-with storage denied. An attempt to inject before navigation was rejected by the
-browser tool as unsupported; no pass is claimed for that scenario. All temporary
-page mutations were cleared by reload, viewport reset, and tab closure.
-
-Build, readiness, and generated browser-script syntax checks pass after the CSS
-and direction changes. Full width/zoom checks across other page families and
-storage-denied initialisation remain to verify.
-
-## Series fixtures, initialisation, and page-family widths
-
-A temporary two-part MDX-compatible Markdown series was built in this worktree.
-Both rendered articles had H1 as their first heading, named series navigation,
-correct Part 1/2 of 2 progress, and current-part/link markup. The series block was
-moved below the article header, and its heading replaced by the series navigation
-label. Fixtures were removed in a finally block and the actual content rebuilt.
-
-A regression check executes the generated theme bootstrap with storage access
-throwing. It verifies progressive-enhancement initialisation and the expected
-light/dark theme for both system preferences. It now runs in the package test
-sequence. This directly covers initial bootstrap denial; the earlier browser
-check covers operation after storage becomes unavailable.
-
-Chrome inspected 13 page families (home, about, contact, privacy, projects, now,
-archive, blog index, topics index, types index, search, graph, and 404) at 375,
-768, and 1440px. All 39 combinations had exactly one H1 and no horizontal document
-overflow. This is a geometry/heading check, not a complete visual or contrast audit.
-Viewport restored and test tab closed. The full local Node 24 test sequence passed
-again, including the new storage-denial check.
-
-## Recovery completion and text scaling
-
-The full no-JavaScript Markdown download path passed in Chrome: script execution
-was disabled, the document had no js class or generated heading-copy buttons,
-native summary opened only Download markdown, and Enter on the link produced a
-download event. A locator click initially failed because its evaluation timed out
-with scripts disabled; using native keyboard activation resolved the test.
-
-Using a temporary clipboard substitute on the loaded article, copy Markdown
-produced the correct title/frontmatter and Markdown copied status; copy link
-produced the canonical .md URL and Markdown link copied status. This verifies the
-success branch/output without altering or reading the system clipboard. Native
-clipboard permissions remain browser-controlled; denied access already has a
-verified recovery branch. Reload removed the substitute.
-
-At 375px with root font size doubled to 32px, the article and sections panel
-remained within the document width; Close remained visible. Temporary scale,
-script, cache, and viewport changes were restored and the tab closed.
-
-Shared colour contrast against light/dark body surfaces measured respectively:
-body 17.08/16.12, muted 4.55/6.99, and links 4.95/6.98. Tinted blockquote surfaces
-reduce muted contrast, so blockquotes now use body text colour. These ratios do
-not establish contrast for every custom surface or image. Biome/Lighthouse are
-not cached; another registry connectivity check failed with DNS resolution.
-They remain external verification limits, not successful checks.
-
-Unused NewsletterSignup and Sidenote components are not imported by published
-pages/posts; no live form submission or validation flow exists. Contact exposes
-email/social links with full names/addresses from identity data. There are no
-payments, currencies, app notifications, emails, or PDF generation paths to
-localise in the shipped reader interface. Published prose remains authored
-English content, separate from shared controls and semantic data exports.
-
-## Footnote previews and graph formatting
-
-Footnote previews now associate their text with the reference using
-aria-describedby, preserving existing description tokens. Escape/blur removes
-only the preview token. Pointer exit gives a short grace period to reach the
-preview, which supports pointer interaction and vertical scrolling. Preview
-position/height is constrained to the viewport. In Chrome, keyboard focus exposed
-both footnote-label and footnote-preview; Escape left footnote-label intact and
-removed the preview; Enter still navigated to the native footnote fragment.
-Pointer travel and long-preview scrolling still need a direct interaction check.
-
-Graph statistics use the shared locale-aware number formatter. Connection labels
-and grouped-post counts use complete contextual plural resources. Decimal/group
-formatting is tested with German 1.234,5. Semantic JSON graph numbers remain
-numbers. The generated build and browser-script syntax checks pass.
-
-## Broad heading regression and remaining gates
-
-A scan of all generated HTML found H1-to-H3 skips in the two short posts
-mountain-to-climb and notes-on-robotics-untapped-potential. Related-post sections
-now use H2; sidebar/TOC labels are plain text within their navigation structures.
-The new test-page-headings command checks every HTML page, rather than only the
-readiness audit's representative routes. It passes for all 80 generated pages
-and is included in the package test sequence.
-
-Raw browser mouse movement from a footnote reference into its preview preserved
-visibility beyond the 200ms grace period; leaving dismissed it. The reference
-was initially focused by the test. Follow-up code preserves previews whilst the
-reference retains keyboard focus. Pointer-only verification of that final code
-and long-preview scrolling still need checking.
-
-Collection counts in HTML and generated Markdown/llms lists now use common
-locale-aware number/plural resources. Breadcrumb and graph grouping labels also
-live in resources. The full local test sequence passed before the final heading
-fix; the fresh build, all-page heading test, and readiness audit pass afterwards.
-
-Completion remains unproven: verify final preview focus/pointer/scroll behaviour,
-then run the final complete test sequence and review the full diff. Biome and
-Lighthouse remain unavailable because no cached tool exists and registry DNS
-fails. These required project gates must not be reported as passed.
+These limits are explicit evidence gaps. The goal remains active pending the
+required project gates and a final completion decision; the issue stays open.

@@ -1,24 +1,25 @@
 ---
-import { ui } from '../i18n/ui';
-import type { CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
+import { ui } from "../i18n/ui";
 
 interface Props {
 	currentPostId: string;
-	series: NonNullable<CollectionEntry<'blog'>['data']['series']>;
-	allPosts: CollectionEntry<'blog'>[];
+	series: NonNullable<CollectionEntry<"blog">["data"]["series"]>;
+	allPosts: CollectionEntry<"blog">[];
 }
 
 const { currentPostId, series, allPosts } = Astro.props;
 
 // Find all posts in this series
 const seriesPosts = allPosts
-	.filter(post => post.data.series?.name === series.name)
+	.filter((post) => post.data.series?.name === series.name)
 	.sort((a, b) => (a.data.series?.part || 0) - (b.data.series?.part || 0));
 
 // Get previous and next posts in series
-const currentIndex = seriesPosts.findIndex(p => p.id === currentPostId);
+const currentIndex = seriesPosts.findIndex((p) => p.id === currentPostId);
 const prevPost = currentIndex > 0 ? seriesPosts[currentIndex - 1] : null;
-const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentIndex + 1] : null;
+const nextPost =
+	currentIndex < seriesPosts.length - 1 ? seriesPosts[currentIndex + 1] : null;
 ---
 
 <nav class="series-nav" aria-label={series.name}>

@@ -1,22 +1,22 @@
 ---
-import { ui } from '../i18n/ui';
-import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
-import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import StructuredData from '../components/StructuredData.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import { SITE_TITLE } from '../consts';
-import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+import { getCollection } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import Header from "../components/Header.astro";
+import StructuredData from "../components/StructuredData.astro";
+import { SITE_TITLE } from "../consts";
+import { SITE_DIRECTION, SITE_LOCALE } from "../i18n/format";
+import { ui } from "../i18n/ui";
+import { calculateReadingTime, formatReadingTime } from "../utils/readingTime";
 
-const posts = (await getCollection('blog')).sort(
+const posts = (await getCollection("blog")).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
 // Group posts by year
 const postsByYear = new Map<number, typeof posts>();
-posts.forEach(post => {
+posts.forEach((post) => {
 	const year = post.data.pubDate.getUTCFullYear();
 	if (!postsByYear.has(year)) {
 		postsByYear.set(year, []);

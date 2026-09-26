@@ -1,30 +1,33 @@
 ---
-import { ui } from '../../i18n/ui';
-import { SITE_LOCALE, SITE_DIRECTION, formatNumber } from '../../i18n/format';
-import { compareText } from '../../i18n/format';
-import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import StructuredData from '../../components/StructuredData.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import { SITE_TITLE } from '../../consts';
+import { getCollection } from "astro:content";
+import BaseHead from "../../components/BaseHead.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import StructuredData from "../../components/StructuredData.astro";
+import { SITE_TITLE } from "../../consts";
+import {
+	compareText,
+	formatNumber,
+	SITE_DIRECTION,
+	SITE_LOCALE,
+} from "../../i18n/format";
+import { ui } from "../../i18n/ui";
 
-const posts = await getCollection('blog');
+const posts = await getCollection("blog");
 
 // Count posts per topic
 const topicCounts = new Map<string, number>();
-posts.forEach(post => {
-	post.data.topics.forEach(topic => {
+posts.forEach((post) => {
+	post.data.topics.forEach((topic) => {
 		topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1);
 	});
 });
 
 // Sort topics by count (descending), then alphabetically
-const sortedTopics = Array.from(topicCounts.entries())
-	.sort((a, b) => {
-		if (b[1] !== a[1]) return b[1] - a[1]; // Sort by count
-		return compareText(a[0], b[0]); // Then alphabetically
-	});
+const sortedTopics = Array.from(topicCounts.entries()).sort((a, b) => {
+	if (b[1] !== a[1]) return b[1] - a[1]; // Sort by count
+	return compareText(a[0], b[0]); // Then alphabetically
+});
 
 // Group topics by frequency
 const groupTopics = (topics: Array<[string, number]>) => {

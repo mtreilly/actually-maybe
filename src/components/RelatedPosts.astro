@@ -1,7 +1,7 @@
 ---
-import { ui } from '../i18n/ui';
-import { formatDate } from '../i18n/format';
-import type { KnowledgeGraph } from '../types/graph';
+import { formatDate } from "../i18n/format";
+import { ui } from "../i18n/ui";
+import type { KnowledgeGraph } from "../types/graph";
 
 interface Props {
 	currentPostId: string;
@@ -12,7 +12,9 @@ interface Props {
 const { currentPostId, graph, maxRelated = 5 } = Astro.props as Props;
 
 const relatedEdges = graph.edges
-	.filter((edge) => edge.source === currentPostId || edge.target === currentPostId)
+	.filter(
+		(edge) => edge.source === currentPostId || edge.target === currentPostId,
+	)
 	.sort((a, b) => b.weight - a.weight)
 	.slice(0, maxRelated);
 
@@ -27,7 +29,14 @@ const relatedPosts = relatedEdges
 
 		return { post, edge };
 	})
-	.filter((item): item is { post: KnowledgeGraph['posts'][number]; edge: KnowledgeGraph['edges'][number] } => Boolean(item));
+	.filter(
+		(
+			item,
+		): item is {
+			post: KnowledgeGraph["posts"][number];
+			edge: KnowledgeGraph["edges"][number];
+		} => Boolean(item),
+	);
 
 if (relatedPosts.length === 0) {
 	return null;
