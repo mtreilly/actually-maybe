@@ -1,0 +1,261 @@
+# Active architectural findings
+
+These are researched recommendations, not completed implementation tasks.
+Reviewed 2026-09-26. See [verification](../review.md) and [change traces](../traces/representative-changes.md).
+
+## F-001: Publication eligibility has no effective owner
+
+Classification: Missing abstraction / ambiguous ownership (dangerous)
+
+Confidence: High
+
+Area: Publishing
+
+### Observation
+
+The active glob-based schema has no `draft` field. The older content schema has
+`draft` and a different series shape. All public collection readers load every
+entry without filtering. A temporary `draft: true` post produced an article,
+Markdown file, and RSS entry. A second probe also appeared in search and llms.txt.
+
+### Why it matters
+
+The writer-facing contract says a draft is excluded. A writer cannot safely keep
+an unpublished thought in the content directory. Adding a filter in just the blog
+route would still expose it through feeds, Markdown, graph consumers, and indexes.
+The conflicting schema makes the missing boundary harder to recognise.
+
+### Evidence
+
+- `src/content.config.ts`: effective schema, no draft field.
+- `src/content/config.ts`: legacy `draft` default and string series.
+- `src/pages/blog/[...slug].astro`, `[...page].md.ts`, `rss.xml.ts`,
+  `llms.txt.ts`, `search.astro`: unfiltered collection reads.
+- `src/lib/knowledge-graph-loader.ts` and integration data-store parsing: further
+  public-data selection paths.
+- Installed Astro `dist/content/utils.js`, `searchConfig`: root configuration wins.
+- [Review probes](../review.md) confirm publication, not merely a missing type.
+
+### Recommendation
+
+Keep one effective schema with draft metadata and a named published-post selection
+boundary. Route every public projection through that boundary, including graph
+construction. Preserve private/editorial access separately if needed. Remove the
+obsolete schema after verifying nothing consumes its old contract.
+
+### Do not do
+
+Do not add independent draft predicates to every renderer or assume filtering HTML
+also filters Markdown/RSS. Do not introduce a CMS or repository framework.
+
+### Revisit when
+
+Resolve only after a draft is absent from direct output paths, collection pages,
+search, RSS, llms.txt, graph nodes/edges, sitemap, and the middleware manifest in
+both cold and changed-content warm builds.
+
+## F-002: A current build has competing graph snapshot owners
+
+Classification: Ambiguous ownership / accidental complexity (expensive)
+
+Confidence: High
+
+Area: Build-time discovery
+
+### Observation
+
+The integration builds a setup snapshot from Astro's serialised data store.
+Rendering builds another graph through the collection-backed loader. Both write a
+disk cache; the JSON endpoint renders the public file, and finalisation overwrites
+it with the setup graph when one exists. Mention suggestions run only on the setup
+path. The universal head also loads the graph for statistics.
+
+A changed-content warm probe produced a 16-post disk handoff and graph HTML, but
+final JSON contained 15 posts. The temporary post was missing from the final graph.
+
+### Why it matters
+
+Debugging one discovery result requires understanding a framework-internal format,
+module cache, integration closure, disk file, route render, and hook order. A new
+post can appear in rendered discovery whilst disappearing from the advertised JSON.
+Cache warmth changes derived output ownership. The prior stale-render-cache fix
+helps one path but does not establish a single build snapshot.
+
+### Evidence
+
+- `src/integrations/knowledge-graph.ts`: setup parsing, closure `graphData`,
+  conditional suggestions, and final JSON write.
+- `src/lib/knowledge-graph-loader.ts`: memory cache and disk handoff.
+- `src/pages/data/graph.json.ts`: another writer of the same public file.
+- `BaseHead.astro`, `BlogPost.astro`, `/graph`: collection-backed consumers.
+- Commits `8029b71` (cold-build handoff) and `1338494` (stale loader input fix).
+- [Warm and cold experiments](../review.md).
+
+### Recommendation
+
+Make finalisation consume the snapshot used by rendering, with one owner of public
+JSON. Derive suggestions from that same snapshot. Prefer the public collection API
+to parsing Astro internals. Treat disk persistence as a handoff/output rather than
+an alternative authority. Evaluate whether every head needs graph statistics.
+
+### Do not do
+
+Do not restore unconditional disk-cache reads in the loader. Do not add more hashes,
+locks, invalidation flags, or fallback writers to reconcile competing authorities.
+Do not remove necessary build/request separation with a browser graph fetch.
+
+### Revisit when
+
+Verify changed-content warm builds, builds without graph input caches, removed
+posts, and all consumers agreeing on the post set. Observe dev-session cache
+refresh separately: this review did not run a dev hot-reload experiment.
+
+## F-003: Related-reading meaning is distributed across three rankings
+
+Classification: Uncertain boundary / duplicated policy (confusing)
+
+Confidence: High on divergence; Medium on desired unification
+
+Area: Discovery
+
+### Observation
+
+The sidebar ranks shared-topic counts with a binary recency factor and a date tie
+break, showing three. The footer ranks graph weights combining proportional topic
+overlap and pairwise date proximity, showing five. Markdown ranks shared-topic
+counts with decay relative to the build date, showing five.
+
+The sidebar compares `postAge` (elapsed milliseconds) to `oneYearAgo` (an absolute
+epoch timestamp), so its stated one-year rule does not do what its comment says.
+The footer's label suggests discussion/reference, but edges only mean shared topics.
+
+### Why it matters
+
+Changing recommendation relevance has three policy locations and cannot guarantee
+consistent selections across representations. Copying the sidebar ranking into
+Markdown would also copy a dimensional error. Yet making all three identical
+without deciding their meanings could erase useful distinctions.
+
+### Evidence
+
+- `src/pages/blog/[...slug].astro`: `postAge < oneYearAgo`, ranking and limit.
+- `src/pages/[...page].md.ts`: `relatedPostsFor`, continuous decay and limit.
+- `src/lib/graph-utils.ts`: `calculateEdgeWeight`, topic normalisation and pairwise dates.
+- `src/components/RelatedPosts.astro`, `BlogSidebar.astro`, `src/i18n/ui.ts`.
+
+### Recommendation
+
+Correct the sidebar age comparison with explicit elapsed duration and a controlled
+clock test. Decide whether sections mean topic similarity, actual references, or
+series membership. Share a selector only where the meaning is genuinely the same;
+keep rendering limits local. Use labels that describe the implemented relationship.
+
+### Do not do
+
+Do not turn all discovery into a generic strategy/plugin engine. Do not add semantic
+embeddings to resolve a basic ownership/meaning disagreement.
+
+### Revisit when
+
+The product meaning and boundary dates are tested, and format differences are
+intentional and documented rather than silently algorithm-dependent.
+
+## F-004: Shared identity facts still have independent copies
+
+Classification: Stable duplication / ambiguous ownership (locally confusing)
+
+Confidence: High
+
+Area: Identity and trust
+
+### Observation
+
+Contact/privacy pages and several identity outputs use `identity.ts`. The human
+profile still embeds email/social URLs; agent context embeds the name and contact
+address. `SITE_TITLE` separately repeats the author name. The AI profile contains
+additional fixed identity/narrative values. Some prose appropriately differs by audience.
+
+### Why it matters
+
+Changing an email or profile URL in the designated owner leaves some public
+representations stale. A developer must inspect human, agent, and structured-data
+surfaces despite the documented single-source contract. This is legitimate
+cross-output projection with accidental repeated facts.
+
+### Evidence
+
+- `src/data/identity.ts`: stated single source of truth and shared constants.
+- `src/data/about.ts`: `elsewhere.links` contains independent mail/social URLs.
+- `src/pages/about.llm.ts`: literal name/contact text.
+- `src/pages/.well-known/ai-profile.ts`, `src/consts.ts`.
+- `src/lib/structured-data.ts`: person name comes from about, contact from identity.
+
+### Recommendation
+
+Derive repeated email/profile/name facts from existing data owners. Keep editorial
+biographies and audience-specific context separate. Test changed facts across both
+human and machine outputs rather than asserting only today's fixed strings.
+
+### Do not do
+
+Do not merge every identity narrative into a generic profile schema, add localisation
+infrastructure for a single name, or invent new personal facts during this review.
+
+### Revisit when
+
+A contact or profile change requires one factual edit and every output reflects it.
+
+## F-005: Markdown route and content promises have parallel owners
+
+Classification: Structural problem / change amplification (confusing)
+
+Confidence: High
+
+Area: Machine-readable access
+
+### Observation
+
+Base routes are enumerated in the Markdown endpoint and dispatched by a separate
+builder map. HTML pages live in filesystem routes. The manifest records only pairs
+that exist. Current output has HTML but no Markdown sibling for `/graph`,
+`/type/guide`, and `/type/link`. HTML enumerates all four kinds; Markdown enumerates
+only kinds with posts and its type builder rejects empty lists.
+
+Home renders ten recent posts; Markdown slices eight without sorting its inputs.
+Search HTML offers every post; its Markdown projection refers to a nonexistent
+command palette and does not include that index. Existing documentation advertises
+Markdown on every route and some obsolete assistant-launcher behaviour.
+
+### Why it matters
+
+Adding or changing a page requires finding route enumeration, content builder,
+HTML template, and sometimes documentation. Negotiation can advertise available
+pairs correctly whilst missing the intended capability. Successful status/header
+checks do not prove readers and agents receive equivalent useful content.
+
+### Evidence
+
+- `src/pages/[...page].md.ts`: `basePages`, type enumeration, independent ranking.
+- `src/utils/staticMarkdown.ts`: `builders`, `buildHomeDoc`, `buildTypeDoc`, `buildSearchDoc`.
+- `src/pages/index.astro`, `search.astro`, `graph.astro`, `type/[type].astro`.
+- `src/integrations/route-manifest.ts`: inventory from actual output, not completeness policy.
+- Built manifest: 76 Markdown pairs, 79 listed HTML routes; built homepage counts 10/8.
+- README and graph usage guide claim capabilities the current code does not implement.
+
+### Recommendation
+
+Complete promised useful projections, including empty type pages and graph/search
+content, and explicitly align homepage selection/order. Keep content selection
+policy shared only where both formats promise it. Add output-level parity checks
+for representative pages and correct documentation to match implementation.
+
+### Do not do
+
+Do not replace filesystem routing with a generic page DSL or require every HTML
+layout detail to survive Markdown. Do not alter the working negotiation parser
+to hide missing build outputs.
+
+### Revisit when
+
+Coverage and semantic selections match the actual contract across populated and
+empty collections; adding a base page has an explicit Markdown completion step.

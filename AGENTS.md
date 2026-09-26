@@ -467,6 +467,14 @@ npx lighthouse http://localhost:4321 --view
 
 ## Workflow for AI Agents
 
+### Architectural context
+
+Read [`.gravity/README.md`](.gravity/README.md) before changing publishing,
+discovery, identity, or machine-readable access. It records observed ownership,
+necessary complexity, and accepted irregularities. Check findings against current
+code, and update the affected knowledge when a boundary changes or a finding is
+resolved. Recommendations there are not claims that the fixes have shipped.
+
 ### Issue Tracking with `bd` (beads)
 
 This project uses [`bd`](https://github.com/steveyegge/beads) for issue tracking, not markdown TODOs.
