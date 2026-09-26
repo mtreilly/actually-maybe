@@ -89,19 +89,27 @@ main {
 
 	.wide-layout {
 		display: grid;
-		grid-template-columns: 1fr 280px;
-		gap: 3.5rem;
-		max-width: 1400px;
+		/* Equal outer tracks keep the reading column centred independently of the sidebar. */
+		grid-template-columns: minmax(0, 1fr) minmax(0, 680px) minmax(0, 1fr);
+		gap: 2rem;
 		margin: 0 auto;
-		padding: 1.75rem 2rem 3.5rem;
+		padding: 1.75rem 1.5rem 3.5rem;
 	}
 
 	.wide-layout main {
-		max-width: 100%;
+		grid-column: 2;
+		min-width: 0;
+		width: 100%;
+		margin: 0;
 		padding: 0;
 	}
 
 	.wide-layout .sidebar {
+		grid-column: 3;
+		min-width: 0;
+		width: 100%;
+		max-width: 280px;
+		justify-self: start;
 		position: sticky;
 		top: 2rem;
 		height: fit-content;
