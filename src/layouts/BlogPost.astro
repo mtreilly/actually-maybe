@@ -110,9 +110,7 @@ try {
 		<div class="wide-layout">
 			<main>
 				<article>
-					{series && allPosts.length > 0 && (
-						<SeriesNav currentPostId={postId} series={series} allPosts={allPosts} />
-					)}
+
 				<header class="post-header">
 					<div class="post-header-top">
 						<div class="post-header-main">
@@ -137,6 +135,10 @@ try {
 						</div>
 					)}
 				</header>
+
+					{series && allPosts.length > 0 && (
+						<SeriesNav currentPostId={postId} series={series} allPosts={allPosts} />
+					)}
 
 				{heroImage && (
 					<div class="hero-image">

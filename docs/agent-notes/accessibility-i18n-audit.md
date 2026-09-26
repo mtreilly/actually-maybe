@@ -189,3 +189,24 @@ page mutations were cleared by reload, viewport reset, and tab closure.
 Build, readiness, and generated browser-script syntax checks pass after the CSS
 and direction changes. Full width/zoom checks across other page families and
 storage-denied initialisation remain to verify.
+
+## Series fixtures, initialisation, and page-family widths
+
+A temporary two-part MDX-compatible Markdown series was built in this worktree.
+Both rendered articles had H1 as their first heading, named series navigation,
+correct Part 1/2 of 2 progress, and current-part/link markup. The series block was
+moved below the article header, and its heading replaced by the series navigation
+label. Fixtures were removed in a finally block and the actual content rebuilt.
+
+A regression check executes the generated theme bootstrap with storage access
+throwing. It verifies progressive-enhancement initialisation and the expected
+light/dark theme for both system preferences. It now runs in the package test
+sequence. This directly covers initial bootstrap denial; the earlier browser
+check covers operation after storage becomes unavailable.
+
+Chrome inspected 13 page families (home, about, contact, privacy, projects, now,
+archive, blog index, topics index, types index, search, graph, and 404) at 375,
+768, and 1440px. All 39 combinations had exactly one H1 and no horizontal document
+overflow. This is a geometry/heading check, not a complete visual or contrast audit.
+Viewport restored and test tab closed. The full local Node 24 test sequence passed
+again, including the new storage-denial check.

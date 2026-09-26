@@ -21,10 +21,10 @@ const prevPost = currentIndex > 0 ? seriesPosts[currentIndex - 1] : null;
 const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentIndex + 1] : null;
 ---
 
-<div class="series-nav">
+<nav class="series-nav" aria-label={series.name}>
 	<div class="series-header">
 		<span class="series-badge">{ui.series.badge}</span>
-		<h3 class="series-title">{series.name}</h3>
+		<p class="series-title">{series.name}</p>
 		<span class="series-progress">{ui.series.progress(series.part, series.total)}</span>
 	</div>
 
@@ -57,7 +57,7 @@ const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentInde
 			)}
 		</div>
 	)}
-</div>
+</nav>
 
 <style>
 	.series-nav {
