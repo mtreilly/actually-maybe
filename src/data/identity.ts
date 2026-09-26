@@ -87,7 +87,7 @@ export const AGENT_NOT_FOR = [
 ];
 
 export const AGENT_HOW_TO_CALL = [
-	"Append `.md` to any route to get clean markdown, for example `/blog/agent-friendly-architecture.md`.",
+	"Append `.md` to any content page to get clean markdown, for example `/blog/agent-friendly-architecture.md`.",
 	"Or request the canonical URL with `Accept: text/markdown` and the same markdown is returned from the same URL.",
 	"Start from `/llms.txt` for the curated index, `/sitemap-index.xml` for every URL, and `/data/graph.json` for the topic graph.",
 	"Read `/about.llm` for author context, and `/.well-known/ai-profile` for the same thing as JSON.",

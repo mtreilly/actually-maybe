@@ -7,10 +7,11 @@ import StructuredData from "../../components/StructuredData.astro";
 import { SITE_TITLE } from "../../consts";
 import { SITE_DIRECTION, SITE_LOCALE } from "../../i18n/format";
 import { typeLabel, ui } from "../../i18n/ui";
+import { POST_TYPES } from "../../lib/post-types";
 import { getPublishedPosts } from "../../lib/published-posts";
 
 export async function getStaticPaths() {
-	const validTypes = ["note", "essay", "guide", "link"] as const;
+	const validTypes = POST_TYPES;
 	const posts = await getPublishedPosts();
 
 	return validTypes.map((type) => ({

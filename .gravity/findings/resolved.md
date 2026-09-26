@@ -66,3 +66,23 @@ email, and all four profile URLs, rebuilds, and confirms propagation and absence
 old facts in human HTML/Markdown, JSON-LD, AI profile, agent context/index, and trust
 pages. It restores the exact original source and rebuilds in a finally block.
 Passed on Node 24.21.0; no test identity remains in the source or output.
+
+## F-005: Content pages have useful Markdown counterparts
+
+Resolved 2026-09-26. Graph and empty guide/link pages lacked Markdown; home selected
+8 unsorted posts whilst HTML selected 10; search Markdown omitted its index.
+
+All 79 inventoried content routes now have Markdown siblings. Graph HTML/Markdown
+share page-specific group/connected-post selections. Both home representations use
+`selectLatestPosts`; static lists are chronological. Supported type vocabulary is
+shared by schema and route generation, so empty types remain addressable. Search
+Markdown contains every published post. Documentation describes actual search/copy
+controls and topic-graph semantics rather than assistant launchers or backlinks.
+
+Verification: output coverage checks every content route and compares ordered home,
+search, connected-post, and topic-group selections. Unit fixtures check 12 unordered
+posts, empty known types, rejection of unknown types, and the full search list.
+Middleware tests and the negotiation harness verify the formerly missing routes.
+All 21 configured test steps and repository TypeScript compilation passed with the
+installed tools on Node 24.21.0. The normal pnpm entrypoint stalled at its supply-chain
+metadata gate; this does not certify installation or live deployment.

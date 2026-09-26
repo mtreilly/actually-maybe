@@ -1,37 +1,52 @@
-# Knowledge Graph Usage
+# Knowledge graph usage
 
-## Overview
-The build pipeline generates a knowledge graph from every post so readers can follow related ideas without manual linking. Graph data is available as HTML (backlinks), `/graph`, and `/data/graph.json` for automation.
+The graph connects published posts that share frontmatter topics. It is a portable
+projection of the content collection, not a database or a map of explicit citations.
 
-## How It Works
-1. Build loads all posts from `src/content/blog`.
-2. Topics are parsed from frontmatter; a graph is constructed at build time.
-3. Backlinks render in each post footer.
-4. `/graph` serves a text-first view; `/data/graph.json` exposes the raw graph.
-5. Unlinked mentions are written to `docs/graph-suggestions.json` for optional manual linking.
+## Outputs
 
-## Maintenance
+- `/graph` and `/graph.md`: statistics, most-connected posts, and topic groups.
+- `/data/graph.json`: nodes, shared-topic edges, topic index, statistics, and generation time.
+- Article footer: “Topic connections”, ordered by graph edge weight.
+- `docs/graph-suggestions.json`: optional editorial suggestions derived after each build.
 
-### Weekly
-- Review `docs/graph-suggestions.json`.
-- If a suggestion makes sense, add a manual link (optional).
+Graph browsing and footer links work without JavaScript.
 
-### When Writing
-- Include accurate `topics` in frontmatter.
-- No extra metadata is required; the graph updates automatically on build.
+## Ownership and freshness
 
-## Manual Linking (Optional)
-```
-relatedPosts:
-  - slug: "spaced-repetition"
-    reason: "Discusses spacing effect in detail"
-```
+`getPublishedPosts()` supplies current public entries. `loadKnowledgeGraph()` owns
+the graph snapshot and reuses it only when the portable node inputs are unchanged.
+The JSON endpoint is its sole public file producer. The integration reads that
+completed output to refresh suggestions; it never overwrites JSON or parses Astro's
+internal data store. Persistent graph cache files are not inputs to this pipeline.
 
-## Endpoints
-- `/data/graph.json` – downloadable graph (JSON)
-- `/graph` – static exploration page
+Nodes carry title, publication date, topics, type, description, and estimated word
+count. Edges currently implement only shared topics. Their weight combines
+proportional overlap (70%) and publication-date proximity within a year (30%).
+The footer does not imply that another post references or discusses this one.
 
-## Performance
-- Build adds <3s for ~100 posts (cached when unchanged).
-- `graph.json` stays <100KB by default.
-- Zero client-side JavaScript required for backlinks or `/graph`.
+Sidebar and Markdown related reading instead use shared-topic count with a recency
+weight, then newest-first ties. They share one policy; display limits remain local.
+Chronological and series neighbours remain separate.
+
+## Editorial suggestions
+
+Suggestions look for repeated topic terms in post descriptions, not full article
+bodies. They are approximate prompts for optional editorial review, not verified
+unlinked mentions and not graph edges. Add a normal Markdown link when useful.
+No `relatedPosts` frontmatter field is implemented or required.
+
+## When writing
+
+Use accurate topics and the effective content schema. `draft: true` excludes a post
+from graph nodes, edges, groups, statistics, suggestions, and all other public outputs.
+Series navigation uses ordered series metadata; declared future graph edge variants
+do not yet create series/reference relationships automatically.
+
+## Verification
+
+`test-graph-builds.ts` checks cold additions, warm edits/removal, public snapshot
+agreement, and suggestion refresh. `test-publication.ts` checks draft omission.
+`test-representations.ts` compares graph and other page content across formats.
+Graph computation is quadratic in post count; no unmeasured large-site performance
+or output-size guarantee is claimed.

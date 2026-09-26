@@ -1,23 +1,26 @@
+import type { CollectionEntry } from "astro:content";
 import assert from "node:assert/strict";
 import { buildBlogMarkdown } from "../src/utils/markdownExport";
 import { buildStaticMarkdown } from "../src/utils/staticMarkdown";
 
 const origin = "https://example.com";
 
-const samplePost = {
+const samplePost: CollectionEntry<"blog"> = {
+	collection: "blog",
 	id: "sample-post",
 	body: "# Sample Body\n\nContent paragraph.",
 	data: {
 		title: "Sample Post",
 		description: "Quick summary for testing.",
 		type: "note",
+		draft: false,
 		pubDate: new Date("2025-01-01T00:00:00.000Z"),
 		updatedDate: new Date("2025-01-02T00:00:00.000Z"),
 		heroImage: undefined,
 		topics: ["testing", "ai"],
 		series: undefined,
 	},
-} as any;
+};
 
 const blogMarkdown = buildBlogMarkdown({
 	post: samplePost,
@@ -106,3 +109,61 @@ assert.equal(
 );
 
 console.log("Markdown export smoke tests passed.");
+
+const unordered = Array.from(
+	{ length: 12 },
+	(_, index): CollectionEntry<"blog"> => ({
+		...samplePost,
+		id: `post-${index}`,
+		data: {
+			...samplePost.data,
+			pubDate: new Date(Date.UTC(2026, 0, index + 1)),
+		},
+	}),
+);
+const home = buildStaticMarkdown({
+	slug: "index",
+	canonicalUrl: `${origin}/`,
+	origin,
+	posts: unordered,
+});
+assert(home);
+const ids = [
+	...home.matchAll(/\]\(https:\/\/example.com\/blog\/(post-\d+)\//g),
+].map((match) => match[1]);
+assert.deepEqual(
+	ids,
+	[11, 10, 9, 8, 7, 6, 5, 4, 3, 2].map((index) => `post-${index}`),
+);
+assert.equal(
+	unordered[0].id,
+	"post-0",
+	"Projection must not mutate input order",
+);
+for (const kind of ["guide", "link"]) {
+	const empty = buildStaticMarkdown({
+		slug: `type/${kind}`,
+		canonicalUrl: `${origin}/type/${kind}/`,
+		origin,
+		posts: [],
+	});
+	assert(empty?.includes("0 posts"));
+	assert(empty?.includes("No posts of this type yet."));
+}
+assert.equal(
+	buildStaticMarkdown({
+		slug: "type/unknown",
+		canonicalUrl: `${origin}/type/unknown/`,
+		origin,
+		posts: [],
+	}),
+	null,
+);
+const search = buildStaticMarkdown({
+	slug: "search",
+	canonicalUrl: `${origin}/search/`,
+	origin,
+	posts: unordered,
+});
+assert(search?.includes("post-0/") && search.includes("post-11/"));
+assert(!search?.includes("command palette"));

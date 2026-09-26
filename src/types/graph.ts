@@ -1,10 +1,12 @@
+import type { PostType } from "../lib/post-types";
+
 export interface PostNode {
 	id: string;
 	slug: string;
 	title: string;
 	date: string;
 	topics: string[];
-	type: "note" | "essay" | "guide" | "link";
+	type: PostType;
 	wordCount?: number;
 	excerpt?: string;
 }

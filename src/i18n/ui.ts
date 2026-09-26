@@ -1,6 +1,23 @@
 import { SITE_LOCALE } from "./format";
 
 export const ui = {
+	graph: {
+		title: "Knowledge Graph",
+		description: "Explore how posts connect through shared topics and ideas.",
+		mostConnected: "Most connected posts",
+		topics: "Topics & posts",
+		postsLabel: "Posts",
+		connectionsLabel: "Connections",
+		topicsLabel: "Topics",
+		averageLabel: "Avg connections/post",
+		dataLink: "Graph JSON",
+		unavailableDescription:
+			"The graph is unavailable. You can still browse published writing from the blog and topic index.",
+		emptyConnections:
+			"No connections yet. Publish a few posts with overlapping topics to populate this list.",
+		topicsDescription:
+			"Posts are grouped by the topics they share. Expand a topic to browse its writing.",
+	},
 	series: {
 		badge: "Part of a series",
 		progress: (part: number, total?: number): string =>
@@ -26,6 +43,7 @@ export const ui = {
 			`Shared topics: ${new Intl.ListFormat(SITE_LOCALE).format(topics)}`,
 	},
 	collections: {
+		emptyType: "No posts of this type yet.",
 		connectionCount: (count: number): string =>
 			new Intl.PluralRules(SITE_LOCALE).select(count) === "one"
 				? "1 connection"
@@ -88,6 +106,9 @@ export const ui = {
 		headingSuccess: "Heading link copied",
 	},
 	search: {
+		indexTitle: "Every post",
+		markdownIntro:
+			"Browse every published post below. Open the search page for interactive title, description, and topic search. Cmd/Ctrl+K opens that page.",
 		label: "Search posts",
 		placeholder: "Search posts by title, description, or topic…",
 		noResults: "No posts found. Try a different search.",

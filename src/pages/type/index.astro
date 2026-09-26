@@ -6,6 +6,7 @@ import StructuredData from "../../components/StructuredData.astro";
 import { SITE_TITLE } from "../../consts";
 import { formatNumber, SITE_DIRECTION, SITE_LOCALE } from "../../i18n/format";
 import { typeLabel, ui } from "../../i18n/ui";
+import { POST_TYPES } from "../../lib/post-types";
 import { getPublishedPosts } from "../../lib/published-posts";
 
 const posts = await getPublishedPosts();
@@ -18,10 +19,10 @@ posts.forEach((post) => {
 });
 
 // Get all types with counts
-const types = Object.entries(ui.types).map(([name, copy]) => ({
+const types = POST_TYPES.map((name) => ({
 	name,
 	count: typeCounts.get(name) || 0,
-	description: copy.description,
+	description: ui.types[name].description,
 }));
 ---
 

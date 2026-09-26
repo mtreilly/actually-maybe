@@ -6,7 +6,9 @@ import { nowPage } from "../data/now";
 import { privacyPage } from "../data/privacy";
 import { projects } from "../data/projects";
 import { compareText } from "../i18n/format";
-import { ui } from "../i18n/ui";
+import { typeLabel, ui } from "../i18n/ui";
+import { selectLatestPosts } from "../lib/latest-posts";
+import { isPostType, POST_TYPES } from "../lib/post-types";
 import { type MarkdownDoc, serializeMarkdownDoc } from "./markdownExport";
 
 type BlogEntry = CollectionEntry<"blog">;
@@ -30,7 +32,7 @@ const buildHomeDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => ({
 	title: SITE_TITLE,
 	description: SITE_DESCRIPTION,
 	canonicalUrl: new URL("/", origin).toString(),
-	body: `# ${SITE_TITLE}\n${SITE_DESCRIPTION}\n\n## Latest writing\n${renderPostsList(posts.slice(0, 8), origin)}`,
+	body: `# ${SITE_TITLE}\n${SITE_DESCRIPTION}\n\n## Latest writing\n${renderPostsList(selectLatestPosts(posts), origin)}`,
 });
 
 const buildAboutDoc = (origin: string): MarkdownDoc => ({
@@ -76,7 +78,7 @@ const buildArchiveDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => {
 	}, {});
 	const sections = Object.keys(byYear)
 		.sort((a, b) => Number(b) - Number(a))
-		.map((year) => `### ${year}\n${renderPostsList(byYear[year], origin)}`)
+		.map((year) => `## ${year}\n${renderPostsList(byYear[year], origin)}`)
 		.join("\n\n");
 	return {
 		title: `Archive | ${SITE_TITLE}`,
@@ -144,11 +146,10 @@ const buildTypeOverviewDoc = (
 	posts.forEach((post) => {
 		counts.set(post.data.type, (counts.get(post.data.type) || 0) + 1);
 	});
-	const list = Array.from(counts.entries())
-		.sort((a, b) => compareText(a[0], b[0]))
+	const list = POST_TYPES.map((type) => [type, counts.get(type) ?? 0] as const)
 		.map(
 			([type, count]) =>
-				`- [${type}](${new URL(`/type/${type}/`, origin).toString()}) — ${ui.collections.postCount(count)}`,
+				`- [${typeLabel(type)}](${new URL(`/type/${type}/`, origin).toString()}) — ${ui.collections.postCount(count)}`,
 		)
 		.join("\n");
 	return {
@@ -164,13 +165,13 @@ const buildTypeDoc = (
 	posts: BlogEntry[],
 	type: string,
 ): MarkdownDoc | null => {
+	if (!isPostType(type)) return null;
 	const typePosts = posts.filter((post) => post.data.type === type);
-	if (!typePosts.length) return null;
 	return {
 		title: `${type} posts | ${SITE_TITLE}`,
 		description: `Posts of type ${type}`,
 		canonicalUrl: new URL(`/type/${type}/`, origin).toString(),
-		body: `# ${type} posts\n${renderPostsList(typePosts, origin)}`,
+		body: `# ${typeLabel(type)}\n${ui.collections.postCount(typePosts.length)}\n\n${typePosts.length ? renderPostsList(typePosts, origin) : ui.collections.emptyType}`,
 	};
 };
 
@@ -204,11 +205,11 @@ const buildPrivacyDoc = (origin: string): MarkdownDoc => ({
 		)}\n\n## Contact\n${privacyPage.contactEmail}\n\n_Last updated: ${privacyPage.lastUpdated}_`,
 });
 
-const buildSearchDoc = (origin: string): MarkdownDoc => ({
+const buildSearchDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => ({
 	title: `Search | ${SITE_TITLE}`,
 	description: "Search the blog",
 	canonicalUrl: new URL("/search/", origin).toString(),
-	body: `# Search\nThe on-site search experience is interactive. Use the command palette (⌘K / Ctrl+K) or visit ${new URL("/search/", origin).toString()} for the full UI.`,
+	body: `# Search\n${ui.search.markdownIntro}\n\n[${ui.search.label}](${new URL("/search/", origin)})\n\n## ${ui.search.indexTitle}\n${renderPostsList(posts, origin)}`,
 });
 
 const builders = new Map<
@@ -239,7 +240,7 @@ const builders = new Map<
 				: buildTypeOverviewDoc(origin, posts);
 		},
 	],
-	["search", (origin) => buildSearchDoc(origin)],
+	["search", (origin, posts) => buildSearchDoc(origin, posts)],
 	["contact", (origin) => buildContactDoc(origin)],
 	["privacy", (origin) => buildPrivacyDoc(origin)],
 ]);
@@ -259,7 +260,10 @@ export const buildStaticMarkdown = ({
 	const root = normalized.split("/")[0];
 	const builder = builders.get(root);
 	if (!builder) return null;
-	const doc = builder(origin, posts, normalized);
+	const sortedPosts = posts.toSorted(
+		(left, right) => right.data.pubDate.valueOf() - left.data.pubDate.valueOf(),
+	);
+	const doc = builder(origin, sortedPosts, normalized);
 	if (!doc) return null;
 	return serializeMarkdownDoc(doc);
 };

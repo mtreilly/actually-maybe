@@ -1,8 +1,11 @@
 import { createHash } from "node:crypto";
 import type { APIRoute } from "astro";
 import { VARY_VALUE } from "../lib/accept-negotiation";
+import { loadKnowledgeGraph } from "../lib/knowledge-graph-loader";
+import { POST_TYPES } from "../lib/post-types";
 import { getPublishedPosts } from "../lib/published-posts";
 import { rankRelatedReading } from "../lib/related-reading";
+import { buildGraphMarkdown } from "../utils/graphMarkdown";
 import { buildBlogMarkdown } from "../utils/markdownExport";
 import { buildStaticMarkdown } from "../utils/staticMarkdown";
 
@@ -18,6 +21,7 @@ const basePages = [
 	"topics",
 	"type",
 	"search",
+	"graph",
 ];
 
 const normalizeSlug = (param?: string | string[]) => {
@@ -48,7 +52,7 @@ const respondWithMarkdown = (markdown: string) => {
 export async function getStaticPaths() {
 	const posts = await getPublishedPosts();
 	const topics = new Set<string>();
-	const types = new Set<string>();
+	const types = new Set<string>(POST_TYPES);
 	posts.forEach((post) => {
 		post.data.topics.forEach((topic) => {
 			topics.add(topic);
@@ -79,6 +83,11 @@ export const GET: APIRoute = async ({ params, site, url }) => {
 	const slug = normalizeSlug(params.page);
 	const posts = await getPublishedPosts();
 	const origin = site?.origin ?? url.origin;
+	if (slug === "graph") {
+		return respondWithMarkdown(
+			buildGraphMarkdown(await loadKnowledgeGraph(), origin),
+		);
+	}
 
 	if (slug.startsWith("blog/")) {
 		const postId = slug.replace(/^blog\//, "");

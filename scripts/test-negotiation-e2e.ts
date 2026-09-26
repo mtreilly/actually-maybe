@@ -17,7 +17,12 @@
 
 import assert from "node:assert/strict";
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
-import { createServer, type Server } from "node:http";
+import {
+	createServer,
+	type IncomingMessage,
+	type Server,
+	type ServerResponse,
+} from "node:http";
 import { extname, join, normalize, resolve } from "node:path";
 import middleware from "../middleware";
 import { VARY_VALUE } from "../src/lib/accept-negotiation";
@@ -84,70 +89,73 @@ const resolveFile = (pathname: string): string | null => {
 
 const startServer = (): Promise<{ server: Server; base: string }> =>
 	new Promise((resolvePromise) => {
-		const server = createServer((request, response) => {
-			const url = new URL(request.url ?? "/", "http://127.0.0.1");
-			const headers = new Headers();
-			for (const [key, value] of Object.entries(request.headers)) {
-				if (typeof value === "string") headers.set(key, value);
-			}
-
-			const middlewareResponse = middleware(
-				new Request(
-					new URL(url.pathname + url.search, "https://actuallymaybe.com"),
-					{
-						method: request.method,
-						headers,
-					},
-				),
-			);
-
-			const extraHeaders = new Headers(middlewareResponse.headers);
-			const rewrite = extraHeaders.get("x-middleware-rewrite");
-			const passThrough = extraHeaders.get("x-middleware-next") === "1";
-			extraHeaders.delete("x-middleware-rewrite");
-			extraHeaders.delete("x-middleware-next");
-
-			// The middleware answered outright (406, markdown 404).
-			if (!rewrite && !passThrough) {
-				response.writeHead(
-					middlewareResponse.status,
-					Object.fromEntries(middlewareResponse.headers.entries()),
-				);
-				middlewareResponse
-					.text()
-					.then((body) => response.end(body))
-					.catch(() => response.end());
-				return;
-			}
-
-			const targetPath = rewrite ? new URL(rewrite).pathname : url.pathname;
-			const file = resolveFile(targetPath);
-			const outgoing: Record<string, string> = {};
-			for (const [key, value] of extraHeaders.entries()) outgoing[key] = value;
-			// vercel.json headers are applied by the routing layer, so they land
-			// after the middleware's own.
-			Object.assign(outgoing, configuredHeaders(url.pathname));
-
-			if (!file) {
-				// Vercel serves 404.html with a real 404 status for a static deployment.
-				const fallback = join(dist, "404.html");
-				outgoing["content-type"] = CONTENT_TYPES[".html"];
-				response.writeHead(404, outgoing);
-				if (existsSync(fallback)) {
-					createReadStream(fallback).pipe(response);
-				} else {
-					response.end();
+		const server = createServer(
+			(request: IncomingMessage, response: ServerResponse) => {
+				const url = new URL(request.url ?? "/", "http://127.0.0.1");
+				const headers = new Headers();
+				for (const [key, value] of Object.entries(request.headers)) {
+					if (typeof value === "string") headers.set(key, value);
 				}
-				return;
-			}
 
-			outgoing["content-type"] =
-				configuredHeaders(url.pathname)["content-type"] ??
-				CONTENT_TYPES[extname(file)] ??
-				"application/octet-stream";
-			response.writeHead(200, outgoing);
-			createReadStream(file).pipe(response);
-		});
+				const middlewareResponse = middleware(
+					new Request(
+						new URL(url.pathname + url.search, "https://actuallymaybe.com"),
+						{
+							method: request.method,
+							headers,
+						},
+					),
+				);
+
+				const extraHeaders = new Headers(middlewareResponse.headers);
+				const rewrite = extraHeaders.get("x-middleware-rewrite");
+				const passThrough = extraHeaders.get("x-middleware-next") === "1";
+				extraHeaders.delete("x-middleware-rewrite");
+				extraHeaders.delete("x-middleware-next");
+
+				// The middleware answered outright (406, markdown 404).
+				if (!rewrite && !passThrough) {
+					response.writeHead(
+						middlewareResponse.status,
+						Object.fromEntries(middlewareResponse.headers.entries()),
+					);
+					middlewareResponse
+						.text()
+						.then((body) => response.end(body))
+						.catch(() => response.end());
+					return;
+				}
+
+				const targetPath = rewrite ? new URL(rewrite).pathname : url.pathname;
+				const file = resolveFile(targetPath);
+				const outgoing: Record<string, string> = {};
+				for (const [key, value] of extraHeaders.entries())
+					outgoing[key] = value;
+				// vercel.json headers are applied by the routing layer, so they land
+				// after the middleware's own.
+				Object.assign(outgoing, configuredHeaders(url.pathname));
+
+				if (!file) {
+					// Vercel serves 404.html with a real 404 status for a static deployment.
+					const fallback = join(dist, "404.html");
+					outgoing["content-type"] = CONTENT_TYPES[".html"];
+					response.writeHead(404, outgoing);
+					if (existsSync(fallback)) {
+						createReadStream(fallback).pipe(response);
+					} else {
+						response.end();
+					}
+					return;
+				}
+
+				outgoing["content-type"] =
+					configuredHeaders(url.pathname)["content-type"] ??
+					CONTENT_TYPES[extname(file)] ??
+					"application/octet-stream";
+				response.writeHead(200, outgoing);
+				createReadStream(file).pipe(response);
+			},
+		);
 
 		server.listen(0, "127.0.0.1", () => {
 			const address = server.address();
@@ -176,6 +184,10 @@ try {
 		"/contact",
 		"/privacy",
 		"/blog/",
+		"/graph",
+		"/type/guide",
+		"/type/link",
+		"/search",
 	]) {
 		const response = await get(path, BROWSER_ACCEPT);
 		assert.equal(response.status, 200, `${path} should be 200 for a browser`);
@@ -200,6 +212,10 @@ try {
 		"/contact",
 		"/privacy",
 		"/blog/agent-friendly-architecture",
+		"/graph",
+		"/type/guide",
+		"/type/link",
+		"/search",
 	]) {
 		const response = await get(path, "text/markdown");
 		assert.equal(

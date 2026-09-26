@@ -74,6 +74,9 @@ const cases: Array<[string, string]> = [
 	["/contact", "/contact.md"],
 	["/privacy", "/privacy.md"],
 	["/blog", "/blog.md"],
+	["/graph", "/graph.md"],
+	["/type/guide", "/type/guide.md"],
+	["/type/link", "/type/link.md"],
 	["/blog/agent-friendly-architecture", "/blog/agent-friendly-architecture.md"],
 	[
 		"/blog/agent-friendly-architecture/",
@@ -176,10 +179,10 @@ assert.ok(
 	"HTML clients fall through so Vercel serves 404.html with a 404 status",
 );
 
-// --- an HTML-only page asked for as markdown still serves, it is not a 404 ---
+// Standalone error output is deliberately HTML-only.
 assert.ok(
-	isPassThrough(call("/graph", { accept: "text/markdown" })),
-	"/graph has no markdown variant but does exist, so it must not 404",
+	isPassThrough(call("/404.html", { accept: "text/markdown" })),
+	"Existing standalone HTML files must not become missing-path Markdown errors",
 );
 
 // --- machine-readable files pass through untouched ---

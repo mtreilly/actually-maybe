@@ -20,6 +20,7 @@
 		"/blog/notes-on-robotics-untapped-potential": "/blog/notes-on-robotics-untapped-potential.md",
 		"/blog/quick-thought": "/blog/quick-thought.md",
 		"/contact": "/contact.md",
+		"/graph": "/graph.md",
 		"/now": "/now.md",
 		"/privacy": "/privacy.md",
 		"/projects": "/projects.md",
@@ -75,6 +76,8 @@
 		"/topics/workflow": "/topics/workflow.md",
 		"/type": "/type.md",
 		"/type/essay": "/type/essay.md",
+		"/type/guide": "/type/guide.md",
+		"/type/link": "/type/link.md",
 		"/type/note": "/type/note.md"
 	},
 	"htmlRoutes": [
@@ -161,13 +164,13 @@
 	"files": [
 		"/.well-known/ai-profile",
 		"/404.html",
-		"/_astro/BlogPost.astro_astro_type_script_index_0_lang.CRZ_S50f.js",
+		"/_astro/BlogPost.astro_astro_type_script_index_0_lang.etT6yTFg.js",
 		"/_astro/_slug_.BhHr1EIk.css",
 		"/_astro/_slug_.IPZhlfpr.css",
 		"/_astro/blog-placeholder-1.Bx0Zcyzv.jpg",
 		"/_astro/graph.AZuYOVnw.css",
-		"/_astro/search.astro_astro_type_script_index_0_lang.UGmoLDhP.js",
-		"/_astro/ui.9evnrhYo.js",
+		"/_astro/search.astro_astro_type_script_index_0_lang.P9MDM11C.js",
+		"/_astro/ui.CKP0__Ro.js",
 		"/about.llm",
 		"/about.md",
 		"/archive.md",
@@ -192,6 +195,7 @@
 		"/favicon.svg",
 		"/fonts/atkinson-bold.woff",
 		"/fonts/atkinson-regular.woff",
+		"/graph.md",
 		"/index.md",
 		"/llm.txt",
 		"/llms.txt",
@@ -254,6 +258,8 @@
 		"/topics/workflow.md",
 		"/type.md",
 		"/type/essay.md",
+		"/type/guide.md",
+		"/type/link.md",
 		"/type/note.md"
 	]
 }

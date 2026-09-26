@@ -5,15 +5,15 @@ import Header from "../components/Header.astro";
 import StructuredData from "../components/StructuredData.astro";
 import { SITE_TITLE } from "../consts";
 import {
-	compareText,
 	formatDate,
 	formatNumber,
 	SITE_DIRECTION,
 	SITE_LOCALE,
 } from "../i18n/format";
 import { ui } from "../i18n/ui";
+import { buildGraphView } from "../lib/graph-view";
 import { loadKnowledgeGraph } from "../lib/knowledge-graph-loader";
-import type { KnowledgeGraph, PostNode } from "../types/graph";
+import type { KnowledgeGraph } from "../types/graph";
 
 let graph: KnowledgeGraph | null = null;
 try {
@@ -22,63 +22,13 @@ try {
 	console.warn("Unable to load knowledge graph for /graph page:", error);
 }
 
-const postsById = new Map<string, PostNode>(
-	graph?.posts.map((post) => [post.id, post]) ?? [],
-);
-
-const topicGroups = graph
-	? Object.entries(graph.topics)
-			.map(([topic, postIds]) => {
-				const posts = postIds
-					.map((id) => postsById.get(id))
-					.filter((post): post is PostNode => Boolean(post));
-				return { topic, posts, count: posts.length };
-			})
-			.filter((group) => group.count > 0)
-			.sort((a, b) => {
-				if (b.count !== a.count) return b.count - a.count;
-				return compareText(a.topic, b.topic);
-			})
-	: [];
-
-const connectionCounts = new Map<string, number>();
-if (graph) {
-	graph.edges.forEach((edge) => {
-		connectionCounts.set(
-			edge.source,
-			(connectionCounts.get(edge.source) ?? 0) + 1,
-		);
-		connectionCounts.set(
-			edge.target,
-			(connectionCounts.get(edge.target) ?? 0) + 1,
-		);
-	});
-}
-
-const mostConnectedPosts =
-	graph && graph.posts.length > 0
-		? Array.from(connectionCounts.entries())
-				.map(([id, count]) => {
-					const post = postsById.get(id);
-					if (!post) return null;
-					return { post, count };
-				})
-				.filter((entry): entry is { post: PostNode; count: number } =>
-					Boolean(entry),
-				)
-				.sort((a, b) => {
-					if (b.count !== a.count) return b.count - a.count;
-					return (
-						new Date(b.post.date).getTime() - new Date(a.post.date).getTime()
-					);
-				})
-				.slice(0, 8)
-		: [];
+const { topicGroups, mostConnectedPosts } = graph
+	? buildGraphView(graph)
+	: { topicGroups: [], mostConnectedPosts: [] };
 
 const generatedDate = graph ? formatDate(new Date(graph.generatedAt)) : null;
-const pageTitle = `Knowledge Graph | ${SITE_TITLE}`;
-const pageDescription =
-	"Explore how posts connect through shared topics and ideas.";
+const pageTitle = `${ui.graph.title} | ${SITE_TITLE}`;
+const pageDescription = ui.graph.description;
 ---
 
 <!doctype html>
@@ -91,7 +41,7 @@ const pageDescription =
 		<Header />
 		<main class="graph-page">
 			<section class="graph-hero">
-				<p class="eyebrow">Knowledge Graph</p>
+				<p class="eyebrow">{ui.graph.title}</p>
 				<h1>Ideas connected</h1>
 				<p class="lede">
 					This site tracks how posts relate to each other so you can jump between connected ideas without hunting through tags or archives.
@@ -105,15 +55,15 @@ const pageDescription =
 						</div>
 						<div class="stat-card" role="listitem">
 							<span class="stat-value">{formatNumber(graph.stats.totalEdges)}</span>
-							<span class="stat-label">Connections</span>
+							<span class="stat-label">{ui.graph.connectionsLabel}</span>
 						</div>
 						<div class="stat-card" role="listitem">
 							<span class="stat-value">{formatNumber(graph.stats.totalTopics)}</span>
-							<span class="stat-label">Topics</span>
+							<span class="stat-label">{ui.graph.topicsLabel}</span>
 						</div>
 						<div class="stat-card" role="listitem">
 							<span class="stat-value">{formatNumber(graph.stats.avgConnectionsPerPost)}</span>
-							<span class="stat-label">Avg connections/post</span>
+							<span class="stat-label">{ui.graph.averageLabel}</span>
 						</div>
 					</div>
 				) : (
@@ -128,9 +78,9 @@ const pageDescription =
 				<>
 					<section class="connections-section">
 						<div class="section-header">
-							<h2>Most connected posts</h2>
+							<h2>{ui.graph.mostConnected}</h2>
 							<p>
-								Posts with the most edges in the graph. These typically revisit popular topics or synthesize ideas from earlier writing.
+								Posts with the most edges in the graph. These typically revisit popular topics or synthesise ideas from earlier writing.
 							</p>
 						</div>
 						{mostConnectedPosts.length > 0 ? (
@@ -157,14 +107,14 @@ const pageDescription =
 								))}
 							</ul>
 						) : (
-							<p>No connections yet. Publish a few posts with overlapping topics to populate this list.</p>
+							<p>{ui.graph.emptyConnections}</p>
 						)}
 					</section>
 
 					<section class="topics-section" aria-labelledby="topics-heading">
-						<h2 id="topics-heading">Topics & posts</h2>
+						<h2 id="topics-heading">{ui.graph.topics}</h2>
 						<p class="section-subtitle">
-							Every topic below expands to show the posts that anchor it. This is a zero-JS fallback that mirrors the interactive visualization planned later.
+							{ui.graph.topicsDescription}
 						</p>
 						<nav aria-label={ui.article.groupedPosts} class="topic-groups">
 							{topicGroups.map((group, index) => (
@@ -192,7 +142,7 @@ const pageDescription =
 						<h2>Need the raw data?</h2>
 						<p>
 							The full graph (nodes, edges, topics, stats) is available as JSON. Use it for custom tooling, LLM context, or to experiment with your
-							own visualization.
+							own visualisation.
 						</p>
 						<a class="download-link" href="/data/graph.json">Download graph.json</a>
 					</section>
@@ -201,8 +151,7 @@ const pageDescription =
 				<section class="topics-section">
 					<h2>Graph unavailable</h2>
 					<p>
-						The graph could not be generated during this build. Try again later or run `pnpm build` locally to regenerate `.astro/data-store.json`
-						before visiting this page.
+						{ui.graph.unavailableDescription}
 					</p>
 				</section>
 			)}

@@ -1,7 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
-
 import { normaliseCalendarDate } from "./lib/calendar-date";
+import { POST_TYPES } from "./lib/post-types";
 
 const blog = defineCollection({
 	// Load Markdown and MDX files in the `src/content/blog/` directory.
@@ -20,7 +20,7 @@ const blog = defineCollection({
 			heroImage: image().optional(),
 			draft: z.boolean().default(false),
 			topics: z.array(z.string()).default([]),
-			type: z.enum(["note", "essay", "guide", "link"]).default("note"),
+			type: z.enum(POST_TYPES).default("note"),
 			// Series support for multi-part content
 			series: z
 				.object({
