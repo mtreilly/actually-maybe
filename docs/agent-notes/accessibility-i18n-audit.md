@@ -127,3 +127,21 @@ TOC indentation uses logical CSS properties. Browser viewport restored afterward
 
 These checks do not prove clipboard success/failure, no-JavaScript recovery,
 storage denial, contrast, full zoom/RTL/text expansion, or all page layouts.
+
+## No-script search and Markdown download
+
+With script execution disabled and a 375px viewport, search retained all 15 static
+posts, mobile navigation had opacity 1, the theme button was hidden, and the page
+had no horizontal overflow. Native Markdown details opened and exposed its link
+without the nonfunctional copy buttons.
+
+Following Open markdown to a valid text/markdown response did not give Chrome a
+readable page. HTTP inspection confirmed 200, text/markdown, and the correct post
+body. Changed recovery to an explicitly labelled Download markdown link with the
+native download attribute, and aligned failure messages with downloading the file
+and copying its text. After rebuilding and disabling cache, browser inspection
+confirmed the new label; clicking it produced a successful download event.
+That final download check had scripts enabled. The complete no-script download
+path remains to verify. An earlier download-observation timeout reset the tool
+session; it was not counted as a test pass. Script/cache/viewport overrides were
+restored, and the test tab closed.

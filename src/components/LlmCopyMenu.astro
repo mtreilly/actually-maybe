@@ -41,7 +41,7 @@ const assistantLinks = buildAssistantLinks({
 				<button type="button" data-assist-action="copy-markdown">{ui.copy.markdown}</button>
 				<button type="button" data-assist-action="copy-link">{ui.copy.link}</button>
 			</div>
-			<a href={markdownPath}>{ui.copy.openMarkdown}</a>
+			<a href={markdownPath} download>{ui.copy.downloadMarkdown}</a>
 		</div>
 	</details>
 	<p class="copy-status" role="status" data-assist-status></p>
