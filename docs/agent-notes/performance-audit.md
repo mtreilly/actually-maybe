@@ -14,7 +14,7 @@ The goal is predictable loading, navigation, search, and reading, without adding
 
 ## Chrome checks
 
-Chrome DevTools MCP fails with a closed target. The Chrome extension connection works. Measurements below are local preview observations, without mobile network or CPU throttling; they are not production field measurements.
+The initial Chrome DevTools MCP launch failed with a closed target; the Chrome extension connection worked. MCP was subsequently configured to attach successfully. Measurements below are local preview observations, without mobile network or CPU throttling; they are not production field measurements.
 
 | Page and viewport | FCP | LCP | CLS |
 | --- | ---: | ---: | ---: |
@@ -64,9 +64,35 @@ no current reason to complicate the graph algorithm or its caching.
 ## Remaining verification
 
 - Chrome DevTools MCP now attaches successfully to the user-enabled remote debugging session. Mobile Lighthouse audits of the homepage and long Drone 101 post score accessibility 100, SEO 100, agentic browsing 100, and best practices 96. The single remaining audit failure on both pages is the local preview's missing `/_vercel/insights/script.js`, a Vercel-served resource. Initial accessibility 91 on the homepage exposed hidden-but-focusable navigation and insufficient footer-note contrast; the navigation now becomes inert when collapsed, and the note no longer reduces text opacity.
-- A separate run of Lighthouse's performance category connected successfully, but inspection of its reports shows this MCP bundle strips out FCP, LCP, TBT, and Speed Index audits. Its displayed performance score of 100 is based only on CLS and is not a valid full performance score. Installing a complete Lighthouse distribution remains necessary for that gate; registry DNS is still unavailable. The MCP's built-in Lighthouse tool explicitly excludes performance. A DevTools homepage trace measured LCP 113 ms, CLS 0, and zero estimated savings from render-blocking changes; no further load optimisation is justified by that trace.
+- A separate run of Lighthouse's performance category connected successfully, but inspection of its reports shows this MCP bundle strips out FCP, LCP, TBT, and Speed Index audits. Its displayed performance score of 100 is based only on CLS and is not a valid full performance score. This tooling limitation was subsequently resolved by running the complete Lighthouse built into Chrome DevTools, as recorded below; a separate package installation is no longer needed for this gate. The MCP's built-in Lighthouse tool explicitly excludes performance. A DevTools homepage trace measured LCP 113 ms, CLS 0, and zero estimated savings from render-blocking changes; no further load optimisation is justified by that trace.
 - Biome 2.5.14 is now available globally. `biome check` passes for the five changed TypeScript files after applying its formatter. This is a scoped check, not a claim that unrelated repository files pass. A fresh Node 24 build and all tests pass after formatting.
 - Remove the unused Sonner dependency when dependency tooling is available. `pnpm remove` failed with registry DNS errors, and offline removal lacks cached dependency metadata. No package/lock changes were made by that attempt.
-- The committed root lockfile currently lists only pnpm itself; the installed dependency lock is under `node_modules/.pnpm/lock.yaml`. This predates this audit and needs verification before dependency changes.
+- The committed root lockfile contains two YAML documents: the first records pnpm itself, and the second contains application dependencies. The earlier inspection of only its first document was incomplete; no lockfile replacement is warranted.
 
-The resumed goal remains active pending full Lighthouse tooling, dependency tooling, and restored Git push access. Registry DNS and SSH user lookup failures were rechecked across three consecutive goal turns. All changes are committed locally; no push succeeded. Current measurements justify these changes; they do not prove production network or device performance.
+## Full Lighthouse verification
+
+The complete Lighthouse 13.4.1 bundled with Chrome DevTools was run on the
+local production preview with mobile navigation, emulated Moto G Power, and
+Slow 4G throttling. All five scoring metrics are present in the exported JSON,
+unlike the filtered MCP distribution. Reports were saved in Downloads;
+`lighthouse-mobile-results.json` preserves their metrics and settings here.
+
+| Page | Performance | FCP | LCP | TBT | CLS | Speed Index |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Home | 100 | 0.8 s | 1.2 s | 20 ms | 0 | 0.8 s |
+| Search | 100 | 0.9 s | 1.4 s | 0 ms | 0 | 0.9 s |
+| Long Drone 101 post | 100 | 0.9 s | 1.4 s | 0 ms | 0 | 0.9 s |
+
+These are local laboratory results, not production field measurements. Browser
+extensions were active: the post's estimated 445 KiB unused JavaScript consists
+entirely of extension URLs, including 1Password. It does not represent shipped
+site JavaScript. The remaining render-blocking CSS totals 7.2 KiB, with estimated
+150 ms savings; retaining ordinary stylesheets avoids runtime complexity for a
+page already meeting the load targets.
+
+The existing implementation commits through `5a6bbeb` are now present at the
+local `origin/main` reference, consistent with the user's successful push.
+Unused dependency removal remains pending: an offline pnpm removal attempt
+still fails its supply-chain metadata check for `@astrojs/prism`. No dependency
+files were changed. Sonner is absent from built client assets, so this remaining
+package cleanup does not affect reader performance.
