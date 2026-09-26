@@ -107,3 +107,23 @@ and no-JavaScript recovery, storage-denied theme operation, expanded text/RTL,
 contrast, reduced motion, and visual layouts at required widths. Shared controls
 have resource boundaries; remaining reusable content and generated labels need a
 final localisation review. The goal is still active.
+
+## Article interaction evidence
+
+At 375 × 812 in Chrome, Enter on Sections opened its panel and focused the first
+section link. Escape returned focus to Sections with aria-expanded false.
+Selecting the first link focused `building-up-the-intuition` and navigated to its
+fragment. Enter on the Markdown summary exposed both copy buttons and the Open
+markdown recovery link. Escape from a copy button closed it and returned focus
+to Markdown. No horizontal document overflow was present during these checks.
+
+The native accessibility tree revealed copy-button labels appended to heading
+names. Heading enhancement now preserves the original heading name independently
+of the action's label. Read-only browser inspection verified both names on all
+five headings in the representative article after rebuilding. The same page has
+zero nested time elements after the sidebar date fix. Article sidebar, TOC, and
+related labels now use UI resources; shared topic names use Intl.ListFormat;
+TOC indentation uses logical CSS properties. Browser viewport restored afterwards.
+
+These checks do not prove clipboard success/failure, no-JavaScript recovery,
+storage denial, contrast, full zoom/RTL/text expansion, or all page layouts.

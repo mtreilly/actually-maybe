@@ -1,4 +1,5 @@
 ---
+import { ui } from '../i18n/ui';
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import TableOfContents from './TableOfContents.astro';
@@ -15,10 +16,10 @@ const topRelatedPosts = relatedPosts.slice(0, 3); // Limit to top 3 related post
 <aside class="sidebar">
 	<!-- Navigation -->
 	<div class="sidebar-section sidebar-nav-section">
-		<h3 class="sidebar-title">Navigation</h3>
+		<h3 class="sidebar-title">{ui.article.navigation}</h3>
 		<div class="sidebar-nav">
-			<a href="/blog/" class="sidebar-nav-link">All Posts</a>
-			<a href="/topics" class="sidebar-nav-link">All Topics</a>
+			<a href="/blog/" class="sidebar-nav-link">{ui.article.allPosts}</a>
+			<a href="/topics" class="sidebar-nav-link">{ui.article.allTopics}</a>
 		</div>
 	</div>
 
@@ -28,14 +29,14 @@ const topRelatedPosts = relatedPosts.slice(0, 3); // Limit to top 3 related post
 	{/* Related Posts - show only top 3 */}
 	{topRelatedPosts.length > 0 && (
 		<div class="sidebar-section">
-			<h3 class="sidebar-title">Related Reading</h3>
+			<h3 class="sidebar-title">{ui.article.relatedReading}</h3>
 			<div class="sidebar-list">
 				{topRelatedPosts.map((related) => (
 					<a href={`/blog/${related.id}/`} class="sidebar-item">
 						<span class="sidebar-item-title">{related.data.title}</span>
-						<time class="sidebar-item-date">
+						<span class="sidebar-item-date">
 							<FormattedDate date={related.data.pubDate} />
-						</time>
+						</span>
 					</a>
 				))}
 			</div>

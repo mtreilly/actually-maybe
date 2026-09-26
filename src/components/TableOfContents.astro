@@ -1,4 +1,5 @@
 ---
+import { ui } from '../i18n/ui';
 interface Props {
 	headings?: Array<{ depth: number; slug: string; text: string }>;
 }
@@ -11,8 +12,8 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
 {
 	tocHeadings.length > 0 && (
-		<nav class="toc-container">
-			<h3 class="toc-title">Table of Contents</h3>
+		<nav class="toc-container" aria-label={ui.article.contents}>
+			<h3 class="toc-title">{ui.article.contents}</h3>
 			<ol class="toc-list">
 				{tocHeadings.map((heading) => (
 					<li class={`toc-item toc-depth-${heading.depth}`}>
@@ -59,11 +60,11 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 	}
 
 	.toc-depth-2 {
-		margin-left: 0;
+		margin-inline-start: 0;
 	}
 
 	.toc-depth-3 {
-		margin-left: 1rem;
+		margin-inline-start: 1rem;
 	}
 
 	.toc-link {
@@ -84,9 +85,9 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 	.toc-link.active {
 		color: var(--accent);
 		font-weight: 500;
-		border-left: 2px solid var(--accent);
-		padding-left: 0.5rem;
-		margin-left: -0.5rem;
+		border-inline-start: 2px solid var(--accent);
+		padding-inline-start: 0.5rem;
+		margin-inline-start: -0.5rem;
 	}
 
 	/* Dark theme adjustments */

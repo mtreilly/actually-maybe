@@ -1,6 +1,12 @@
 import { SITE_LOCALE } from './format';
 
 export const ui = {
+ article: {
+  navigation: 'Navigation', allPosts: 'All Posts', allTopics: 'All Topics',
+  relatedReading: 'Related Reading', contents: 'Table of Contents',
+  discussedIn: 'Also discussed in',
+  sharedTopics: (topics: string[]): string => `Shared topics: ${new Intl.ListFormat(SITE_LOCALE).format(topics)}`,
+ },
  collections: {
   postCount: (count: number): string => new Intl.PluralRules(SITE_LOCALE).select(count) === 'one'
    ? '1 post' : `${new Intl.NumberFormat(SITE_LOCALE).format(count)} posts`,

@@ -1,4 +1,5 @@
 ---
+import { ui } from '../i18n/ui';
 import { formatDate } from '../i18n/format';
 import type { KnowledgeGraph } from '../types/graph';
 
@@ -34,7 +35,7 @@ if (relatedPosts.length === 0) {
 ---
 
 <aside class="related-posts" aria-labelledby="related-heading">
-	<h3 id="related-heading">Also discussed in</h3>
+	<h3 id="related-heading">{ui.article.discussedIn}</h3>
 	<ul role="list">
 		{relatedPosts.map(({ post, edge }) => (
 			<li>
@@ -45,7 +46,7 @@ if (relatedPosts.length === 0) {
 					</time>
 				</a>
 				{edge.sharedTopics && edge.sharedTopics.length > 0 && (
-					<span class="shared-topics" aria-label={`Shared topics: ${edge.sharedTopics.join(', ')}`}>
+					<span class="shared-topics" aria-label={ui.article.sharedTopics(edge.sharedTopics)}>
 						{edge.sharedTopics.map((topic) => (
 							<span class="topic-badge">{topic}</span>
 						))}
