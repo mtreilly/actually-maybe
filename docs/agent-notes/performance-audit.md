@@ -28,9 +28,41 @@ A local Node Fuse benchmark used representative titles, descriptions, and topics
 
 `pnpm build` and `pnpm test` pass on Node 24. The new browser-script regression check parses 255 inline scripts across 80 built pages, catching syntax failures that a build alone misses.
 
+## Throttled and growth verification
+
+Chrome was checked at 375 × 812 with 4× CPU slowdown, cache disabled,
+150 ms latency, 200,000 bytes/s download, and 93,750 bytes/s upload.
+Network instrumentation was enabled before measuring: font requests took
+approximately 470–493 ms, confirming throttling affected resource loading.
+
+| Page | FCP | LCP | CLS |
+| --- | ---: | ---: | ---: |
+| Search | 544 ms | 672 ms | 0 |
+| Long Drone 101 post | 840 ms | 840 ms | 0 |
+
+Typing `robotics` returned the expected post with throttling active. The long
+post had no horizontal overflow and no captured console warnings/errors.
+These are laboratory observations on this machine, not field percentiles.
+Browser throttling and viewport overrides were reset afterwards.
+
+An isolated checkout duplicated representative existing posts without changing
+published content. A fresh build with 50 posts and 558 graph connections
+rendered 115 pages in 1.21 seconds. A build with 500 posts and 56,073 connections
+rendered 565 pages in 6.30 seconds. Both finished successfully. The temporary
+checkout was removed after measurement.
+
+Graph generation alone, using repeated representative topic distributions,
+took 1.28 ms at 50 posts, 44.07 ms at 500 posts, and 160.30 ms at 1,000 posts.
+The corresponding compact JSON sizes were about 109 KB, 9.1 MB, and 35.9 MB.
+Retaining every shared-topic connection makes the graph export grow
+quadratically for dense topic distributions. This is intentional data fidelity,
+not a reader load dependency: graph generation remains at build time, and
+readers request the export explicitly. The measured 500-post full build shows
+no current reason to complicate the graph algorithm or its caching.
+`graph-utils.test.ts` also passed when run separately.
+
 ## Remaining verification
 
-- Repeat cold-load and interaction checks with CPU/network throttling; inspect longer posts and growth at build time.
 - Run Lighthouse and Biome. Neither is installed in this repository; attempted tooling installation failed because registry DNS could not resolve.
 - Remove the unused Sonner dependency when dependency tooling is available. `pnpm remove` failed with registry DNS errors, and offline removal lacks cached dependency metadata. No package/lock changes were made by that attempt.
 - The committed root lockfile currently lists only pnpm itself; the installed dependency lock is under `node_modules/.pnpm/lock.yaml`. This predates this audit and needs verification before dependency changes.
