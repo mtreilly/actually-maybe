@@ -522,3 +522,19 @@ hr {
 	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }
+
+/* Keep focus visible even when component hover styles remove outlines. */
+:focus-visible {
+ outline: 2px solid var(--accent) !important;
+ outline-offset: 3px;
+}
+pre:focus-within .copy-button { opacity: 1; }
+@media (hover: none) { .copy-button { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+ *, *::before, *::after {
+  scroll-behavior: auto !important;
+  transition: none !important;
+  animation: none !important;
+ }
+}
+input, textarea { box-sizing: border-box; }

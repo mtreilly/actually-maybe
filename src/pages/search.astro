@@ -5,6 +5,7 @@ import StructuredData from '../components/StructuredData.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import { ui } from '../i18n/ui';
 import { SITE_TITLE } from '../consts';
 
 const posts = (await getCollection('blog')).sort(
@@ -30,13 +31,14 @@ const posts = (await getCollection('blog')).sort(
 				<input
 					type="search"
 					id="search-input"
-					aria-label="Search posts"
+					aria-label={ui.search.label}
 					class="search-input"
-					placeholder="Search posts by title, description, or topic..."
+					placeholder={ui.search.placeholder}
 					autocomplete="off"
 				/>
 			</div>
 
+			<p id="search-status" role="status" aria-atomic="true" class="sr-only"></p>
 			<div id="search-results" class="search-results"></div>
 
 			{posts.length === 0 && (
@@ -76,6 +78,8 @@ const posts = (await getCollection('blog')).sort(
 
 <script>
 	import Fuse from 'fuse.js';
+	import { ui } from '../i18n/ui';
+	const status = document.querySelector('#search-status');
 
 	const searchInput = document.querySelector<HTMLInputElement>('#search-input');
 	const resultsContainer = document.querySelector<HTMLElement>('#search-results');
@@ -98,16 +102,21 @@ const posts = (await getCollection('blog')).sort(
 			const query = searchInput.value.trim();
 			resultsContainer.replaceChildren();
 			allPosts.hidden = query.length > 0;
-			if (!query) return;
+			if (!query) {
+				if (status) status.textContent = ui.search.allPosts;
+				return;
+			}
 
 			const matches = fuse.search(query, { limit: RESULT_LIMIT });
 			if (!matches.length) {
 				const message = document.createElement('p');
 				message.className = 'no-results';
-				message.textContent = 'No posts found. Try a different search.';
+				message.textContent = ui.search.noResults;
+				if (status) status.textContent = ui.search.noResults;
 				resultsContainer.append(message);
 				return;
 			}
+			if (status) status.textContent = ui.search.results(matches.length);
 			const list = document.createElement('ul');
 			list.className = 'all-posts-list';
 			for (const { item } of matches) list.append(item.element.cloneNode(true));

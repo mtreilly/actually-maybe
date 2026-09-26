@@ -94,6 +94,7 @@ const isActive = (href: string) => {
 
 		const updateAria = (isOpen) => {
 			nav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+			nav.inert = !isOpen;
 		};
 
 		const closeMenu = () => {
@@ -119,6 +120,13 @@ const isActive = (href: string) => {
 				updateAria(false);
 			}
 		};
+
+		nav.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && !mediaQuery.matches) {
+				closeMenu();
+				toggle.focus();
+			}
+		});
 
 		syncWithViewport();
 		if (typeof mediaQuery.addEventListener === 'function') {
@@ -187,6 +195,7 @@ const isActive = (href: string) => {
 	}
 
 	.menu-toggle {
+		min-height: 44px;
 		background: transparent;
 		border: 1px solid rgba(var(--gray), 0.4);
 		border-radius: 999px;
@@ -202,7 +211,8 @@ const isActive = (href: string) => {
 	.menu-toggle:hover,
 	.menu-toggle:focus-visible {
 		border-color: var(--accent);
-		outline: none;
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
 		background-color: rgba(var(--gray-light), 0.6);
 	}
 
@@ -287,7 +297,8 @@ const isActive = (href: string) => {
 	.nav-link:hover,
 	.nav-link:focus-visible {
 		color: rgb(var(--black));
-		outline: none;
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
 	}
 
 	.nav-link.icon-link:hover,
@@ -357,4 +368,8 @@ const isActive = (href: string) => {
 			padding: 1rem;
 		}
 	}
+</style>
+
+<style>
+	:global(html:not(.js)) .menu-toggle { display: none; }
 </style>
