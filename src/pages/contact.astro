@@ -1,5 +1,5 @@
 ---
-import { SITE_LOCALE } from '../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
@@ -9,7 +9,7 @@ import { contactPage } from '../data/contact';
 ---
 
 <!doctype html>
-<html lang={SITE_LOCALE}>
+<html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
 		<BaseHead
 			title={`Contact | ${SITE_TITLE}`}
@@ -106,7 +106,7 @@ import { contactPage } from '../data/contact';
 		background: rgba(128, 128, 128, 0.05);
 		padding: 1.5rem;
 		border-radius: 8px;
-		border-left: 3px solid var(--accent);
+		border-inline-start: 3px solid var(--accent);
 	}
 
 	.email-address {
@@ -156,7 +156,7 @@ import { contactPage } from '../data/contact';
 	.handle {
 		color: rgb(var(--gray));
 		font-size: 0.875rem;
-		margin-left: 0.5rem;
+		margin-inline-start: 0.5rem;
 	}
 
 	.agent-links {

@@ -1,5 +1,5 @@
 ---
-import { SITE_LOCALE } from '../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
@@ -17,7 +17,7 @@ import {
 ---
 
 <!doctype html>
-<html lang={SITE_LOCALE}>
+<html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
 		<BaseHead title={`404 ${NOT_FOUND_TITLE} | ${SITE_TITLE}`} description={NOT_FOUND_MESSAGE} />
 		<meta name="robots" content="noindex" />
@@ -138,7 +138,7 @@ import {
 	.note {
 		color: rgb(var(--gray));
 		font-size: 0.875rem;
-		margin-left: 0.5rem;
+		margin-inline-start: 0.5rem;
 	}
 
 	.report {
@@ -151,7 +151,7 @@ import {
 	@media (max-width: 640px) {
 		.note {
 			display: block;
-			margin-left: 0;
+			margin-inline-start: 0;
 		}
 	}
 </style>

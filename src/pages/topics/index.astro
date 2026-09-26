@@ -1,6 +1,6 @@
 ---
 import { ui } from '../../i18n/ui';
-import { SITE_LOCALE } from '../../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION } from '../../i18n/format';
 import { compareText } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
@@ -38,7 +38,7 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 ---
 
 <!doctype html>
-<html lang={SITE_LOCALE}>
+<html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
 		<BaseHead
 			title={`Topics | ${SITE_TITLE}`}
@@ -139,9 +139,9 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 		text-decoration: none;
 		color: rgb(var(--black));
 		transition: all 0.2s ease;
-		border-left: 2px solid transparent;
-		margin-left: -0.75rem;
-		padding-left: 0.75rem;
+		border-inline-start: 2px solid transparent;
+		margin-inline-start: -0.75rem;
+		padding-inline-start: 0.75rem;
 	}
 
 	.topic-item:last-child {
@@ -151,7 +151,7 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 	.topic-item:hover {
 		color: var(--accent);
 		background-color: rgba(37, 99, 235, 0.02);
-		border-left-color: var(--accent);
+		border-inline-start-color: var(--accent);
 	}
 
 	.topic-item:hover .topic-count {
@@ -207,8 +207,8 @@ const { popular, regular, emerging } = groupTopics(sortedTopics);
 
 		.topic-item {
 			padding: 0.75rem 0.875rem;
-			margin-left: -0.5rem;
-			padding-left: 0.5rem;
+			margin-inline-start: -0.5rem;
+			padding-inline-start: 0.5rem;
 		}
 	}
 </style>

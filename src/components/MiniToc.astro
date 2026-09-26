@@ -103,7 +103,7 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 	.mini-toc {
 		position: fixed;
 		bottom: 1.5rem;
-		right: 1.25rem;
+		inset-inline-end: 1.25rem;
 		z-index: 900;
 		display: flex;
 		flex-direction: column;
@@ -188,6 +188,8 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 	}
 
 	.mini-toc-close {
+		min-width: 44px;
+		min-height: 44px;
 		background: transparent;
 		border: none;
 		color: rgb(var(--gray));
@@ -215,33 +217,33 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 		text-decoration: none;
 		color: rgb(var(--gray));
 		font-size: 0.8rem;
-		border-left: 2px solid transparent;
+		border-inline-start: 2px solid transparent;
 		transition: all 0.2s;
 		min-height: 32px;
 		display: flex;
 		align-items: center;
 		line-height: 1.3;
 		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+		white-space: normal;
+		overflow-wrap: anywhere;
 	}
 
 	.mini-toc-link:hover,
 	.mini-toc-link:focus-visible {
 		color: var(--accent);
 		background-color: rgba(37, 99, 235, 0.08);
-		border-left-color: var(--accent);
+		border-inline-start-color: var(--accent);
 	}
 
 	.mini-toc-link.active {
 		color: var(--accent);
-		border-left-color: var(--accent);
+		border-inline-start-color: var(--accent);
 		background-color: rgba(37, 99, 235, 0.1);
 		font-weight: 500;
 	}
 
 	.depth-3 .mini-toc-link {
-		padding-left: 1.6rem;
+		padding-inline-start: 1.6rem;
 		font-size: 0.75rem;
 		min-height: 28px;
 	}
@@ -268,7 +270,7 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 		}
 
 		.depth-3 .mini-toc-link {
-			padding-left: 1.4rem;
+			padding-inline-start: 1.4rem;
 			font-size: 0.7rem;
 			min-height: 24px;
 		}
@@ -295,7 +297,7 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 		}
 
 		.depth-3 .mini-toc-link {
-			padding-left: 1.2rem;
+			padding-inline-start: 1.2rem;
 			font-size: 0.65rem;
 			min-height: 20px;
 		}
@@ -318,7 +320,7 @@ const panelId = `mini-toc-panel-${Math.random().toString(36).slice(2, 7)}`;
 	@media (max-width: 480px) {
 		.mini-toc {
 			bottom: 1rem;
-			right: 0.75rem;
+			inset-inline-end: 0.75rem;
 		}
 
 		.mini-toc-panel {

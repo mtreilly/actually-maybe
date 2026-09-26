@@ -1,5 +1,5 @@
 ---
-import { SITE_LOCALE } from '../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
 import { formatDate, compareText } from '../i18n/format';
 import BaseHead from '../components/BaseHead.astro';
 import StructuredData from '../components/StructuredData.astro';
@@ -63,7 +63,7 @@ const pageDescription = 'Explore how posts connect through shared topics and ide
 ---
 
 <!doctype html>
-<html lang={SITE_LOCALE}>
+<html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
 		<BaseHead title={pageTitle} description={pageDescription} />
 		<StructuredData page={{ kind: 'page', name: 'Knowledge graph', description: 'How the posts on actuallymaybe.com connect.', path: '/graph/' }} />
@@ -229,7 +229,7 @@ const pageDescription = 'Explore how posts connect through shared topics and ide
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 		gap: 1rem;
-		text-align: left;
+		text-align: start;
 	}
 
 	.stat-card {
@@ -311,7 +311,7 @@ const pageDescription = 'Explore how posts connect through shared topics and ide
 		font-size: 1.5rem;
 		font-weight: 600;
 		color: var(--accent);
-		margin-right: 1rem;
+		margin-inline-end: 1rem;
 	}
 
 	.connection-info a {
@@ -413,7 +413,7 @@ const pageDescription = 'Explore how posts connect through shared topics and ide
 	.topic-panel time {
 		font-size: 0.85rem;
 		color: rgb(var(--gray));
-		margin-left: 1rem;
+		margin-inline-start: 1rem;
 		white-space: nowrap;
 	}
 

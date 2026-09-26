@@ -165,3 +165,27 @@ numbers; previous/next/updated copy is in article resources. SeriesNav accepts
 only the post identifier and real typed series metadata, removing the fabricated
 post and its any cast. No currently published series fixture exists to prove
 that path's rendered output; it still needs representative verification.
+
+## Expanded text and denied APIs
+
+Removed mobile TOC no-wrap clipping: section labels wrap fully instead of becoming
+indistinguishable truncated titles. Close has a 44px target. Text alignment,
+indentation, margins, and leading borders use logical properties across reader
+layouts. HTML direction is defined next to the site locale.
+
+In a fresh Chrome article tab at 375px, temporarily setting document direction to
+RTL and prepending long Arabic section labels produced wrapping links (44–61px
+high), equal client/scroll widths, and no horizontal document overflow. These
+synthetic labels test layout only; they are not reviewed translations.
+
+At desktop width, temporarily making localStorage throw and clipboard.writeText
+reject still allowed the theme button to update its pressed state. Markdown copy
+reported: `Unable to copy. Download the markdown file and copy its text manually.`
+This checks operation after storage becomes unavailable, not initial page loading
+with storage denied. An attempt to inject before navigation was rejected by the
+browser tool as unsupported; no pass is claimed for that scenario. All temporary
+page mutations were cleared by reload, viewport reset, and tab closure.
+
+Build, readiness, and generated browser-script syntax checks pass after the CSS
+and direction changes. Full width/zoom checks across other page families and
+storage-denied initialisation remain to verify.

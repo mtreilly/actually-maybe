@@ -1,5 +1,5 @@
 ---
-import { SITE_LOCALE } from '../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
@@ -20,7 +20,7 @@ const hasMorePosts = totalPosts > LATEST_POSTS_COUNT;
 ---
 
 <!doctype html>
-<html lang={SITE_LOCALE}>
+<html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<StructuredData page={{ kind: 'home' }} />

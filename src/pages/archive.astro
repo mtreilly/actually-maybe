@@ -1,6 +1,6 @@
 ---
 import { ui } from '../i18n/ui';
-import { SITE_LOCALE } from '../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION } from '../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import StructuredData from '../components/StructuredData.astro';
@@ -29,7 +29,7 @@ const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
 ---
 
 <!doctype html>
-<html lang={SITE_LOCALE}>
+<html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
 		<BaseHead
 			title={`Archive | ${SITE_TITLE}`}
@@ -125,7 +125,7 @@ const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
 
 	.archive-item:hover {
 		background-color: rgba(37, 99, 235, 0.04);
-		padding-left: 0.25rem;
+		padding-inline-start: 0.25rem;
 	}
 
 	.archive-item:hover .archive-title {
@@ -148,7 +148,7 @@ const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
 	.archive-meta {
 		color: rgb(var(--gray));
 		font-size: 0.875rem;
-		text-align: right;
+		text-align: end;
 		flex-shrink: 0;
 	}
 
@@ -160,7 +160,7 @@ const years = Array.from(postsByYear.keys()).sort((a, b) => b - a);
 		}
 
 		.archive-meta {
-			text-align: left;
+			text-align: start;
 		}
 	}
 </style>

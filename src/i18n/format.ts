@@ -1,5 +1,6 @@
 // Published dates represent calendar days, independent of the build machine.
 export const SITE_LOCALE = 'en-IE';
+export const SITE_DIRECTION: 'ltr' | 'rtl' = 'ltr';
 
 export function formatDate(date: Date, locale: string = SITE_LOCALE): string {
  return new Intl.DateTimeFormat(locale, {

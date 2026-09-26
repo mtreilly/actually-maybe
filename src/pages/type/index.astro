@@ -1,6 +1,6 @@
 ---
 import { ui, typeLabel } from '../../i18n/ui';
-import { SITE_LOCALE } from '../../i18n/format';
+import { SITE_LOCALE, SITE_DIRECTION } from '../../i18n/format';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import StructuredData from '../../components/StructuredData.astro';
@@ -25,7 +25,7 @@ const types = Object.entries(ui.types).map(([name, copy]) => ({
 ---
 
 <!doctype html>
-<html lang={SITE_LOCALE}>
+<html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
 		<BaseHead
 			title={`Post Types | ${SITE_TITLE}`}
