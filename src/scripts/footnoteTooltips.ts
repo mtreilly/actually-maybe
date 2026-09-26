@@ -9,6 +9,19 @@
  */
 
 let activeTooltip: HTMLElement | null = null;
+let activeReference: HTMLAnchorElement | null = null;
+let hideTimer: ReturnType<typeof setTimeout> | undefined;
+const POINTER_GRACE_MS = 200;
+const TOOLTIP_ID = 'footnote-preview';
+
+function cancelHide(): void {
+ clearTimeout(hideTimer);
+}
+
+function scheduleHide(): void {
+ cancelHide();
+ hideTimer = setTimeout(hideTooltip, POINTER_GRACE_MS);
+}
 
 function getFootnoteText(href: string): string | null {
 	const id = href.slice(1); // strip leading #
@@ -38,7 +51,7 @@ function positionTooltip(tooltip: HTMLElement, ref: HTMLElement): void {
 	const tooltipWidth = tooltip.offsetWidth;
 
 	const preferAbove = refRect.top >= tooltipHeight + margin;
-	const top = preferAbove
+	const preferredTop = preferAbove
 		? refRect.top - tooltipHeight - margin
 		: refRect.bottom + margin;
 
@@ -46,7 +59,7 @@ function positionTooltip(tooltip: HTMLElement, ref: HTMLElement): void {
 	left = Math.max(margin, Math.min(left, window.innerWidth - tooltipWidth - margin));
 
 	tooltip.style.left = `${left}px`;
-	tooltip.style.top = `${top}px`;
+	tooltip.style.top = `${Math.max(margin, Math.min(preferredTop, window.innerHeight - tooltipHeight - margin))}px`;
 }
 
 function showTooltip(ref: HTMLAnchorElement): void {
@@ -61,27 +74,35 @@ function showTooltip(ref: HTMLAnchorElement): void {
 	const tooltip = document.createElement('div');
 	tooltip.className = 'footnote-tooltip';
 	tooltip.setAttribute('role', 'tooltip');
+	tooltip.id = TOOLTIP_ID;
+	activeReference = ref;
+	const descriptions = new Set((ref.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean));
+	descriptions.add(TOOLTIP_ID);
+	ref.setAttribute('aria-describedby', [...descriptions].join(' '));
+	tooltip.addEventListener('mouseenter', cancelHide);
+	tooltip.addEventListener('mouseleave', scheduleHide);
 	tooltip.textContent = text;
 	document.body.appendChild(tooltip);
 
 	positionTooltip(tooltip, ref);
 
 	// Trigger fade-in on next frame so the transition fires
-	requestAnimationFrame(() => tooltip.classList.add('visible'));
+	requestAnimationFrame(() => { if (activeTooltip === tooltip) tooltip.classList.add('visible'); });
 
 	activeTooltip = tooltip;
 }
 
 function hideTooltip(): void {
-	if (!activeTooltip) return;
-	const tooltip = activeTooltip;
-	activeTooltip = null;
-
-	tooltip.classList.remove('visible');
-	tooltip.addEventListener('transitionend', () => tooltip.remove(), { once: true });
-
-	// Fallback removal in case transitionend doesn't fire (reduced motion etc.)
-	setTimeout(() => tooltip.remove(), 300);
+ cancelHide();
+ if (activeReference) {
+  const descriptions = (activeReference.getAttribute('aria-describedby') ?? '')
+   .split(/\s+/).filter(id => id && id !== TOOLTIP_ID);
+  if (descriptions.length) activeReference.setAttribute('aria-describedby', descriptions.join(' '));
+  else activeReference.removeAttribute('aria-describedby');
+ }
+ activeReference = null;
+ activeTooltip?.remove();
+ activeTooltip = null;
 }
 
 export function initFootnoteTooltips(): void {
@@ -95,7 +116,7 @@ export function initFootnoteTooltips(): void {
 
 	refs.forEach((ref) => {
 		ref.addEventListener('mouseenter', () => showTooltip(ref));
-		ref.addEventListener('mouseleave', hideTooltip);
+		ref.addEventListener('mouseleave', scheduleHide);
 		ref.addEventListener('focus', () => showTooltip(ref));
 		ref.addEventListener('blur', hideTooltip);
 	});

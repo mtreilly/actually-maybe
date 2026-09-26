@@ -18,3 +18,7 @@ export function formatReadingMinutes(minutes: number, locale: string = SITE_LOCA
  }).format(Math.max(1, minutes));
  return minutes < 1 ? `< ${value}` : value;
 }
+
+export function formatNumber(value: number, locale: string = SITE_LOCALE): string {
+ return new Intl.NumberFormat(locale).format(value);
+}

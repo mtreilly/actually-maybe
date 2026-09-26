@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { formatDate, formatReadingMinutes, compareText } from '../format';
+import { formatDate, formatReadingMinutes, compareText, formatNumber } from '../format';
 
 const date = new Date('2024-11-18T00:00:00Z');
 const originalTimeZone = process.env.TZ;
@@ -13,6 +13,7 @@ try {
  assert.equal(Math.sign(compareText('ä', 'z', 'de')), -1);
  assert.match(formatReadingMinutes(2, 'ar-u-nu-arab'), /٢/);
  assert.match(formatReadingMinutes(0), /^< /);
+ assert.equal(formatNumber(1234.5, 'de-DE'), '1.234,5');
 } finally {
  if (originalTimeZone === undefined) delete process.env.TZ;
  else process.env.TZ = originalTimeZone;

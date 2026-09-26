@@ -382,7 +382,10 @@ blockquote p {
 	font-size: 0.8125rem;
 	line-height: 1.5;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-	pointer-events: none;
+	pointer-events: auto;
+	box-sizing: border-box;
+	max-height: calc(100vh - 20px);
+	overflow-y: auto;
 	opacity: 0;
 	transition: opacity 0.15s ease;
 }

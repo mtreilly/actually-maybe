@@ -243,3 +243,19 @@ email/social links with full names/addresses from identity data. There are no
 payments, currencies, app notifications, emails, or PDF generation paths to
 localise in the shipped reader interface. Published prose remains authored
 English content, separate from shared controls and semantic data exports.
+
+## Footnote previews and graph formatting
+
+Footnote previews now associate their text with the reference using
+aria-describedby, preserving existing description tokens. Escape/blur removes
+only the preview token. Pointer exit gives a short grace period to reach the
+preview, which supports pointer interaction and vertical scrolling. Preview
+position/height is constrained to the viewport. In Chrome, keyboard focus exposed
+both footnote-label and footnote-preview; Escape left footnote-label intact and
+removed the preview; Enter still navigated to the native footnote fragment.
+Pointer travel and long-preview scrolling still need a direct interaction check.
+
+Graph statistics use the shared locale-aware number formatter. Connection labels
+and grouped-post counts use complete contextual plural resources. Decimal/group
+formatting is tested with German 1.234,5. Semantic JSON graph numbers remain
+numbers. The generated build and browser-script syntax checks pass.

@@ -16,6 +16,8 @@ export const ui = {
   sharedTopics: (topics: string[]): string => `Shared topics: ${new Intl.ListFormat(SITE_LOCALE).format(topics)}`,
  },
  collections: {
+  connectionCount: (count: number): string => new Intl.PluralRules(SITE_LOCALE).select(count) === 'one'
+   ? '1 connection' : `${new Intl.NumberFormat(SITE_LOCALE).format(count)} connections`,
   postCount: (count: number): string => new Intl.PluralRules(SITE_LOCALE).select(count) === 'one'
    ? '1 post' : `${new Intl.NumberFormat(SITE_LOCALE).format(count)} posts`,
   topicCount: (count: number): string => new Intl.PluralRules(SITE_LOCALE).select(count) === 'one'
