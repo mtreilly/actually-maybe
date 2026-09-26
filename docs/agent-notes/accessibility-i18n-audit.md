@@ -145,3 +145,23 @@ That final download check had scripts enabled. The complete no-script download
 path remains to verify. An earlier download-observation timeout reset the tool
 session; it was not counted as a test pass. Script/cache/viewport overrides were
 restored, and the test tab closed.
+
+## Motion, widths, and series presentation
+
+On the representative article at 375, 768, and 1440px in Chrome, document width
+stayed within the viewport. At 1440px, the main reading column measured 680px.
+The 375px screenshot showed readable dark-mode text and wrapping title/topic
+links, with navigation and the sections control visible. Computed colours were
+background rgb(17,24,39), body rgb(243,244,246), muted rgb(156,163,175), and prose
+links rgb(96,165,250). These observations cover this representative layout, not
+all page families or expanded translations.
+
+Emulated reduced motion yielded 0s navigation transitions on search and 0s on
+the article reading-progress pseudo-element. Media and viewport overrides were
+reset and the review tab closed.
+
+Series messages now use complete progress/post functions with locale-aware
+numbers; previous/next/updated copy is in article resources. SeriesNav accepts
+only the post identifier and real typed series metadata, removing the fabricated
+post and its any cast. No currently published series fixture exists to prove
+that path's rendered output; it still needs representative verification.

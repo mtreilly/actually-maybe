@@ -1,19 +1,14 @@
 ---
+import { ui } from '../i18n/ui';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
-	currentPost: CollectionEntry<'blog'>;
+	currentPostId: string;
+	series: NonNullable<CollectionEntry<'blog'>['data']['series']>;
 	allPosts: CollectionEntry<'blog'>[];
 }
 
-const { currentPost, allPosts } = Astro.props;
-
-// Only render if post is part of a series
-if (!currentPost.data.series) {
-	throw new Error('SeriesNav requires a post with series data');
-}
-
-const { series } = currentPost.data;
+const { currentPostId, series, allPosts } = Astro.props;
 
 // Find all posts in this series
 const seriesPosts = allPosts
@@ -21,16 +16,16 @@ const seriesPosts = allPosts
 	.sort((a, b) => (a.data.series?.part || 0) - (b.data.series?.part || 0));
 
 // Get previous and next posts in series
-const currentIndex = seriesPosts.findIndex(p => p.id === currentPost.id);
+const currentIndex = seriesPosts.findIndex(p => p.id === currentPostId);
 const prevPost = currentIndex > 0 ? seriesPosts[currentIndex - 1] : null;
 const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentIndex + 1] : null;
 ---
 
 <div class="series-nav">
 	<div class="series-header">
-		<span class="series-badge">Part of a series</span>
+		<span class="series-badge">{ui.series.badge}</span>
 		<h3 class="series-title">{series.name}</h3>
-		<span class="series-progress">Part {series.part}{series.total ? ` of ${series.total}` : ''}</span>
+		<span class="series-progress">{ui.series.progress(series.part, series.total)}</span>
 	</div>
 
 	{seriesPosts.length > 1 && (
@@ -38,10 +33,10 @@ const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentInde
 			{seriesPosts.map((post, index) => (
 				<a
 					href={`/blog/${post.id}/`}
-					class={`series-item ${post.id === currentPost.id ? 'current' : ''}`}
-					aria-current={post.id === currentPost.id ? 'page' : undefined}
+					class={`series-item ${post.id === currentPostId ? 'current' : ''}`}
+					aria-current={post.id === currentPostId ? 'page' : undefined}
 				>
-					<span class="series-number">Part {post.data.series?.part}</span>
+					<span class="series-number">{ui.series.progress(post.data.series?.part ?? 1)}</span>
 					<span class="series-item-title">{post.data.title}</span>
 				</a>
 			))}
@@ -52,12 +47,12 @@ const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentInde
 		<div class="series-navigation">
 			{prevPost && (
 				<a href={`/blog/${prevPost.id}/`} class="series-nav-link series-prev">
-					← Part {prevPost.data.series?.part}: {prevPost.data.title}
+					← {ui.series.post(prevPost.data.series?.part ?? 1, prevPost.data.title)}
 				</a>
 			)}
 			{nextPost && (
 				<a href={`/blog/${nextPost.id}/`} class="series-nav-link series-next">
-					Part {nextPost.data.series?.part}: {nextPost.data.title} →
+					{ui.series.post(nextPost.data.series?.part ?? 1, nextPost.data.title)} →
 				</a>
 			)}
 		</div>

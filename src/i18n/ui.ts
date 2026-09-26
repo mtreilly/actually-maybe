@@ -1,7 +1,15 @@
 import { SITE_LOCALE } from './format';
 
 export const ui = {
+ series: {
+  badge: 'Part of a series',
+  progress: (part: number, total?: number): string => total === undefined
+   ? `Part ${new Intl.NumberFormat(SITE_LOCALE).format(part)}`
+   : `Part ${new Intl.NumberFormat(SITE_LOCALE).format(part)} of ${new Intl.NumberFormat(SITE_LOCALE).format(total)}`,
+  post: (part: number, title: string): string => `Part ${new Intl.NumberFormat(SITE_LOCALE).format(part)}: ${title}`,
+ },
  article: {
+  updated: 'Updated', previous: 'Previous', next: 'Next',
   navigation: 'Navigation', allPosts: 'All Posts', allTopics: 'All Topics',
   relatedReading: 'Related Reading', contents: 'Table of Contents',
   discussedIn: 'Also discussed in',
