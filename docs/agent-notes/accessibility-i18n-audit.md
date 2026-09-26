@@ -4,8 +4,9 @@ Worktree: `../actually-maybe-accessibility-i18n`.
 Branch: `quality/accessibility-i18n`. Issue: `actually-maybe-zxb`.
 
 The implementation and verification below follow both quality-goal documents.
-Completion remains unproven because the project-wide lint and Lighthouse gates
-are not satisfied. No merge or deployment has been performed.
+The accessibility and localisation goals are verified against the evidence below.
+The combined implementation includes the newer performance changes from main.
+Merge, push, and worktree cleanup are tracked separately as delivery steps.
 
 ## Accessibility requirements and evidence
 
@@ -30,7 +31,7 @@ are not satisfied. No merge or deployment has been performed.
 | --- | --- | --- |
 | UI and accessibility copy | Meaningful resources for shared navigation, search, copy, theme, article, series, collections, and type labels. Author prose remains content. | `src/i18n/ui.ts`, shared components and scripts. |
 | Grammar and pluralisation | Full messages for search/collection/connection counts and series progress; explicit type plural labels; no identifier capitalisation or appended s. | Resources and rendered two-part series fixture. |
-| Dates and time zones | Shared Irish English date formatter uses UTC calendar days. Archive HTML/Markdown group by UTC year. | Tests in opposite time zones and German date locale; rendered dates. |
+| Dates and time zones | Shared Irish English date formatter uses UTC calendar days. Archive HTML/Markdown group by UTC year. | Content-ingestion regression in Los Angeles, Auckland, and Warsaw, German date locale, and rendered dates. Legacy month-name strings are normalised to UTC before schema coercion; the Drone post remains 26 September in HTML and Markdown. |
 | Numbers and lists | Intl number/unit/list formatting, explicit collation locale. | German grouping/decimal, Swedish/German sorting, Arabic numbering tests. Graph JSON keeps numeric values. |
 | Language and direction | Site locale/direction are presentation constants, used by every HTML page. Logical text alignment/spacing. | Source scan; synthetic Arabic expanded labels at 375px RTL wrap without overflow. |
 | Names and addresses | Identity data retains full names, email, postal address, and profiles. No parsing into cultural name components. | `src/data/identity.ts`, contact and structured-data output tests. |
@@ -73,15 +74,20 @@ regression suite pass after this cleanup.
 
 ## Remaining project gates and limitations
 
-- A Lighthouse runner was found bundled in the cached DevTools MCP package.
-  Its isolated Puppeteer launch fails before connecting, with no stderr. The
-  DevTools connector also fails with Target closed. Registry DNS fails, preventing
-  installation of another CLI/browser. No Lighthouse >90 score is claimed.
-- Standalone Playwright cannot launch either installed Chrome binary. Runtime
-  checks used the functioning Chrome extension instead.
+- Lighthouse 13.4.1 from Chrome DevTools audited the combined local production
+  preview with mobile Slow 4G simulation. Home, search, and the long Drone article
+  each score performance 100 and accessibility 100. Full FCP/LCP/TBT/CLS/Speed
+  Index metrics and settings are retained in `accessibility-i18n-lighthouse.json`.
+  Home/search were checked before the final calendar-ingestion fix; the article
+  was checked after it. The change affects date text, not styles or scripts.
+  These are laboratory results with active extensions, not production field data.
+- Direct browser launch and the MCP connector failed, but native Chrome DevTools
+  provided the complete runner. Keyboard/AX checks used the Chrome extension.
 - Browser coverage is Chrome and representative interactions. No human screen-
   reader session, second-language content review, exhaustive image contrast audit,
   or cross-browser certification is claimed.
 
-These limits are explicit evidence gaps. The goal remains active pending the
-required project gates and a final completion decision; the issue stays open.
+These coverage limits do not hide known product barriers. The build, complete
+regression suite, Biome, runtime paths, and required Lighthouse gates pass. The
+review improves the shipped interactions and presentation boundaries without
+adding a language switcher, translated blog content, or runtime framework.

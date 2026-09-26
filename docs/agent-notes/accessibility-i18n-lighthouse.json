@@ -1,0 +1,89 @@
+[
+	{
+		"url": "http://localhost:4322/",
+		"lighthouseVersion": "13.4.1",
+		"fetchTime": "2026-09-26T12:36:25.728Z",
+		"scores": {
+			"performance": 1,
+			"accessibility": 1
+		},
+		"settings": {
+			"formFactor": "mobile",
+			"throttlingMethod": "simulate",
+			"throttling": {
+				"rttMs": 150,
+				"throughputKbps": 1638.4,
+				"requestLatencyMs": 562.5,
+				"downloadThroughputKbps": 1474.5600000000002,
+				"uploadThroughputKbps": 675,
+				"cpuSlowdownMultiplier": 4
+			}
+		},
+		"metrics": {
+			"first-contentful-paint": 889.1583500000002,
+			"largest-contentful-paint": 1204.3167000000003,
+			"total-blocking-time": 39,
+			"cumulative-layout-shift": 0,
+			"speed-index": 889.1583500000002
+		},
+		"sourceReport": "/Users/micheal/Downloads/localhost_4322-20260926T143625.json"
+	},
+	{
+		"url": "http://localhost:4322/search/",
+		"lighthouseVersion": "13.4.1",
+		"fetchTime": "2026-09-26T12:37:32.901Z",
+		"scores": {
+			"performance": 1,
+			"accessibility": 1
+		},
+		"settings": {
+			"formFactor": "mobile",
+			"throttlingMethod": "simulate",
+			"throttling": {
+				"rttMs": 150,
+				"throughputKbps": 1638.4,
+				"requestLatencyMs": 562.5,
+				"downloadThroughputKbps": 1474.5600000000002,
+				"uploadThroughputKbps": 675,
+				"cpuSlowdownMultiplier": 4
+			}
+		},
+		"metrics": {
+			"first-contentful-paint": 995.0668750000001,
+			"largest-contentful-paint": 1371.8802500000002,
+			"total-blocking-time": 0,
+			"cumulative-layout-shift": 0,
+			"speed-index": 995.0668750000001
+		},
+		"sourceReport": "/Users/micheal/Downloads/localhost_4322-20260926T143732.json"
+	},
+	{
+		"url": "http://localhost:4322/blog/building-explainers-random-thoughts-drone-101/",
+		"lighthouseVersion": "13.4.1",
+		"fetchTime": "2026-09-26T12:39:26.358Z",
+		"scores": {
+			"performance": 1,
+			"accessibility": 1
+		},
+		"settings": {
+			"formFactor": "mobile",
+			"throttlingMethod": "simulate",
+			"throttling": {
+				"rttMs": 150,
+				"throughputKbps": 1638.4,
+				"requestLatencyMs": 562.5,
+				"downloadThroughputKbps": 1474.5600000000002,
+				"uploadThroughputKbps": 675,
+				"cpuSlowdownMultiplier": 4
+			}
+		},
+		"metrics": {
+			"first-contentful-paint": 1070.279,
+			"largest-contentful-paint": 1505.8231999999998,
+			"total-blocking-time": 0,
+			"cumulative-layout-shift": 0.00267662405874749,
+			"speed-index": 1070.279
+		},
+		"sourceReport": "/Users/micheal/Downloads/localhost_4322-20260926T143926.json"
+	}
+]

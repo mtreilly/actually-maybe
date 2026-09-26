@@ -1,0 +1,128 @@
+[
+	{
+		"page": "home",
+		"url": "http://127.0.0.1:4325/",
+		"lighthouseVersion": "13.4.1",
+		"fetchTime": "2026-09-26T12:14:36.046Z",
+		"settings": {
+			"formFactor": "mobile",
+			"throttlingMethod": "simulate",
+			"throttling": {
+				"rttMs": 150,
+				"throughputKbps": 1638.4,
+				"requestLatencyMs": 562.5,
+				"downloadThroughputKbps": 1474.5600000000002,
+				"uploadThroughputKbps": 675,
+				"cpuSlowdownMultiplier": 4
+			}
+		},
+		"performanceScore": 1,
+		"metrics": {
+			"first-contentful-paint": {
+				"value": 803.5989,
+				"unit": "millisecond"
+			},
+			"largest-contentful-paint": {
+				"value": 1207.1978,
+				"unit": "millisecond"
+			},
+			"total-blocking-time": {
+				"value": 15,
+				"unit": "millisecond"
+			},
+			"cumulative-layout-shift": {
+				"value": 0,
+				"unit": "unitless"
+			},
+			"speed-index": {
+				"value": 803.5989,
+				"unit": "millisecond"
+			}
+		},
+		"sourceReport": "/Users/micheal/Downloads/lighthouse-home-mobile.json"
+	},
+	{
+		"page": "search",
+		"url": "http://127.0.0.1:4325/search/",
+		"lighthouseVersion": "13.4.1",
+		"fetchTime": "2026-09-26T12:15:34.544Z",
+		"settings": {
+			"formFactor": "mobile",
+			"throttlingMethod": "simulate",
+			"throttling": {
+				"rttMs": 150,
+				"throughputKbps": 1638.4,
+				"requestLatencyMs": 562.5,
+				"downloadThroughputKbps": 1474.5600000000002,
+				"uploadThroughputKbps": 675,
+				"cpuSlowdownMultiplier": 4
+			}
+		},
+		"performanceScore": 1,
+		"metrics": {
+			"first-contentful-paint": {
+				"value": 924.4057026290893,
+				"unit": "millisecond"
+			},
+			"largest-contentful-paint": {
+				"value": 1359.29,
+				"unit": "millisecond"
+			},
+			"total-blocking-time": {
+				"value": 0,
+				"unit": "millisecond"
+			},
+			"cumulative-layout-shift": {
+				"value": 0,
+				"unit": "unitless"
+			},
+			"speed-index": {
+				"value": 924.4057026290893,
+				"unit": "millisecond"
+			}
+		},
+		"sourceReport": "/Users/micheal/Downloads/lighthouse-search-mobile.json"
+	},
+	{
+		"page": "post",
+		"url": "http://127.0.0.1:4325/blog/building-explainers-random-thoughts-drone-101/",
+		"lighthouseVersion": "13.4.1",
+		"fetchTime": "2026-09-26T12:12:45.097Z",
+		"settings": {
+			"formFactor": "mobile",
+			"throttlingMethod": "simulate",
+			"throttling": {
+				"rttMs": 150,
+				"throughputKbps": 1638.4,
+				"requestLatencyMs": 562.5,
+				"downloadThroughputKbps": 1474.5600000000002,
+				"uploadThroughputKbps": 675,
+				"cpuSlowdownMultiplier": 4
+			}
+		},
+		"performanceScore": 1,
+		"metrics": {
+			"first-contentful-paint": {
+				"value": 945.027,
+				"unit": "millisecond"
+			},
+			"largest-contentful-paint": {
+				"value": 1364.027,
+				"unit": "millisecond"
+			},
+			"total-blocking-time": {
+				"value": 0,
+				"unit": "millisecond"
+			},
+			"cumulative-layout-shift": {
+				"value": 0,
+				"unit": "unitless"
+			},
+			"speed-index": {
+				"value": 945.027,
+				"unit": "millisecond"
+			}
+		},
+		"sourceReport": "/Users/micheal/Downloads/lighthouse-post-mobile.json"
+	}
+]

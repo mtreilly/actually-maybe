@@ -1,4 +1,5 @@
 import { strict as assert } from "node:assert";
+import { normaliseCalendarDate } from "../../lib/calendar-date";
 import {
 	compareText,
 	formatDate,
@@ -9,6 +10,23 @@ import {
 const date = new Date("2024-11-18T00:00:00Z");
 const originalTimeZone = process.env.TZ;
 try {
+	for (const timeZone of [
+		"America/Los_Angeles",
+		"Pacific/Auckland",
+		"Europe/Warsaw",
+	]) {
+		process.env.TZ = timeZone;
+		for (const authored of ["Sep 26 2026", "2026-09-26"]) {
+			const normalised = normaliseCalendarDate(authored);
+			assert.equal(typeof normalised, "string");
+			if (typeof normalised !== "string")
+				throw new Error("Expected a date string");
+			assert.equal(
+				new Date(normalised).toISOString(),
+				"2026-09-26T00:00:00.000Z",
+			);
+		}
+	}
 	process.env.TZ = "America/Los_Angeles";
 	assert.equal(formatDate(date), "18 Nov 2024");
 	process.env.TZ = "Pacific/Auckland";
