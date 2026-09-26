@@ -1,5 +1,4 @@
 ---
-import { getCollection } from "astro:content";
 import BaseHead from "../../components/BaseHead.astro";
 import Footer from "../../components/Footer.astro";
 import Header from "../../components/Header.astro";
@@ -12,8 +11,9 @@ import {
 	SITE_LOCALE,
 } from "../../i18n/format";
 import { ui } from "../../i18n/ui";
+import { getPublishedPosts } from "../../lib/published-posts";
 
-const posts = await getCollection("blog");
+const posts = await getPublishedPosts();
 
 // Count posts per topic
 const topicCounts = new Map<string, number>();

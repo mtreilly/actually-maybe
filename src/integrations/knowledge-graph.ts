@@ -9,6 +9,7 @@ import {
 	writeGraphCache,
 } from "../lib/knowledge-graph-loader";
 import { findUnlinkedMentions } from "../lib/mention-detector";
+import { isPublishedPost } from "../lib/published-posts";
 import type { KnowledgeGraph } from "../types/graph";
 
 export default function knowledgeGraphIntegration(): AstroIntegration {
@@ -31,7 +32,9 @@ export default function knowledgeGraphIntegration(): AstroIntegration {
 
 					try {
 						const dataStoreRaw = readFileSync(dataStorePath, "utf-8");
-						posts = parseBlogEntries(JSON.parse(dataStoreRaw));
+						posts = parseBlogEntries(JSON.parse(dataStoreRaw)).filter(
+							isPublishedPost,
+						);
 						contentHash = createHash("sha256")
 							.update(dataStoreRaw)
 							.digest("hex");

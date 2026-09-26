@@ -3,57 +3,6 @@
 These are researched recommendations, not completed implementation tasks.
 Reviewed 2026-09-26. See [verification](../review.md) and [change traces](../traces/representative-changes.md).
 
-## F-001: Publication eligibility has no effective owner
-
-Classification: Missing abstraction / ambiguous ownership (dangerous)
-
-Confidence: High
-
-Area: Publishing
-
-### Observation
-
-The active glob-based schema has no `draft` field. The older content schema has
-`draft` and a different series shape. All public collection readers load every
-entry without filtering. A temporary `draft: true` post produced an article,
-Markdown file, and RSS entry. A second probe also appeared in search and llms.txt.
-
-### Why it matters
-
-The writer-facing contract says a draft is excluded. A writer cannot safely keep
-an unpublished thought in the content directory. Adding a filter in just the blog
-route would still expose it through feeds, Markdown, graph consumers, and indexes.
-The conflicting schema makes the missing boundary harder to recognise.
-
-### Evidence
-
-- `src/content.config.ts`: effective schema, no draft field.
-- `src/content/config.ts`: legacy `draft` default and string series.
-- `src/pages/blog/[...slug].astro`, `[...page].md.ts`, `rss.xml.ts`,
-  `llms.txt.ts`, `search.astro`: unfiltered collection reads.
-- `src/lib/knowledge-graph-loader.ts` and integration data-store parsing: further
-  public-data selection paths.
-- Installed Astro `dist/content/utils.js`, `searchConfig`: root configuration wins.
-- [Review probes](../review.md) confirm publication, not merely a missing type.
-
-### Recommendation
-
-Keep one effective schema with draft metadata and a named published-post selection
-boundary. Route every public projection through that boundary, including graph
-construction. Preserve private/editorial access separately if needed. Remove the
-obsolete schema after verifying nothing consumes its old contract.
-
-### Do not do
-
-Do not add independent draft predicates to every renderer or assume filtering HTML
-also filters Markdown/RSS. Do not introduce a CMS or repository framework.
-
-### Revisit when
-
-Resolve only after a draft is absent from direct output paths, collection pages,
-search, RSS, llms.txt, graph nodes/edges, sitemap, and the middleware manifest in
-both cold and changed-content warm builds.
-
 ## F-002: A current build has competing graph snapshot owners
 
 Classification: Ambiguous ownership / accidental complexity (expensive)

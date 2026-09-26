@@ -9,6 +9,8 @@ import {
 	toPostNode,
 } from "./graph-utils";
 
+import { getPublishedPosts, isPublishedPost } from "./published-posts";
+
 const GRAPH_CACHE_PATH = resolve(process.cwd(), ".astro/graph-cache.json");
 
 let memoryCache: KnowledgeGraph | null = null;
@@ -36,12 +38,7 @@ export async function loadKnowledgeGraph(
 		return memoryCache;
 	}
 
-	const posts =
-		entries ??
-		(await (async () => {
-			const { getCollection } = await import("astro:content");
-			return getCollection("blog");
-		})());
+	const posts = entries ?? (await getPublishedPosts());
 	const graph = buildGraph(posts);
 
 	if (!skipCacheWrite) {
@@ -67,7 +64,7 @@ export async function writeGraphCache(
 }
 
 function buildGraph(entries: Array<CollectionEntry<"blog">>): KnowledgeGraph {
-	const nodes = entries.map(toPostNode);
+	const nodes = entries.filter(isPublishedPost).map(toPostNode);
 	const edges = buildEdges(nodes);
 	const topics = buildTopicIndex(nodes);
 	const graphBase: Omit<KnowledgeGraph, "stats"> = {

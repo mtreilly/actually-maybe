@@ -310,7 +310,10 @@ type: "note"  # note | essay | guide | link
 **Optional fields:**
 ```yaml
 heroImage: "./hero.jpg"  # relative to post file
-series: "Learning Theory"  # multi-part posts
+series:                   # ordered multi-part posts
+  name: "Learning Theory"
+  part: 1
+  total: 3
 draft: true  # exclude from build
 ```
 

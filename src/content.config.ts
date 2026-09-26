@@ -18,6 +18,7 @@ const blog = defineCollection({
 				z.coerce.date().optional(),
 			),
 			heroImage: image().optional(),
+			draft: z.boolean().default(false),
 			topics: z.array(z.string()).default([]),
 			type: z.enum(["note", "essay", "guide", "link"]).default("note"),
 			// Series support for multi-part content

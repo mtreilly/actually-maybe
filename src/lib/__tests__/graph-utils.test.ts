@@ -26,6 +26,7 @@ function createCollectionEntry(
 			heroImage: undefined,
 			topics: ["astro", "ai"],
 			type: "note",
+			draft: false,
 			series: undefined,
 		},
 	};

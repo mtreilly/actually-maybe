@@ -1,8 +1,8 @@
 import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
 import { createHash } from "node:crypto";
 import type { APIRoute } from "astro";
 import { VARY_VALUE } from "../lib/accept-negotiation";
+import { getPublishedPosts } from "../lib/published-posts";
 import { buildBlogMarkdown } from "../utils/markdownExport";
 import { buildStaticMarkdown } from "../utils/staticMarkdown";
 
@@ -73,7 +73,7 @@ const respondWithMarkdown = (markdown: string) => {
 };
 
 export async function getStaticPaths() {
-	const posts = await getCollection("blog");
+	const posts = await getPublishedPosts();
 	const topics = new Set<string>();
 	const types = new Set<string>();
 	posts.forEach((post) => {
@@ -104,7 +104,7 @@ export async function getStaticPaths() {
 
 export const GET: APIRoute = async ({ params, site, url }) => {
 	const slug = normalizeSlug(params.page);
-	const posts = await getCollection("blog");
+	const posts = await getPublishedPosts();
 	const origin = site?.origin ?? url.origin;
 
 	if (slug.startsWith("blog/")) {

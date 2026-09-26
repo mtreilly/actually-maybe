@@ -1,9 +1,10 @@
 ---
-import { type CollectionEntry, getCollection, render } from "astro:content";
+import { type CollectionEntry, render } from "astro:content";
 import BlogPost from "../../layouts/BlogPost.astro";
+import { getPublishedPosts } from "../../lib/published-posts";
 
 export async function getStaticPaths() {
-	const posts = await getCollection("blog");
+	const posts = await getPublishedPosts();
 	return posts.map((post) => ({
 		params: { slug: post.id },
 		props: post,
@@ -18,7 +19,7 @@ const { Content, headings } = await render(post);
 const bodyText = post.body || "";
 
 // Get all posts sorted by date for next/previous navigation
-const allPosts = await getCollection("blog");
+const allPosts = await getPublishedPosts();
 const sortedPosts = allPosts.sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );

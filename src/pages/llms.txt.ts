@@ -1,5 +1,6 @@
 import { compareText } from "../i18n/format";
 import { ui } from "../i18n/ui";
+import { getPublishedPosts } from "../lib/published-posts";
 
 /**
  * /llms.txt, following the llmstxt.org structure:
@@ -10,7 +11,6 @@ import { ui } from "../i18n/ui";
  * whether this site is the right source, and how to fetch from it.
  */
 
-import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import {
@@ -29,7 +29,7 @@ export const GET: APIRoute = async ({ site, url }) => {
 	const origin = site?.origin ?? url.origin ?? SITE_ORIGIN;
 	const absolute = (path: string) => new URL(path, origin).toString();
 
-	const posts = (await getCollection("blog")).sort(
+	const posts = (await getPublishedPosts()).sort(
 		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 	);
 
