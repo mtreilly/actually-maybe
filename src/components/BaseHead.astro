@@ -21,7 +21,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, image = FallbackImage, imageAlt } = Astro.props;
 const socialImageURL = new URL(image.src, Astro.site ?? Astro.url);
 const socialImageAlt = imageAlt ?? (image === FallbackImage
-	? `Actually Maybe: a blue, hand-drawn approximation mark. Small, sharp notes on AI & vibe engineering, by ${AUTHOR_NAME}.`
+	? `Actually Maybe: a blue, hand-drawn approximation mark. Notes and stuff, by ${AUTHOR_NAME}.`
 	: title);
 
 let graphStats: KnowledgeGraph["stats"] | null = null;

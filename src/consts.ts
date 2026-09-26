@@ -4,4 +4,4 @@
 import { AUTHOR_NAME } from "./data/identity";
 
 export const SITE_TITLE = AUTHOR_NAME;
-export const SITE_DESCRIPTION = "Small, sharp notes on AI & vibe engineering.";
+export const SITE_DESCRIPTION = "Notes and stuff.";
