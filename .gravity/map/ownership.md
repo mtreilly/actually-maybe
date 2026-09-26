@@ -18,6 +18,7 @@
 | Graph page selections | `graph-view.ts` | HTML/Markdown share groups and connected-post order |
 | Identity facts | `identity.ts` | Name, contact, social, postal, origin facts |
 | Editorial biographies | Human and agent page data | Audience-specific prose remains local |
+| Social artwork | `BaseHead.astro`, SVG masters, asset generation script | Static branded fallback; blog hero images override; PNG/ICO assets committed |
 | Structured data shape | `structured-data.ts` | Page descriptor plus shared identity graph; 404 excluded |
 | Markdown content | Explicit endpoint/builders | Coverage/parity tests enforce intended siblings |
 | Route inventory | Manifest integration | Generated and committed after building |

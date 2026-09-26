@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <title>Actually Maybe</title>
+  <desc>A blue pencil approximation mark on warm paper. Small, sharp notes on AI and vibe engineering, by Micheál Reilly.</desc>
+  <rect width="1200" height="630" fill="#faf8f2"/>
+  <g fill="none" stroke="#2563eb" stroke-linecap="round">
+    <path stroke-width="14" d="M92 152 C122 105 150 132 176 148 S225 181 250 134 M92 208 C122 161 150 188 176 204 S225 237 250 190"/>
+    <path stroke-width="3" opacity=".6" d="M89 164 C125 121 147 132 179 161 S229 181 254 138 M89 220 C125 177 147 188 179 217 S229 237 254 194"/>
+  </g>
+  <g font-family="Helvetica, Arial, sans-serif" fill="#0f172a">
+    <text x="88" y="340" font-size="88" font-weight="700" letter-spacing="-4">Actually Maybe</text>
+    <text x="93" y="412" font-size="32">Small, sharp notes on AI &amp; vibe engineering.</text>
+    <text x="93" y="542" font-size="25" fill="#475569">Micheál Reilly</text>
+    <text x="1107" y="542" text-anchor="end" font-size="25" fill="#475569">actuallymaybe.com</text>
+  </g>
+</svg>

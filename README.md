@@ -76,3 +76,19 @@ Commit `src/generated/route-manifest.json` after route or client-asset changes.
 Biome is the formatter/linter; see the existing audit notes for verification limits.
 
 The reading styles began with Astro's Bear Blog-based starter.
+
+## Social artwork and favicon
+
+The blue, hand-drawn approximation mark represents “Actually Maybe”. Editable
+masters live in `src/assets/social-preview.svg` and `public/favicon.svg`. They
+are static SVG artwork, compatible with a Rough.js-style visual language, with
+no browser dependency. After editing either master, run:
+
+```sh
+node scripts/generate-brand-assets.mjs
+```
+
+Commit the generated PNG and ICO assets alongside the masters. `BaseHead.astro`
+uses the 1200 × 630 PNG as the default social image; posts with a hero image use
+that instead. Astro fingerprints the social image URL. When changing the favicon,
+bump its SVG query version and rename its PNG links to refresh browser caches.

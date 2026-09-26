@@ -86,7 +86,7 @@ try {
 
 <html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} image={heroImage} imageAlt={heroImage ? title : undefined} />
 		<StructuredData
 			page={{
 				kind: 'post',
