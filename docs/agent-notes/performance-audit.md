@@ -96,3 +96,21 @@ Unused dependency removal remains pending: an offline pnpm removal attempt
 still fails its supply-chain metadata check for `@astrojs/prism`. No dependency
 files were changed. Sonner is absent from built client assets, so this remaining
 package cleanup does not affect reader performance.
+
+## Dependency cleanup
+
+On the user's request, npm was tried for Sonner removal. `npm uninstall` cannot
+interpret the pnpm-installed tree's `link:./src/types` reference. `npm pkg delete
+dependencies.sonner` successfully removed the declaration, and the matching
+importer, package, and snapshot entries were removed from the pnpm lockfile.
+Both YAML documents parse; all manifest specifiers match the application
+importer, and a structural comparison confirms only Sonner entries changed.
+No other dependency versions or integrity hashes changed.
+
+`npm run build` completed in 1.05 seconds. Middleware typechecking and every
+remaining command from the test script passed using the installed executables.
+The generated assets and route manifest are unchanged. pnpm's registry-dependent
+supply-chain validation could not complete in this shell, so this does not claim
+a fresh installation or a successful pnpm metadata check. No npm lockfile was
+created. The old local installed package may remain until the next pnpm install;
+it is no longer declared, locked, imported, or shipped by the site.
