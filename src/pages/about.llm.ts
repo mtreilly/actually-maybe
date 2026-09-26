@@ -3,16 +3,19 @@ import {
 	AGENT_HOW_TO_CALL,
 	AGENT_NOT_FOR,
 	AGENT_USE_CASES,
+	AUTHOR_NAME,
+	CONTACT_EMAIL,
+	SOCIAL_PROFILES,
 } from "../data/identity";
 import { VARY_VALUE } from "../lib/accept-negotiation";
 
 const bullets = (items: string[]) =>
 	items.map((item) => `- ${item}`).join("\n");
 
-const context = `# About Micheál Reilly - LLM Context
+const context = `# About ${AUTHOR_NAME} - LLM Context
 
 ## Core Identity
-- Name: Micheál Reilly
+- Name: ${AUTHOR_NAME}
 - Based in: Europe
 - Professional Focus: Software engineer interested in AI, learning systems, and institutional design
 - Communication Style: Appreciates technical depth, nuance, and exploration of edge cases
@@ -74,11 +77,11 @@ ${bullets(AGENT_NOT_FOR)}
 ${bullets(AGENT_HOW_TO_CALL)}
 
 ## Contact
-Email: micheal@actuallymaybe.com
-Links: Blog at actuallymaybe.com, GitHub, LinkedIn, Bluesky, X
+Email: ${CONTACT_EMAIL}
+Links: ${SOCIAL_PROFILES.map((profile) => `${profile.label}: ${profile.url}`).join(", ")}
 
 ---
-This profile helps AI assistants understand Micheál's perspective, interests, and communication style for more contextually appropriate and valuable interactions.`;
+This profile helps AI assistants understand the author's perspective, interests, and communication style for more contextually appropriate and valuable interactions.`;
 
 export const GET: APIRoute = () =>
 	new Response(context + "\n", {

@@ -35,7 +35,7 @@ const buildHomeDoc = (origin: string, posts: BlogEntry[]): MarkdownDoc => ({
 
 const buildAboutDoc = (origin: string): MarkdownDoc => ({
 	title: `About | ${SITE_TITLE}`,
-	description: "About Micheál Reilly",
+	description: `About ${aboutProfile.name}`,
 	canonicalUrl: new URL("/about/", origin).toString(),
 	body: `# ${aboutProfile.name}\n${aboutProfile.subtitle}\n\n${aboutProfile.intro.paragraphs.map((p) => p.text).join("\n\n")}\n\n## ${aboutProfile.currently.title}\n${renderList(
 		aboutProfile.currently.items.map(
@@ -176,7 +176,7 @@ const buildTypeDoc = (
 
 const buildContactDoc = (origin: string): MarkdownDoc => ({
 	title: `Contact | ${SITE_TITLE}`,
-	description: "How to reach Micheál Reilly, and what to expect.",
+	description: `How to reach ${aboutProfile.name}, and what to expect.`,
 	canonicalUrl: new URL("/contact/", origin).toString(),
 	body: `# ${contactPage.title}\n${contactPage.subtitle}\n\n${contactPage.intro.join("\n\n")}\n\n## Email\n${contactPage.email}\n\n${contactPage.emailNote}\n\n## Elsewhere\n${renderList(
 		contactPage.social.map(

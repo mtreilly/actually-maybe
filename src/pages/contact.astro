@@ -5,6 +5,7 @@ import Header from "../components/Header.astro";
 import StructuredData from "../components/StructuredData.astro";
 import { SITE_TITLE } from "../consts";
 import { contactPage } from "../data/contact";
+import { AUTHOR_NAME } from "../data/identity";
 import { SITE_DIRECTION, SITE_LOCALE } from "../i18n/format";
 ---
 
@@ -13,7 +14,7 @@ import { SITE_DIRECTION, SITE_LOCALE } from "../i18n/format";
 	<head>
 		<BaseHead
 			title={`Contact | ${SITE_TITLE}`}
-			description="How to reach Micheál Reilly by email or on social platforms, and what to expect."
+			description={`How to reach ${AUTHOR_NAME} by email or on social platforms, and what to expect.`}
 		/>
 		<StructuredData page={{ kind: 'contact' }} />
 	</head>

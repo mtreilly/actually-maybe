@@ -1,3 +1,5 @@
+import { AUTHOR_NAME, CONTACT_EMAIL, SOCIAL_PROFILES } from "./identity";
+
 // Structured types for clear semantics
 export type CurrentlyItem = {
 	category: "building" | "exploring" | "writing-about";
@@ -43,7 +45,7 @@ export type WritingSection = {
 };
 
 export const aboutProfile = {
-	name: "Micheál Reilly",
+	name: AUTHOR_NAME,
 	subtitle:
 		"Software engineer exploring AI, learning systems, institutions, and economic history.",
 	tagline: "Software development, AI, and understanding how systems work",
@@ -87,19 +89,12 @@ export const aboutProfile = {
 		type: "social-links",
 		title: "Find me elsewhere",
 		links: [
-			{ platform: "email", url: "mailto:micheal@actuallymaybe.com", rel: "me" },
-			{ platform: "github", url: "https://github.com/mtreilly", rel: "me" },
-			{
-				platform: "bluesky",
-				url: "https://bsky.app/profile/michealrs.bsky.social",
+			{ platform: "email", url: `mailto:${CONTACT_EMAIL}`, rel: "me" },
+			...SOCIAL_PROFILES.map(({ platform, url }) => ({
+				platform,
+				url,
 				rel: "me",
-			},
-			{ platform: "x", url: "https://x.com/MichealReilly", rel: "me" },
-			{
-				platform: "linkedin",
-				url: "https://www.linkedin.com/in/michealreilly/",
-				rel: "me",
-			},
+			})),
 			{ platform: "rss", url: "/rss.xml" },
 		],
 	} as ElsewhereSection,

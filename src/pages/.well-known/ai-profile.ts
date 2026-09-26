@@ -3,33 +3,34 @@ import {
 	AGENT_HOW_TO_CALL,
 	AGENT_NOT_FOR,
 	AGENT_USE_CASES,
+	AUTHOR_NAME,
+	CONTACT_EMAIL,
 	POSTAL_ADDRESS,
+	SITE_ORIGIN,
+	SOCIAL_PROFILES,
 } from "../../data/identity";
 import { VARY_VALUE } from "../../lib/accept-negotiation";
 
 const profile = {
-	name: "Micheál Reilly",
+	name: AUTHOR_NAME,
 	description:
 		"Software engineer interested in AI, learning systems, institutions, and economic history",
-	url: "https://actuallymaybe.com",
-	about_url: "https://actuallymaybe.com/about",
-	llm_context_url: "https://actuallymaybe.com/about.llm",
-	contact: "micheal@actuallymaybe.com",
+	url: SITE_ORIGIN,
+	about_url: new URL("/about", SITE_ORIGIN).toString(),
+	llm_context_url: new URL("/about.llm", SITE_ORIGIN).toString(),
+	contact: CONTACT_EMAIL,
 	address: {
 		country: POSTAL_ADDRESS.addressCountry,
 	},
-	agent_instructions_url: "https://actuallymaybe.com/llms.txt",
-	contact_url: "https://actuallymaybe.com/contact",
-	privacy_url: "https://actuallymaybe.com/privacy",
+	agent_instructions_url: new URL("/llms.txt", SITE_ORIGIN).toString(),
+	contact_url: new URL("/contact", SITE_ORIGIN).toString(),
+	privacy_url: new URL("/privacy", SITE_ORIGIN).toString(),
 	when_to_use: AGENT_USE_CASES,
 	when_not_to_use: AGENT_NOT_FOR,
 	how_to_call: AGENT_HOW_TO_CALL,
-	profiles: {
-		github: "https://github.com/mtreilly",
-		linkedin: "https://www.linkedin.com/in/michealreilly/",
-		bluesky: "https://bsky.app/profile/michealrs.bsky.social",
-		x: "https://x.com/MichealReilly",
-	},
+	profiles: Object.fromEntries(
+		SOCIAL_PROFILES.map((profile) => [profile.platform, profile.url]),
+	),
 	interests: [
 		"software development",
 		"AI systems",

@@ -17,6 +17,7 @@ import {
 	AGENT_HOW_TO_CALL,
 	AGENT_NOT_FOR,
 	AGENT_USE_CASES,
+	AUTHOR_NAME,
 	CONTACT_EMAIL,
 	SITE_ORIGIN,
 } from "../data/identity";
@@ -58,7 +59,7 @@ export const GET: APIRoute = async ({ site, url }) => {
 
 	const body = `# ${SITE_TITLE}
 
-> ${SITE_DESCRIPTION} A personal blog by Micheál Reilly, a software engineer, covering agentic AI tooling, small language models, learning systems, institutions, and economic history. ${posts.length} posts, all available as clean markdown from the same URLs that serve HTML.
+> ${SITE_DESCRIPTION} A personal blog by ${AUTHOR_NAME}, a software engineer, covering agentic AI tooling, small language models, learning systems, institutions, and economic history. ${posts.length} posts, all available as clean markdown from the same URLs that serve HTML.
 
 ## When to use this site
 

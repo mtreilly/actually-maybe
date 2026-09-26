@@ -3,51 +3,6 @@
 These are researched recommendations, not completed implementation tasks.
 Reviewed 2026-09-26. See [verification](../review.md) and [change traces](../traces/representative-changes.md).
 
-## F-004: Shared identity facts still have independent copies
-
-Classification: Stable duplication / ambiguous ownership (locally confusing)
-
-Confidence: High
-
-Area: Identity and trust
-
-### Observation
-
-Contact/privacy pages and several identity outputs use `identity.ts`. The human
-profile still embeds email/social URLs; agent context embeds the name and contact
-address. `SITE_TITLE` separately repeats the author name. The AI profile contains
-additional fixed identity/narrative values. Some prose appropriately differs by audience.
-
-### Why it matters
-
-Changing an email or profile URL in the designated owner leaves some public
-representations stale. A developer must inspect human, agent, and structured-data
-surfaces despite the documented single-source contract. This is legitimate
-cross-output projection with accidental repeated facts.
-
-### Evidence
-
-- `src/data/identity.ts`: stated single source of truth and shared constants.
-- `src/data/about.ts`: `elsewhere.links` contains independent mail/social URLs.
-- `src/pages/about.llm.ts`: literal name/contact text.
-- `src/pages/.well-known/ai-profile.ts`, `src/consts.ts`.
-- `src/lib/structured-data.ts`: person name comes from about, contact from identity.
-
-### Recommendation
-
-Derive repeated email/profile/name facts from existing data owners. Keep editorial
-biographies and audience-specific context separate. Test changed facts across both
-human and machine outputs rather than asserting only today's fixed strings.
-
-### Do not do
-
-Do not merge every identity narrative into a generic profile schema, add localisation
-infrastructure for a single name, or invent new personal facts during this review.
-
-### Revisit when
-
-A contact or profile change requires one factual edit and every output reflects it.
-
 ## F-005: Markdown route and content promises have parallel owners
 
 Classification: Structural problem / change amplification (confusing)

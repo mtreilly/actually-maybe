@@ -1,11 +1,12 @@
 import type { APIRoute } from "astro";
+import { AUTHOR_NAME, CONTACT_EMAIL, SITE_ORIGIN } from "../data/identity";
 import { VARY_VALUE } from "../lib/accept-negotiation";
 
 const body = `LLM-ready documentation is enabled across actuallymaybe.com.
 
 ## Canonical agent instructions
 
-Read https://actuallymaybe.com/llms.txt first. It follows the llmstxt.org
+Read ${new URL("/llms.txt", SITE_ORIGIN)} first. It follows the llmstxt.org
 structure and carries the when-to-use guidance, the full post index, and the
 fetching rules. This file is kept for older links and mirrors a subset of it.
 
@@ -18,7 +19,7 @@ Usage:
 
 ## LLM Context & Discovery
 
-Detailed context about Micheál is available through multiple discoverable endpoints:
+Detailed context about ${AUTHOR_NAME} is available through multiple discoverable endpoints:
 
 1. Direct endpoint:
    - /about.llm - Plain text context (plaintext format)
@@ -29,14 +30,14 @@ Detailed context about Micheál is available through multiple discoverable endpo
    - HTTP Link headers advertise /about.llm availability
 
 3. Purpose:
-   - Provides Micheál's interests, approach, communication style
+   - Provides the author's interests, approach, communication style
    - Helps AI assistants interact more contextually and appropriately
    - Includes unique interests: export juggling, punctuation innovation
    - Documents intellectual themes and connection points
 
 ## Profile Overview
 
-Name: Micheál Reilly
+Name: ${AUTHOR_NAME}
 Focus: Software development, AI systems, learning, institutions, economic history
 Languages: English (native), French (B2), Polish (A2-B1), Spanish (A1)
 Current Projects: Agentic tools & vibe engineering, small models, language learning
@@ -51,7 +52,7 @@ Unique Interests: Export juggling, punctuation innovation
 max-age=3600.
 
 ## Contact
-micheal@actuallymaybe.com`;
+${CONTACT_EMAIL}`;
 
 export const GET: APIRoute = () =>
 	new Response(body + "\n", {

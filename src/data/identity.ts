@@ -1,10 +1,12 @@
 /**
- * Single source of truth for machine-readable identity.
+ * Single source of truth for shared author and publisher facts.
  *
  * Consumed by the JSON-LD structured data component, the /.well-known/ai-profile
- * endpoint, /llms.txt, and the /contact and /privacy trust-anchor pages. Keep this
- * in step with `src/data/about.ts`, which drives the human-facing /about page.
+ * endpoint, agent context, and human trust-anchor pages. Narrative biographies
+ * remain in `src/data/about.ts` and the context endpoints.
  */
+
+export const AUTHOR_NAME = "Micheál Reilly";
 
 export const SITE_ORIGIN = "https://actuallymaybe.com";
 

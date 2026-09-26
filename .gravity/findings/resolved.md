@@ -50,3 +50,19 @@ overlap, ties, input-order independence, self/draft/unrelated exclusions. Output
 compare the HTML sidebar to the Markdown selection prefix across all 15 posts.
 Build and all page heading outlines passed. Product meanings are recorded in the
 related-reading decision; no generic relevance framework was introduced.
+
+## F-004: Shared identity facts have one source
+
+Resolved 2026-09-26. Email, social URLs, and author name previously had independent
+copies in the human profile, AI profile, context endpoints, and metadata.
+
+`identity.ts` now owns AUTHOR_NAME as well as contact/social facts and site origin.
+Human profile links, site title, context text, machine profile, and metadata derive
+those facts. The Astro site origin also consumes the existing constant. Editorial
+biographies, language descriptions, project links, and interests remain local.
+
+Verification: `test-identity.ts` temporarily changes only the factual owner's name,
+email, and all four profile URLs, rebuilds, and confirms propagation and absence of
+old facts in human HTML/Markdown, JSON-LD, AI profile, agent context/index, and trust
+pages. It restores the exact original source and rebuilds in a finally block.
+Passed on Node 24.21.0; no test identity remains in the source or output.

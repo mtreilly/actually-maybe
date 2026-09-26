@@ -20,8 +20,8 @@ const platformLabels = {
 <!doctype html>
 <html lang={SITE_LOCALE} dir={SITE_DIRECTION}>
 	<head>
-		<BaseHead title={`About | ${SITE_TITLE}`} description="About Micheál Reilly" />
-		<link rel="llm-context" href="/about.llm" type="text/plain" title="LLM Context for Micheál Reilly" />
+		<BaseHead title={`About | ${SITE_TITLE}`} description={`About ${aboutProfile.name}`} />
+		<link rel="llm-context" href="/about.llm" type="text/plain" title={`LLM Context for ${aboutProfile.name}`} />
 		<StructuredData page={{ kind: 'about' }} />
 	</head>
 	<body>
