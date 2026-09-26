@@ -6,9 +6,12 @@ import type { KnowledgeGraph, UnlinkedMention } from "../src/types/graph";
 
 const firstId = "quality-graph-first";
 const secondId = "quality-graph-second";
+const thirdId = "quality-graph-third";
 const topic = "quality-shared-topic";
 const editedTopic = "quality-edited-topic";
-const fixtures = [firstId, secondId].map((id) => `src/content/blog/${id}.md`);
+const fixtures = [firstId, secondId, thirdId].map(
+	(id) => `src/content/blog/${id}.md`,
+);
 for (const path of fixtures)
 	assert(!existsSync(path), `Do not overwrite ${path}`);
 
@@ -82,6 +85,22 @@ try {
 		),
 	);
 
+	writePost(thirdId, "Warm added graph fixture", [topic, "ai"], "Third marker");
+	graph = build();
+	assertViews(graph, thirdId, "Warm added graph fixture");
+	assert.equal(graph.posts.length, baseline.length + 3);
+	assert(
+		readFileSync(`dist/blog/${thirdId}.md`, "utf8").includes(
+			"Warm added graph fixture",
+		),
+	);
+	assert(
+		suggestions().some(
+			(mention) =>
+				mention.sourcePostId === thirdId && mention.targetPostId === secondId,
+		),
+	);
+
 	writePost(
 		firstId,
 		"Edited graph fixture",
@@ -91,7 +110,7 @@ try {
 	graph = build();
 	assertViews(graph, firstId, "Edited graph fixture");
 	assert.deepEqual(graph.topics[editedTopic], [firstId]);
-	assert.deepEqual(graph.topics[topic], [secondId]);
+	assert.deepEqual(graph.topics[topic], [secondId, thirdId]);
 	const refreshed = suggestions().find(
 		(mention) =>
 			mention.sourcePostId === firstId && mention.targetPostId === secondId,
@@ -128,7 +147,7 @@ try {
 	);
 	assertViews(graph, secondId, "Second graph fixture");
 	console.log(
-		"Cold additions, warm edits/removal, and snapshot agreement passed.",
+		"Cold additions, warm additions/edits/removal, and snapshot agreement passed.",
 	);
 } finally {
 	for (const path of fixtures) rmSync(path, { force: true });

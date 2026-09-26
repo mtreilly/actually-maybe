@@ -64,8 +64,15 @@ ${slug}: this draft must stay private.
 	assert(!suggestions.includes(slug));
 	assert(!existsSync(`dist/blog/${slug}.md`));
 	assert(!existsSync(`dist/blog/${slug}/index.html`));
+	rmSync(".astro", { recursive: true, force: true });
+	build();
+	assertPrivate("dist");
+	assert(
+		!readFileSync("src/generated/route-manifest.json", "utf8").includes(slug),
+	);
+	assert(!readFileSync("docs/graph-suggestions.json", "utf8").includes(slug));
 	console.log(
-		"Draft excluded from all public outputs and derived discovery data.",
+		"Draft excluded from cold/warm public outputs and derived discovery data.",
 	);
 } finally {
 	rmSync(fixture, { force: true });
