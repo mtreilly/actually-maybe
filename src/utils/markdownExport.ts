@@ -1,4 +1,11 @@
 import type { CollectionEntry } from "astro:content";
+import { posix } from "node:path";
+import {
+	type ImageUrlResolver,
+	resolveRelativeImages,
+} from "../lib/markdown-images";
+
+const BLOG_CONTENT_DIRECTORY = "src/content/blog";
 
 export type MarkdownDoc = {
 	title: string;
@@ -82,14 +89,22 @@ export const buildBlogMarkdown = ({
 	canonicalUrl,
 	origin,
 	relatedPosts = [],
+	resolveImageUrl,
 }: {
 	post: CollectionEntry<"blog">;
 	canonicalUrl: string;
 	origin: string;
 	relatedPosts?: Array<CollectionEntry<"blog">>;
+	resolveImageUrl?: ImageUrlResolver;
 }) => {
 	const heroImage = post.data.heroImage ? post.data.heroImage.src : undefined;
 	const summary = post.data.description ? `> ${post.data.description}\n\n` : "";
+	const postDirectory = post.filePath
+		? posix.dirname(post.filePath)
+		: BLOG_CONTENT_DIRECTORY;
+	const postBody = resolveImageUrl
+		? resolveRelativeImages(post.body ?? "", postDirectory, resolveImageUrl)
+		: (post.body ?? "");
 	return serializeMarkdownDoc({
 		title: post.data.title,
 		description: post.data.description,
@@ -100,7 +115,7 @@ export const buildBlogMarkdown = ({
 		updatedDate: post.data.updatedDate,
 		series: post.data.series,
 		heroImage,
-		body: `${heroImage ? `![Hero image for ${post.data.title}](${heroImage})\n\n` : ""}${summary}${post.body ?? ""}`,
+		body: `${heroImage ? `![Hero image for ${post.data.title}](${heroImage})\n\n` : ""}${summary}${postBody}`,
 		furtherReading: relatedPosts.slice(0, 5).map((related) => ({
 			title: related.data.title,
 			description: related.data.description,

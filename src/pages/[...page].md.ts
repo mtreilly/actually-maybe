@@ -1,7 +1,9 @@
+import { getImage } from "astro:assets";
 import { createHash } from "node:crypto";
-import type { APIRoute } from "astro";
+import type { APIRoute, ImageMetadata } from "astro";
 import { VARY_VALUE } from "../lib/accept-negotiation";
 import { loadKnowledgeGraph } from "../lib/knowledge-graph-loader";
+import type { ImageUrlResolver } from "../lib/markdown-images";
 import { POST_TYPES } from "../lib/post-types";
 import { getPublishedPosts } from "../lib/published-posts";
 import { rankRelatedReading } from "../lib/related-reading";
@@ -36,6 +38,26 @@ const normalizeSlug = (param?: string | string[]) => {
 const canonicalForSlug = (origin: string, slug: string) => {
 	if (slug === "index") return new URL("/", origin).toString();
 	return new URL(`/${slug.replace(/\/+$/, "")}/`, origin).toString();
+};
+
+const blogImages = import.meta.glob<{ default: ImageMetadata }>(
+	"/src/content/blog/**/*.{png,jpg,jpeg,webp,avif,gif}",
+	{ eager: true },
+);
+
+/** Publishes each post image the way the HTML page does, keyed by its source path. */
+const buildImageUrlResolver = async (
+	origin: string,
+): Promise<ImageUrlResolver> => {
+	const publishedEntries = await Promise.all(
+		Object.entries(blogImages).map(async ([modulePath, image]) => {
+			const optimised = await getImage({ src: image.default });
+			const sourcePath = modulePath.replace(/^\//, "");
+			return [sourcePath, new URL(optimised.src, origin).toString()] as const;
+		}),
+	);
+	const publishedUrls = new Map(publishedEntries);
+	return (sourcePath) => publishedUrls.get(sourcePath);
 };
 
 const respondWithMarkdown = (markdown: string) => {
@@ -101,6 +123,7 @@ export const GET: APIRoute = async ({ params, site, url }) => {
 			canonicalUrl,
 			origin,
 			relatedPosts: rankRelatedReading(posts, post).slice(0, 5),
+			resolveImageUrl: await buildImageUrlResolver(origin),
 		});
 		return respondWithMarkdown(markdown);
 	}
