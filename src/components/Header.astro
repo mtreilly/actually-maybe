@@ -234,11 +234,15 @@ const isActive = (href: string) => {
 	}
 
 	.nav-links {
+		/* Room for focus outlines (2px + 3px offset), which overflow: hidden would clip */
+		--focus-ring-space: 5px;
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
 		font-size: 0.9375rem;
 		align-items: flex-start;
+		padding-inline: var(--focus-ring-space);
+		margin-inline: calc(-1 * var(--focus-ring-space));
 		max-height: 0;
 		overflow: hidden;
 		opacity: 0;
@@ -252,6 +256,7 @@ const isActive = (href: string) => {
 		opacity: 1;
 		transform: translateY(0);
 		padding-top: 0.5rem;
+		padding-bottom: var(--focus-ring-space);
 	}
 
 	.link-list {
@@ -335,9 +340,10 @@ const isActive = (href: string) => {
 			align-items: center;
 			gap: 2rem;
 			max-height: none;
+			overflow: visible;
 			opacity: 1;
 			transform: none;
-			padding-top: 0;
+			padding-block: 0;
 			font-size: 0.95rem;
 		}
 
