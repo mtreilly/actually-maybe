@@ -44,14 +44,14 @@ assert.deepEqual(
 );
 assert.equal(searchItems.length, graph.posts.length);
 for (const kind of POST_TYPES) {
-	const markdown = read(`type/${kind}.md`);
 	const expected = graph.posts.filter((post) => post.type === kind).length;
+	if (!expected) {
+		assert(!manifest.htmlRoutes.includes(`/type/${kind}`));
+		assert(!manifest.markdownRoutes[`/type/${kind}`]);
+		continue;
+	}
+	const markdown = read(`type/${kind}.md`);
 	assert.equal(markdownPostIds(markdown).length, expected);
-	if (!expected)
-		assert(
-			markdown.includes("0 posts") &&
-				markdown.includes("No posts of this type yet."),
-		);
 }
 
 const graphHtml = read("graph/index.html");

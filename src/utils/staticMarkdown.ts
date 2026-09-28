@@ -146,7 +146,8 @@ const buildTypeOverviewDoc = (
 	posts.forEach((post) => {
 		counts.set(post.data.type, (counts.get(post.data.type) || 0) + 1);
 	});
-	const list = POST_TYPES.map((type) => [type, counts.get(type) ?? 0] as const)
+	const list = POST_TYPES.filter((type) => counts.has(type))
+		.map((type) => [type, counts.get(type) ?? 0] as const)
 		.map(
 			([type, count]) =>
 				`- [${typeLabel(type)}](${new URL(`/type/${type}/`, origin).toString()}) — ${ui.collections.postCount(count)}`,

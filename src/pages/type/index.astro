@@ -19,7 +19,7 @@ posts.forEach((post) => {
 });
 
 // Get all types with counts
-const types = POST_TYPES.map((name) => ({
+const types = POST_TYPES.filter((name) => typeCounts.has(name)).map((name) => ({
 	name,
 	count: typeCounts.get(name) || 0,
 	description: ui.types[name].description,

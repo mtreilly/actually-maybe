@@ -1,5 +1,11 @@
 # Actually Maybe
 
+Production releases can be made with `pnpm deploy:prod`. It builds and tests the
+site, captures the current canonical pages, deploys to Vercel, and notifies
+IndexNow about pages that changed, appeared, or disappeared. The public key file
+is in `public/`. Git-triggered Vercel deployments do not run this local command,
+so use it for publishing changes that should notify IndexNow.
+
 A static personal blog built with Astro, TypeScript, and Markdown/MDX. The aim is
 simple: write a thought, publish it, and make it readable by people and agents.
 Read [AGENTS.md](AGENTS.md) for project standards and
@@ -32,7 +38,7 @@ representations automatically. No manual related-post metadata is required.
 
 Every content page has a Markdown sibling: `/index.md`, `/about.md`, `/contact.md`,
 `/privacy.md`, `/blog/post-slug.md`, `/topics/topic.md`, `/type/guide.md`, `/graph.md`,
-and the other page routes. Empty supported type collections have Markdown too.
+and the other page routes. Type collections appear once they contain a published post.
 Search HTML and Markdown both include the complete published-post index; HTML
 adds interactive title, description, and topic search when JavaScript is available.
 Home HTML and Markdown select the same ten latest posts in the same order.

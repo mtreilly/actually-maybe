@@ -185,8 +185,7 @@ try {
 		"/privacy",
 		"/blog/",
 		"/graph",
-		"/type/guide",
-		"/type/link",
+		"/type/note",
 		"/search",
 	]) {
 		const response = await get(path, BROWSER_ACCEPT);
@@ -213,8 +212,7 @@ try {
 		"/privacy",
 		"/blog/agent-friendly-architecture",
 		"/graph",
-		"/type/guide",
-		"/type/link",
+		"/type/note",
 		"/search",
 	]) {
 		const response = await get(path, "text/markdown");

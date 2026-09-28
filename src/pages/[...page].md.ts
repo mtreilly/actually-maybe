@@ -4,7 +4,6 @@ import type { APIRoute, ImageMetadata } from "astro";
 import { VARY_VALUE } from "../lib/accept-negotiation";
 import { loadKnowledgeGraph } from "../lib/knowledge-graph-loader";
 import type { ImageUrlResolver } from "../lib/markdown-images";
-import { POST_TYPES } from "../lib/post-types";
 import { getPublishedPosts } from "../lib/published-posts";
 import { rankRelatedReading } from "../lib/related-reading";
 import { buildGraphMarkdown } from "../utils/graphMarkdown";
@@ -74,7 +73,7 @@ const respondWithMarkdown = (markdown: string) => {
 export async function getStaticPaths() {
 	const posts = await getPublishedPosts();
 	const topics = new Set<string>();
-	const types = new Set<string>(POST_TYPES);
+	const types = new Set<string>();
 	posts.forEach((post) => {
 		post.data.topics.forEach((topic) => {
 			topics.add(topic);

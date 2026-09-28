@@ -80,8 +80,6 @@
 		"/topics/workflow": "/topics/workflow.md",
 		"/type": "/type.md",
 		"/type/essay": "/type/essay.md",
-		"/type/guide": "/type/guide.md",
-		"/type/link": "/type/link.md",
 		"/type/note": "/type/note.md"
 	},
 	"htmlRoutes": [
@@ -165,13 +163,12 @@
 		"/topics/workflow",
 		"/type",
 		"/type/essay",
-		"/type/guide",
-		"/type/link",
 		"/type/note"
 	],
 	"files": [
 		"/.well-known/ai-profile",
 		"/404.html",
+		"/7db5dab628ad9b44cf34d84de9aa8ac5.txt",
 		"/_astro/BlogPost.astro_astro_type_script_index_0_lang.etT6yTFg.js",
 		"/_astro/_slug_.BhHr1EIk.css",
 		"/_astro/_slug_.kdlKbR65.css",
@@ -276,8 +273,6 @@
 		"/topics/workflow.md",
 		"/type.md",
 		"/type/essay.md",
-		"/type/guide.md",
-		"/type/link.md",
 		"/type/note.md"
 	]
 }

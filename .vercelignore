@@ -4,6 +4,7 @@
 
 # Development
 node_modules
+.beads/
 
 # Documentation
 README.md
@@ -20,4 +21,3 @@ dist
 .DS_Store
 *.swp
 *.swo
-

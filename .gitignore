@@ -26,3 +26,4 @@ pnpm-debug.log*
 
 # Knowledge graph suggestions (optional)
 docs/graph-suggestions.json
+.indexnow-before.json

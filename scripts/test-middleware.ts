@@ -75,8 +75,7 @@ const cases: Array<[string, string]> = [
 	["/privacy", "/privacy.md"],
 	["/blog", "/blog.md"],
 	["/graph", "/graph.md"],
-	["/type/guide", "/type/guide.md"],
-	["/type/link", "/type/link.md"],
+	["/type/note", "/type/note.md"],
 	["/blog/agent-friendly-architecture", "/blog/agent-friendly-architecture.md"],
 	[
 		"/blog/agent-friendly-architecture/",

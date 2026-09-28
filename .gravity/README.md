@@ -36,6 +36,11 @@ portable graph nodes. Keep [build/request separation](necessity/static-represent
 calendar dates, independent middleware compilation, and the committed route manifest.
 The [graph simplification](grace/one-build-graph.md) is now implemented.
 
+The 2026-09-29 discoverability pass keeps type collections inside the publication
+boundary: only types used by a published post produce HTML, Markdown, navigation
+links, and sitemap entries. `pnpm deploy:prod` snapshots live canonical HTML,
+deploys to Vercel, and submits changed, added, or removed URLs to IndexNow.
+
 ## Maintenance guidance
 
 1. Use the publication boundary for every new public consumer; exercise actual

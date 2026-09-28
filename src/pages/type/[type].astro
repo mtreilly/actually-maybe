@@ -11,10 +11,11 @@ import { POST_TYPES } from "../../lib/post-types";
 import { getPublishedPosts } from "../../lib/published-posts";
 
 export async function getStaticPaths() {
-	const validTypes = POST_TYPES;
 	const posts = await getPublishedPosts();
 
-	return validTypes.map((type) => ({
+	return POST_TYPES.filter((type) =>
+		posts.some((post) => post.data.type === type),
+	).map((type) => ({
 		params: { type },
 		props: {
 			posts: posts
