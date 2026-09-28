@@ -14,11 +14,18 @@ interface Props {
 	description: string;
 	image?: ImageMetadata;
 	imageAlt?: string;
+	openGraphType?: "website" | "article";
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = FallbackImage, imageAlt } = Astro.props;
+const {
+	title,
+	description,
+	image = FallbackImage,
+	imageAlt,
+	openGraphType = "website",
+} = Astro.props;
 const socialImageURL = new URL(image.src, Astro.site ?? Astro.url);
 const socialImageAlt = imageAlt ?? (image === FallbackImage
 	? `Actually Maybe: a blue, hand-drawn approximation mark. Notes and stuff, by ${AUTHOR_NAME}.`
@@ -48,7 +55,7 @@ try {
 	href={new URL('rss.xml', Astro.site)}
 />
 <meta name="generator" content={Astro.generator} />
-<meta name="author" content={SITE_TITLE} />
+<meta name="author" content={AUTHOR_NAME} />
 <meta name="publisher" content={ORGANISATION_NAME} />
 <link rel="author" href={new URL('/about/', Astro.site)} />
 <link rel="me" href={`mailto:${CONTACT_EMAIL}`} />
@@ -92,7 +99,7 @@ try {
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={openGraphType} />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
