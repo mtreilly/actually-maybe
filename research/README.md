@@ -6,6 +6,16 @@ Keep Markdown as the source. Export dated PDFs for tablet review, with generous
 annotation margins, page numbers, and a contents page for long documents. Upload
 new revisions separately so existing handwritten comments stay with their draft.
 
+Generate both PDFs on this Mac (requires Pandoc and uv):
+
+```bash
+uv run scripts/export-research-pdfs.py
+```
+
+Exports go into the ignored `output/pdf/` directory. To select a revision date,
+pass `--date YYYY-MM-DD`. The exporter preserves the notes, keeps external links
+clickable, and adds a blank page for review notes.
+
 Use the maintained [ddvk/rmapi CLI](https://github.com/ddvk/rmapi) for cloud
 transfers and [remarkable-mcp](https://github.com/SamMorrowDrums/remarkable-mcp)
 to browse the library, read highlights, and export annotated PDFs.

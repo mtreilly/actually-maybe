@@ -30,3 +30,7 @@ docs/graph-suggestions.json
 
 # Local MCP configuration contains reMarkable credentials
 .codex/config.toml
+
+# Private tablet exports and PDF preview files
+output/pdf/
+tmp/pdfs/
