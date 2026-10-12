@@ -34,3 +34,4 @@ docs/graph-suggestions.json
 # Private tablet exports and PDF preview files
 output/pdf/
 tmp/pdfs/
+scripts/__pycache__/

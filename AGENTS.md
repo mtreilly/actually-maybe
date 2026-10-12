@@ -478,6 +478,32 @@ necessary complexity, and accepted irregularities. Check findings against curren
 code, and update the affected knowledge when a boundary changes or a finding is
 resolved. Recommendations there are not claims that the fixes have shipped.
 
+### Private research review on reMarkable
+
+`research/` contains private working notes, not publishable blog content. Read
+[research/README.md](research/README.md) before exporting or transferring them.
+
+- Export with `uv run scripts/export-research-pdfs.py`. The exporter requires
+  Pandoc and macOS system fonts; uv installs the pinned Python dependency.
+  PDFs live in ignored `output/pdf/`, never `public/` or `src/content/blog/`.
+- Exports refuse existing dated files. `--overwrite` replaces **local** PDFs
+  explicitly, and never uploads. Use a distinct revision date/name on the tablet
+  so handwriting remains attached to the version it reviews.
+- After modifying the exporter, run `uv run scripts/test-research-pdfs.py`, export
+  the actual notes, and inspect rendered pages, text completeness, code widths,
+  contents links, and bookmarks. The PDF checks are separate from `pnpm test`.
+- Unsupported Markdown or glyphs are errors. Do not silently omit content or
+  add a generic Markdown framework to handle an unrequested feature.
+- Upload only when the user authorises transfer. Use `rmapi -ni put <pdf>
+  /Research`; never `put --force` on an annotated document. `--content-only` can
+  also misalign handwriting when pagination changes.
+- Verify remote names with MCP `remarkable_browse` at `/Research`. Check its
+  structured result for `_error`, because failures can return `isError=false`.
+  Cloud presence confirms upload, not that the tablet has finished syncing.
+- `.env` holds the consumed pairing code. Reusable credentials are in `~/.rmapi`
+  and the ignored `.codex/config.toml`. Never print or commit them. Preserve
+  `REMARKABLE_TOKEN` and `PYMUPDF_MESSAGE=fd:2` in the local MCP configuration.
+
 ### Issue Tracking with `bd` (beads)
 
 This project uses [`bd`](https://github.com/steveyegge/beads) for issue tracking, not markdown TODOs.
