@@ -27,3 +27,6 @@ pnpm-debug.log*
 # Knowledge graph suggestions (optional)
 docs/graph-suggestions.json
 .indexnow-before.json
+
+# Local MCP configuration contains reMarkable credentials
+.codex/config.toml
